@@ -1,0 +1,25 @@
+<?php
+
+namespace PE\Component\IRC\Message;
+
+/**
+ * STATS [<query> [<server>]]
+ *
+ * ERR_NOSUCHSERVER
+ * RPL_STATSCLINE
+ * RPL_STATSILINE
+ * RPL_STATSQLINE
+ * RPL_STATSLINKINFO
+ * RPL_STATSCOMMANDS
+ * RPL_STATSHLINE
+ * RPL_STATSNLINE
+ * RPL_STATSKLINE
+ * RPL_STATSLLINE
+ * RPL_STATSUPTIME
+ * RPL_STATSOLINE
+ * RPL_ENDOFSTATS
+ */
+class StatsMessage
+{
+
+}

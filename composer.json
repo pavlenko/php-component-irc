@@ -1,0 +1,28 @@
+{
+  "name": "pe/php-component-irc",
+  "type": "library",
+  "description": "IRC protocol implementation",
+  "minimum-stability": "stable",
+  "config": {
+    "sort-packages": true
+  },
+  "require": {
+    "php": "^7.4",
+    "ext-json": "*",
+    "psr/log": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "PE\\Component\\IRC\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "PE\\Component\\SMPP\\IRC\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~9.0",
+    "symfony/console": "^5.4"
+  }
+}

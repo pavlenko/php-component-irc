@@ -49,78 +49,78 @@ class Replies
     public const ERR_UMODEUNKNOWNFLAG = 501;//<target> ::= :Unknown MODE flag
     public const ERR_USERSDONTMATCH   = 502;//<target> ::= :Cant change mode for other users
 
-    public const RPL_NONE            = 300;//<target> ::=
-    public const RPL_USERHOST        = 302;//<target> ::=
-    public const RPL_ISON            = 303;//<target> ::=
-    public const RPL_AWAY            = 301;//<target> ::=
-    public const RPL_UNAWAY          = 305;//<target> ::=
-    public const RPL_NOWAWAY         = 306;//<target> ::=
-    public const RPL_WHOISUSER       = 311;//<target> ::=
-    public const RPL_WHOISSERVER     = 312;//<target> ::=
-    public const RPL_WHOISOPERATOR   = 313;//<target> ::=
-    public const RPL_WHOISIDLE       = 317;//<target> ::=
-    public const RPL_ENDOFWHOIS      = 318;//<target> ::=
-    public const RPL_WHOISCHANNELS   = 319;//<target> ::=
-    public const RPL_WHOWASUSER      = 314;//<target> ::=
-    public const RPL_ENDOFWHOWAS     = 369;//<target> ::=
-    public const RPL_LISTSTART       = 321;//<target> ::=
-    public const RPL_LIST            = 322;//<target> ::=
-    public const RPL_LISTEND         = 323;//<target> ::=
-    public const RPL_CHANNELMODEIS   = 324;//<target> ::=
-    public const RPL_NOTOPIC         = 331;//<target> ::=
-    public const RPL_TOPIC           = 332;//<target> ::=
-    public const RPL_INVITING        = 341;//<target> ::=
-    public const RPL_SUMMONING       = 342;//<target> ::=
-    public const RPL_VERSION         = 351;//<target> ::=
-    public const RPL_WHOREPLY        = 352;//<target> ::=
-    public const RPL_ENDOFWHO        = 315;//<target> ::=
-    public const RPL_NAMREPLY        = 353;//<target> ::=
-    public const RPL_ENDOFNAMES      = 366;//<target> ::=
-    public const RPL_LINKS           = 364;//<target> ::=
-    public const RPL_ENDOFLINKS      = 365;//<target> ::=
-    public const RPL_BANLIST         = 367;//<target> ::=
-    public const RPL_ENDOFBANLIST    = 368;//<target> ::=
-    public const RPL_INFO            = 371;//<target> ::=
-    public const RPL_ENDOFINFO       = 374;//<target> ::=
-    public const RPL_MOTDSTART       = 375;//<target> ::=
-    public const RPL_MOTD            = 372;//<target> ::=
-    public const RPL_ENDOFMOTD       = 376;//<target> ::=
-    public const RPL_YOUREOPER       = 381;//<target> ::=
-    public const RPL_REHASHING       = 382;//<target> ::=
-    public const RPL_TIME            = 391;//<target> ::=
-    public const RPL_USERSSTART      = 392;//<target> ::=
-    public const RPL_USERS           = 393;//<target> ::=
-    public const RPL_ENDOFUSERS      = 394;//<target> ::=
-    public const RPL_NOUSERS         = 395;//<target> ::=
-    public const RPL_TRACELINK       = 200;//<target> ::=
-    public const RPL_TRACECONNECTING = 201;//<target> ::=
-    public const RPL_TRACEHANDSHAKE  = 202;//<target> ::=
-    public const RPL_TRACEUNKNOWN    = 203;//<target> ::=
-    public const RPL_TRACEOPERATOR   = 204;//<target> ::=
-    public const RPL_TRACEUSER       = 205;//<target> ::=
-    public const RPL_TRACESERVER     = 206;//<target> ::=
-    public const RPL_TRACENEWTYPE    = 208;//<target> ::=
-    public const RPL_TRACELOG        = 261;//<target> ::=
-    public const RPL_STATSLINKINFO   = 211;//<target> ::=
-    public const RPL_STATSCOMMANDS   = 212;//<target> ::=
-    public const RPL_STATSCLINE      = 213;//<target> ::=
-    public const RPL_STATSNLINE      = 214;//<target> ::=
-    public const RPL_STATSILINE      = 215;//<target> ::=
-    public const RPL_STATSKLINE      = 216;//<target> ::=
-    public const RPL_STATSYLINE      = 218;//<target> ::=
-    public const RPL_ENDOFSTATS      = 219;//<target> ::=
-    public const RPL_STATSLLINE      = 241;//<target> ::=
-    public const RPL_STATSUPTIME     = 242;//<target> ::=
-    public const RPL_STATSOLINE      = 243;//<target> ::=
-    public const RPL_STATSHLINE      = 244;//<target> ::=
-    public const RPL_UMODEIS         = 221;//<target> ::=
-    public const RPL_LUSERCLIENT     = 251;//<target> ::=
-    public const RPL_LUSEROP         = 252;//<target> ::=
-    public const RPL_LUSERUNKNOWN    = 253;//<target> ::=
-    public const RPL_LUSERCHANNELS   = 254;//<target> ::=
-    public const RPL_LUSERME         = 255;//<target> ::=
-    public const RPL_ADMINME         = 256;//<target> ::=
-    public const RPL_ADMINLOC1       = 257;//<target> ::=
-    public const RPL_ADMINLOC2       = 258;//<target> ::=
-    public const RPL_ADMINEMAIL      = 259;//<target> ::=
+    public const RPL_NONE            = 300;//Dummy reply number. Not used.
+    public const RPL_USERHOST        = 302;//<target> ::= :[<reply>{<space><reply>}] <reply> ::= <nick>[’*’] ’=’ <’+’|’-’><hostname>
+    public const RPL_ISON            = 303;//<target> ::= :[<nick>{<space><nick>}]
+    public const RPL_AWAY            = 301;//<target> ::= <nick> :<away message>
+    public const RPL_UNAWAY          = 305;//<target> ::= :You are no longer marked as being away
+    public const RPL_NOWAWAY         = 306;//<target> ::= :You have been marked as being away
+    public const RPL_WHOISUSER       = 311;//<target> ::= <nick> <user> <host> * :<real name>
+    public const RPL_WHOISSERVER     = 312;//<target> ::= <nick> <server> :<server info>
+    public const RPL_WHOISOPERATOR   = 313;//<target> ::= <nick> :is an IRC operator
+    public const RPL_WHOISIDLE       = 317;//<target> ::= <nick> <integer> :seconds idle
+    public const RPL_ENDOFWHOIS      = 318;//<target> ::= <nick> :End of /WHOIS list
+    public const RPL_WHOISCHANNELS   = 319;//<target> ::= <nick> :{[@|+]<channel><space>}
+    public const RPL_WHOWASUSER      = 314;//<target> ::= <nick> <user> <host> * :<real name>
+    public const RPL_ENDOFWHOWAS     = 369;//<target> ::= <nick> :End of /WHOWAS
+    public const RPL_LISTSTART       = 321;//<target> ::= Channel :Users Name
+    public const RPL_LIST            = 322;//<target> ::= <channel> <# visible> :<topic>
+    public const RPL_LISTEND         = 323;//<target> ::= :End of /LIST
+    public const RPL_CHANNELMODEIS   = 324;//<target> ::= <channel> <mode> <mode params>
+    public const RPL_NOTOPIC         = 331;//<target> ::= <channel> :No topic is set
+    public const RPL_TOPIC           = 332;//<target> ::= <channel> :<topic>
+    public const RPL_INVITING        = 341;//<target> ::= <channel> <nick>
+    public const RPL_SUMMONING       = 342;//<target> ::= <user> :Summoning user to IRC
+    public const RPL_VERSION         = 351;//<target> ::= <version>.<debug level> <server> :<comments>
+    public const RPL_WHOREPLY        = 352;//<target> ::= <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hop count> <real name>
+    public const RPL_ENDOFWHO        = 315;//<target> ::= <name> :End of /WHO list
+    public const RPL_NAMREPLY        = 353;//<target> ::= <channel> :[[@|+]<nick> [[@|+]<nick> [...]]]
+    public const RPL_ENDOFNAMES      = 366;//<target> ::= <channel> :End of /NAMES list
+    public const RPL_LINKS           = 364;//<target> ::= <mask> <server> :<hop count> <server info>
+    public const RPL_ENDOFLINKS      = 365;//<target> ::= <mask> :End of /LINKS list
+    public const RPL_BANLIST         = 367;//<target> ::= <channel> <ban id>
+    public const RPL_ENDOFBANLIST    = 368;//<target> ::= <channel> :End of channel ban list
+    public const RPL_INFO            = 371;//<target> ::= :<string>
+    public const RPL_ENDOFINFO       = 374;//<target> ::= :End of /INFO list
+    public const RPL_MOTDSTART       = 375;//<target> ::= :- <server> Message of the day -
+    public const RPL_MOTD            = 372;//<target> ::= :- <text>
+    public const RPL_ENDOFMOTD       = 376;//<target> ::= :End of /MOTD command
+    public const RPL_YOUREOPER       = 381;//<target> ::= :You are now an IRC operator
+    public const RPL_REHASHING       = 382;//<target> ::= <config file> :Rehashing
+    public const RPL_TIME            = 391;//<target> ::= <server> :<string showing server’s local time>
+    public const RPL_USERSSTART      = 392;//<target> ::= :UserID Terminal Host
+    public const RPL_USERS           = 393;//<target> ::= :%-8s %-9s %-8s
+    public const RPL_ENDOFUSERS      = 394;//<target> ::= :End of users
+    public const RPL_NOUSERS         = 395;//<target> ::= :Nobody logged in
+    public const RPL_TRACELINK       = 200;//<target> ::= Link <version & debug level> <destination> <next server>
+    public const RPL_TRACECONNECTING = 201;//<target> ::= Try. <class> <server>
+    public const RPL_TRACEHANDSHAKE  = 202;//<target> ::= H.S. <class> <server>
+    public const RPL_TRACEUNKNOWN    = 203;//<target> ::= ???? <class> [<client IP address in dot form>]
+    public const RPL_TRACEOPERATOR   = 204;//<target> ::= Oper <class> <nick>
+    public const RPL_TRACEUSER       = 205;//<target> ::= User <class> <nick>
+    public const RPL_TRACESERVER     = 206;//<target> ::= Serv <class> <int>S <int>C <server> <nick!user|*!*>@<host|server>
+    public const RPL_TRACENEWTYPE    = 208;//<target> ::= <new type> 0 <client name>
+    public const RPL_TRACELOG        = 261;//<target> ::= File <logfile> <debug level>
+    public const RPL_STATSLINKINFO   = 211;//<target> ::= <link name> <send q> <sent messages> <sent bytes> <received messages> <received bytes> <time open>
+    public const RPL_STATSCOMMANDS   = 212;//<target> ::= <command> <count>
+    public const RPL_STATSCLINE      = 213;//<target> ::= C <host> * <name> <port> <class>
+    public const RPL_STATSNLINE      = 214;//<target> ::= N <host> * <name> <port> <class>
+    public const RPL_STATSILINE      = 215;//<target> ::= I <host> * <host> <port> <class>
+    public const RPL_STATSKLINE      = 216;//<target> ::= K <host> * <username> <port> <class>
+    public const RPL_STATSYLINE      = 218;//<target> ::= Y <class> <ping frequency> <connect frequency> <max send q>
+    public const RPL_ENDOFSTATS      = 219;//<target> ::= <stats letter> :End of /STATS report
+    public const RPL_STATSLLINE      = 241;//<target> ::= L <host mask> * <servername> <max depth>
+    public const RPL_STATSUPTIME     = 242;//<target> ::= :Server Up %d days %d:%02d:%02d
+    public const RPL_STATSOLINE      = 243;//<target> ::= O <host mask> * <name>
+    public const RPL_STATSHLINE      = 244;//<target> ::= H <host mask> * <servername>
+    public const RPL_UMODEIS         = 221;//<target> ::= <user mode string>
+    public const RPL_LUSERCLIENT     = 251;//<target> ::= :There are <integer> users and <integer> invisible on <integer> servers
+    public const RPL_LUSEROP         = 252;//<target> ::= <integer> :operator(s) online
+    public const RPL_LUSERUNKNOWN    = 253;//<target> ::= <integer> :unknown connection(s)
+    public const RPL_LUSERCHANNELS   = 254;//<target> ::= <integer> :channels formed
+    public const RPL_LUSERME         = 255;//<target> ::= :I have <integer> clients and <integer> servers
+    public const RPL_ADMINME         = 256;//<target> ::= <server> :Administrative info
+    public const RPL_ADMINLOC1       = 257;//<target> ::= :<admin info>
+    public const RPL_ADMINLOC2       = 258;//<target> ::= :<admin info>
+    public const RPL_ADMINEMAIL      = 259;//<target> ::= :<admin info>
 }

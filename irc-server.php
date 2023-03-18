@@ -9,5 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
-$server = new Server(null, $logger);
+
+$handler = new Handler([
+    new Channel('#foo'),
+]);
+
+$server = new Server($handler, null, $logger);
 $server->listen('0.0.0.0:6667');

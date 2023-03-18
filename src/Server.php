@@ -19,9 +19,9 @@ class Server
     private LoopInterface $loop;
     private LoggerInterface $logger;
 
-    public function __construct(LoopInterface $loop = null, LoggerInterface $logger = null)
+    public function __construct(Handler $handler, LoopInterface $loop = null, LoggerInterface $logger = null)
     {
-        $this->handler  = new Handler();
+        $this->handler  = $handler;
         $this->parser   = new Parser();
         $this->sessions = new \SplObjectStorage();
 
@@ -45,6 +45,7 @@ class Server
 
             $connection->on('data', function ($data) use ($connection) {
                 $lines = preg_split('/\r?\n/', $data, null, PREG_SPLIT_NO_EMPTY);
+                dump($data);
                 foreach ($lines as $line) {
                     $this->processMessageReceived($connection, $this->parser->parse($line));
                 }
@@ -60,7 +61,7 @@ class Server
     private function processMessageReceived(ConnectionInterface $connection, Command $command)
     {
         $this->logger->info('<-- ' . $command);
-        $this->handler->handle($command, $this->sessions[$connection], $this);
+        $this->handler->handle($command, $this->sessions[$connection]);
     }
 
     public function processMessageSend(ConnectionInterface $connection, Command $command)

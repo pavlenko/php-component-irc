@@ -7,14 +7,19 @@ use React\Socket\ConnectionInterface;
 class Session
 {
     private array $data;
-    private ConnectionInterface $conn;
+    private ConnectionInterface $connection;
     private Server $server;
 
-    public function __construct(ConnectionInterface $conn, Server $server, array $data = [])
+    public function __construct(ConnectionInterface $connection, Server $server, array $data = [])
     {
-        $this->data   = $data;
-        $this->conn   = $conn;
+        $this->data = $data;
+        $this->connection = $connection;
         $this->server = $server;
+    }
+
+    public function getConnection(): ConnectionInterface
+    {
+        return $this->connection;
     }
 
     public function __get(string $name)
@@ -39,7 +44,11 @@ class Session
 
     public function send(Command $command): void
     {
-        $this->server->processMessageSend($this->conn, $command);
-        $this->conn->write($command);
+        $this->server->processMessageSend($this->connection, $command);
+    }
+
+    public function quit(): void
+    {
+        $this->connection->close();
     }
 }

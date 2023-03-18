@@ -29,6 +29,10 @@ class Server
         $this->logger = $logger ?: new NullLogger();
     }
 
+    /**
+     * @param string $address Port can be in range 6660–6669,7000
+     * @return void
+     */
     public function listen(string $address): void
     {
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
@@ -39,12 +43,15 @@ class Server
             $this->logger->info('New connection from ' . $connection->getRemoteAddress());
             $this->sessions->attach($connection, new Session($connection, $this, ['addr' => $connection->getRemoteAddress()]));
 
-            $connection->on('data', fn($data) => $this->processMessageReceived($connection, $this->parser->parse($data)));
+            $connection->on('data', function ($data) use ($connection) {
+                $lines = preg_split('/\r?\n/', $data, null, PREG_SPLIT_NO_EMPTY);
+                foreach ($lines as $line) {
+                    $this->processMessageReceived($connection, $this->parser->parse($line));
+                }
+            });
 
             //TODO on close, on error
-            $connection->on('close', function () {
-                echo "closed\n";
-            });
+            $connection->on('close', fn() => $this->logger->info('Close connection from ' . $connection->getRemoteAddress()));
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());

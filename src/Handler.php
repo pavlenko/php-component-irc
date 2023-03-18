@@ -9,6 +9,8 @@ class Handler
 {
     public function handle(Command $command, Session $session): void
     {
+        //TODO need JOIN command for complete registration
+        //TODO hierarchy: server->channel->topic
         switch ($command->getName()) {
             case 'NICK':
                 $session->nick = $command->getParams()[0];
@@ -24,6 +26,17 @@ class Handler
                         $command->getParams()[0],
                         $session->addr
                     )
+                ));
+                break;
+            case 'QUIT':
+                $session->quit();
+                break;
+            case 'TIME':
+                $session->send(new Command(
+                    null,
+                    Replies::RPL_TIME,
+                    [parse_url($session->getConnection()->getLocalAddress(), PHP_URL_HOST)],
+                    date(DATE_RFC3339)
                 ));
                 break;
             default:

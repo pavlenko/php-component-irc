@@ -49,6 +49,11 @@ class Replies
     public const ERR_UMODEUNKNOWNFLAG = 501;//<target> ::= :Unknown MODE flag
     public const ERR_USERSDONTMATCH   = 502;//<target> ::= :Cant change mode for other users
 
+    public const RPL_WELCOME         = 001;//<target> ::= Welcome to the Internet Relay Network <nick>!<user>@<host>
+    public const RPL_YOURHOST        = 002;//<target> ::= :Your host is <servername>, running version <ver>
+    public const RPL_CREATED         = 003;//<target> ::= :This server was created <date>
+    public const RPL_MYINFO          = 004;//<target> ::= <servername> <version> <available user modes> <available channel modes>
+    public const RPL_BOUNCE          = 005;//<target> ::= :Try server <server name>, port <port number>
     public const RPL_NONE            = 300;//Dummy reply number. Not used.
     public const RPL_USERHOST        = 302;//<target> ::= :[<reply>{<space><reply>}] <reply> ::= <nick>[’*’] ’=’ <’+’|’-’><hostname>
     public const RPL_ISON            = 303;//<target> ::= :[<nick>{<space><nick>}]

@@ -22,15 +22,8 @@ class Parser
         // Resolve comment & params
         $parts   = preg_split('/:/', $parts[0] ?? '', 2, PREG_SPLIT_NO_EMPTY);
         $params  = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
-        $comment = $parts[1] ?? null;
+        $comment = !empty($parts[1]) ? trim($parts[1]) : null;
 
         return new Command($prefix, $command, $params, $comment);
-
-        return [
-            'prefix'  => $prefix,
-            'command' => $command,
-            'params'  => $params,
-            'comment' => $comment,
-        ];
     }
 }

@@ -9,7 +9,13 @@
   "require": {
     "php": "^7.4",
     "ext-json": "*",
-    "psr/log": "^1.1"
+    "psr/log": "^1.1",
+    "react/socket": "^1.12"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~9.0",
+    "symfony/console": "^5.4",
+    "symfony/var-dumper": "^5.4"
   },
   "autoload": {
     "psr-4": {
@@ -21,8 +27,4 @@
       "PE\\Component\\SMPP\\IRC\\": "tests/"
     }
   },
-  "require-dev": {
-    "phpunit/phpunit": "~9.0",
-    "symfony/console": "^5.4"
-  }
 }

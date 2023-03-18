@@ -20,7 +20,7 @@ $socket->on('connection', function (ConnectionInterface $connection) {
 
     echo "CONNECTED\n";
     $connection->on('data', function ($data) use ($connection) {
-        dump($data);
+        dump((new Parser())->parse($data));
         //$connection->close();
     });
     $connection->on('close', function () {

@@ -22,7 +22,7 @@ class Replies
     public const ERR_FILEERROR        = 424;//<target> ::= :File error doing <file op> on <file>
     public const ERR_NONICKNAMEGIVEN  = 431;//<target> ::= :No nickname given
     public const ERR_ERRONEUSNICKNAME = 432;//<target> ::= <nick> :Erroneous nickname
-    public const ERR_NICKNAMEINUSE    = 433;//<target> ::= "<nick> :Nickname is already in use
+    public const ERR_NICKNAMEINUSE    = 433;//<target> ::= <nick> :Nickname is already in use
     public const ERR_NICKCOLLISION    = 436;//<target> ::= <nick> :Nickname collision KILL
     public const ERR_USERNOTINCHANNEL = 441;//<target> ::= <nick> <channel> :They aren’t on that channel
     public const ERR_NOTONCHANNEL     = 442;//<target> ::= <channel> :You’re not on that channel

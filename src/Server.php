@@ -50,7 +50,10 @@ class Server
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (ConnectionInterface $connection) {
             $this->logger->info('New connection from ' . $connection->getRemoteAddress());
-            $this->sessions->attach($connection, new Session($connection, $this, ['servername' => $connection->getRemoteAddress()]));
+            $this->sessions->attach($connection, new Session($connection, $this, [
+                'servername' => $this->name,
+                'hostname'   => $connection->getRemoteAddress(),
+            ]));
 
             $connection->on('data', function ($data) use ($connection) {
                 $lines = preg_split('/\r?\n/', $data, null, PREG_SPLIT_NO_EMPTY);

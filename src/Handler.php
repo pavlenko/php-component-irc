@@ -22,16 +22,6 @@ class Handler
         //TODO hierarchy: server->channel->topic
         //TODO maybe move to server class???
         switch ($command->getName()) {
-            case 'NICK':
-                $session->nickname = $command->getArg(0);
-                break;
-            case 'USER':
-                $session->send(new Command(
-                    Replies::RPL_WELCOME,
-                    [$command->getArg(0)],
-                    'Welcome to the Internet Relay Network ' . $session->nickname
-                ));
-                break;
             case 'QUIT':
                 $session->quit();
                 break;

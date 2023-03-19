@@ -13,6 +13,8 @@ use React\Socket\SocketServer;
 class Server
 {
     private string $name;
+    private ?string $password;
+
     private Parser $parser;
 
     /**
@@ -24,9 +26,11 @@ class Server
     private LoopInterface $loop;
     private LoggerInterface $logger;
 
-    public function __construct(string $name, LoopInterface $loop = null, LoggerInterface $logger = null)
+    //TODO config file instead of $name, $password, $modt file
+    public function __construct(string $name, string $pass = null, LoopInterface $loop = null, LoggerInterface $logger = null)
     {
         $this->name     = $name;
+        $this->password = $pass;
         $this->parser   = new Parser();
         $this->sessions = new \SplObjectStorage();
 
@@ -68,6 +72,19 @@ class Server
         $this->logger->info('<-- ' . $cmd);
         //$this->handler->handle($command, $this->sessions[$connection]);
 
+        $checkRegistration = function (Session $sess) {
+            if (!empty($sess->nickname) && !empty($sess->username)) {
+                if (empty($this->password) || $sess->password === $this->password) {
+                    if (!($sess->flags & Session::REGISTERED)) {
+                        $sess->flags |= Session::REGISTERED;
+                        //TODO send MODT
+                    }
+                } else {
+                    $sess->quit();
+                }
+            }
+        };
+
         $sess = $this->sessions[$conn];
         switch ($cmd->getName()) {
             case 'PASS':
@@ -105,7 +122,7 @@ class Server
                     }
                     $sess->nickname = $cmd->getArg(0);
                 }
-                //TODO check registration & set registered and send MODT
+                $checkRegistration($sess);
                 break;
             case 'USER':
                 if (count($cmd->getArgs()) < 4) {
@@ -116,7 +133,7 @@ class Server
                     $sess->username = $cmd->getArg(0);
                     $sess->realname = $cmd->getArg(3);
                 }
-                //TODO check registration & set registered and send MODT
+                $checkRegistration($sess);
         }
     }
 

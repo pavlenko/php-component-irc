@@ -17,13 +17,13 @@ class Parser
 
         // Resolve command
         $parts   = preg_split('/\s+/', $data, 2, PREG_SPLIT_NO_EMPTY);
-        $command = array_shift($parts) ?? '';//TODO maybe throw exception here
+        $command = strtoupper(array_shift($parts) ?? '');//TODO maybe throw exception here
 
         // Resolve comment & params
         $parts   = preg_split('/:/', $parts[0] ?? '', 2, PREG_SPLIT_NO_EMPTY);
         $params  = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
         $comment = !empty($parts[1]) ? trim($parts[1]) : null;
 
-        return new Command($prefix, $command, $params, $comment);
+        return new Command($command, $params, $comment, $prefix);
     }
 }

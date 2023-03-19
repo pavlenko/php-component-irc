@@ -4,22 +4,17 @@ namespace PE\Component\IRC;
 
 class Command
 {
-    private ?string $prefix;
     private string  $name;
     private array   $params;
     private ?string $comment;
+    private ?string $prefix;
 
-    public function __construct(?string $prefix, string $name, array $params = [], ?string $comment = null)
+    public function __construct(string $name, array $params = [], ?string $comment = null, ?string $prefix = null)
     {
-        $this->prefix  = $prefix;
         $this->name    = is_numeric($name) ? sprintf('%03d', $name) : $name;
         $this->params  = $params;
         $this->comment = $comment;
-    }
-
-    public function getPrefix(): ?string
-    {
-        return $this->prefix;
+        $this->prefix  = $prefix;
     }
 
     public function getName(): string
@@ -32,9 +27,23 @@ class Command
         return $this->params;
     }
 
+    /**
+     * @param int $index
+     * @return mixed
+     */
+    public function getParam(int $index)
+    {
+        return $this->params[$index] ?? null;
+    }
+
     public function getComment(): ?string
     {
         return $this->comment;
+    }
+
+    public function getPrefix(): ?string
+    {
+        return $this->prefix;
     }
 
     public function __toString()

@@ -23,13 +23,12 @@ class Handler
         //TODO maybe move to server class???
         switch ($command->getName()) {
             case 'NICK':
-                $session->nick = $command->getParams()[0];
+                $session->nick = $command->getParam(0);
                 break;
             case 'USER':
                 $session->send(new Command(
-                    null,
                     Replies::RPL_WELCOME,
-                    [$command->getParams()[0]],
+                    [$command->getParam(0)],
                     'Welcome to the Internet Relay Network ' . $session->nick
                 ));
                 break;
@@ -38,16 +37,14 @@ class Handler
                 break;
             case 'TIME':
                 $session->send(new Command(
-                    null,
                     Replies::RPL_TIME,
                     [parse_url($session->getConnection()->getLocalAddress(), PHP_URL_HOST)],
                     date(DATE_RFC3339)
                 ));
                 break;
             case 'JOIN':
-                if (empty($command->getParams()[0])) {
+                if (empty($command->getParam(0))) {
                     $session->send(new Command(
-                        null,
                         Replies::ERR_NOSUCHCHANNEL
                     ));
                 } else {
@@ -56,23 +53,31 @@ class Handler
                 break;
             case 'LIST':
                 $session->send(new Command(
-                    null,
                     Replies::RPL_LISTSTART
                 ));
                 foreach ($this->channels as $channel) {
                     $session->send(new Command(
-                        null,
                         Replies::RPL_LIST,
                         [$channel->getName(), /*'NUMBER OF VISIBLE USERS'*/count($channel->getUsers())],
                         '[+' . $channel->getFlags() . '] ' . $channel->getTopic()
                     ));
                 }
                 $session->send(new Command(
-                    null,
                     Replies::RPL_LISTEND,
                     [],
                     'End of /LIST'
                 ));
+                break;
+            case 'WHO':
+                $name = $command->getParam(0);
+                $isO  = $command->getParam(1);
+                if (empty($name)) {
+                    $session->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$command->getName()], 'Not enough parameters'));
+                    break;
+                }
+                //TODO
+                $session->send(new Command(Replies::RPL_WHOREPLY));
+                $session->send(new Command(Replies::RPL_ENDOFWHO, ['NAME'], ':End of /WHO'));
                 break;
             default:
                 /*$session->send(new Command(

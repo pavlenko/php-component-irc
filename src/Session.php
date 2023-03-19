@@ -11,6 +11,7 @@ use React\Socket\ConnectionInterface;
  * @property string $username
  * @property string $realname
  * @property string $hostname
+ * @property string $servername
  */
 class Session
 {

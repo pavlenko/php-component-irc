@@ -55,17 +55,6 @@ class Handler
                     'End of /LIST'
                 ));
                 break;
-            case 'WHO':
-                $name = $command->getArg(0);
-                $isO  = $command->getArg(1);
-                if (empty($name)) {
-                    $session->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$command->getName()], 'Not enough parameters'));
-                    break;
-                }
-                //TODO
-                $session->send(new Command(Replies::RPL_WHOREPLY));
-                $session->send(new Command(Replies::RPL_ENDOFWHO, ['NAME'], ':End of /WHO'));
-                break;
             default:
                 /*$session->send(new Command(
                     null,

@@ -50,7 +50,7 @@ class Server
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (ConnectionInterface $connection) {
             $this->logger->info('New connection from ' . $connection->getRemoteAddress());
-            $this->sessions->attach($connection, new Session($connection, $this, ['addr' => $connection->getRemoteAddress()]));
+            $this->sessions->attach($connection, new Session($connection, $this, ['servername' => $connection->getRemoteAddress()]));
 
             $connection->on('data', function ($data) use ($connection) {
                 $lines = preg_split('/\r?\n/', $data, null, PREG_SPLIT_NO_EMPTY);
@@ -188,7 +188,7 @@ class Server
                                     $channel,
                                     $this->sessions[$k]->username,
                                     $this->sessions[$k]->hostname,
-                                    $this->sessions[$k]->servername,//TODO
+                                    $this->sessions[$k]->servername,
                                     $this->sessions[$k]->nickname,
                                     'H' . $status,
                                     '0',
@@ -212,6 +212,34 @@ class Server
                     $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No origin specified'));
                 } else {
                     $sess->flags &= ~Session::PINGING;
+                }
+                break;
+            case 'USERHOST':
+                if (empty($cmd->getArgs())) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } else {
+                    $replies = [];
+                    for ($n = 0; $n < min(count($cmd->getArgs()), 5); $n++) {
+                        foreach ($this->sessions as $k) {
+                            if ($cmd->getArg($n) === $this->sessions[$k]->nickname) {
+                                $reply = $this->sessions[$k]->nickname;
+                                if ($this->sessions[$k]->flags & Session::IRC_OPERATOR) {
+                                    $reply .= '*';
+                                }
+                                $reply .= $this->sessions[$k]->flags & Session::AWAY ? '=-@' : '=+@';
+                                $reply .= $this->sessions[$k]->hostname;
+                                $replies[] = $reply;
+                            }
+                        }
+                    }
+                    $sess->send(new Command(Replies::RPL_USERHOST, [], implode(' ', $replies)));
+                }
+                break;
+            case 'TIME':
+                if (empty($cmd->getArgs()) || $cmd->getArg(0) !== $sess->servername) {
+                    $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No such server'));
+                } else {
+                    $sess->send(new Command(Replies::RPL_TIME, [$sess->servername], date(DATE_RFC3339)));
                 }
                 break;
         }

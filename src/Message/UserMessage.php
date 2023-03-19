@@ -3,7 +3,7 @@
 namespace PE\Component\IRC\Message;
 
 /**
- * USER <username> <hostname> <servername> <realname>
+ * USER <username> <hostname> <servername> :<realname>
  *
  * ERR_NEEDMOREPARAMS
  * ERR_ALREADYREGISTRED

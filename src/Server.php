@@ -80,7 +80,8 @@ class Server
                 if (empty($this->password) || $sess->password === $this->password) {
                     if (!($sess->flags & Session::REGISTERED)) {
                         $sess->flags |= Session::REGISTERED;
-                        //TODO send MODT
+                        //TODO send MODT or welcome if modt not configured
+                        $sess->send(new Command(Replies::RPL_WELCOME, [$sess->nickname], 'Welcome to the Internet Relay Network ' . $sess->nickname));
                     }
                 } else {
                     $sess->quit();
@@ -105,7 +106,7 @@ class Server
                 } elseif (
                     strlen($cmd->getArg(0)) > 9 ||
                     !preg_match('/^[^0-9-][\w\-_\[\]\\\`^{}]{0,8}$/', $cmd->getArg(0)) ||
-                    $this->name !== $cmd->getArg(0)
+                    $this->name === $cmd->getArg(0)
                 ) {
                     $sess->send(new Command(Replies::ERR_ERRONEUSNICKNAME, [$cmd->getName()], 'Erroneous nickname'));
                 } else {
@@ -120,7 +121,7 @@ class Server
                         //TODO Notify users (search in user channels) - check validity
                         //TODO format ":" + user.getPrefix() + " " + msg.getCommand() + " " + msg.getParams()[0] + "\n"
                         foreach ($this->sessions as $k) {
-                            $this->sessions[$k]->send(new Command($cmd->getName(), [$cmd->getName()], null, $cmd->getArg(0)));
+                            $this->sessions[$k]->send(new Command($cmd->getName(), [$cmd->getArg(0)], null, $sess->nickname));
                         }
                     }
                     $sess->nickname = $cmd->getArg(0);
@@ -128,15 +129,16 @@ class Server
                 $checkRegistration($sess);
                 break;
             case 'USER':
-                if (count($cmd->getArgs()) < 4) {
+                if (count($cmd->getArgs()) < 3) {
                     $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
                 } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
                     $sess->send(new Command(Replies::ERR_ALREADYREGISTRED, [$cmd->getName()], 'You may not re-register'));
                 } else {
                     $sess->username = $cmd->getArg(0);
-                    $sess->realname = $cmd->getArg(3);
+                    $sess->realname = $cmd->getComment() ?: $sess->username;
                 }
                 $checkRegistration($sess);
+                break;
             case 'OPER':
                 if (count($cmd->getArgs()) < 2) {
                     $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
@@ -194,9 +196,7 @@ class Server
                                     $this->sessions[$k]->servername,
                                     $this->sessions[$k]->nickname,
                                     'H' . $status,
-                                    '0',
-                                    $this->sessions[$k]->realname,
-                                ], 'End of /WHO'));
+                                ], '0 ' . $this->sessions[$k]->realname));
                             }
                         }
                     }

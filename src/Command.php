@@ -5,15 +5,15 @@ namespace PE\Component\IRC;
 class Command
 {
     private string  $name;
-    private array   $params;
+    private array   $args;
     private ?string $comment;
     private ?string $prefix;
 
-    public function __construct(string $name, array $params = [], ?string $comment = null, ?string $prefix = null)
+    public function __construct(string $name, array $args = [], ?string $comment = null, ?string $prefix = null)
     {
         $this->name    = is_numeric($name) ? sprintf('%03d', $name) : $name;
-        $this->params  = $params;
-        $this->comment = $comment;
+        $this->args    = $args;
+        $this->comment = $comment;//TODO if null - try to resolve depends on NAME/CODE & args
         $this->prefix  = $prefix;
     }
 
@@ -22,18 +22,18 @@ class Command
         return $this->name;
     }
 
-    public function getParams(): array
+    public function getArgs(): array
     {
-        return $this->params;
+        return $this->args;
     }
 
     /**
      * @param int $index
      * @return mixed
      */
-    public function getParam(int $index)
+    public function getArg(int $index)
     {
-        return $this->params[$index] ?? null;
+        return $this->args[$index] ?? null;
     }
 
     public function getComment(): ?string
@@ -52,7 +52,7 @@ class Command
         if ($this->prefix) {
             $parts[] = ':' . $this->prefix;
         }
-        array_push($parts, $this->name, ...$this->params);
+        array_push($parts, $this->name, ...$this->args);
         if ($this->comment) {
             $parts[] = ':' . $this->comment;
         }

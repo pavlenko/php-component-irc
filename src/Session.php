@@ -4,8 +4,25 @@ namespace PE\Component\IRC;
 
 use React\Socket\ConnectionInterface;
 
+/**
+ * @property int $flags
+ * @property string $password
+ * @property string $nickname
+ * @property string $username
+ * @property string $realname
+ * @property string $hostname
+ */
 class Session
 {
+    public const REGISTERED       = 0b00000001;
+    public const INVISIBLE        = 0b00000010;
+    public const RECEIVE_NOTICE   = 0b00000100;
+    public const RECEIVE_WALLOPS  = 0b00001000;
+    public const IRC_OPERATOR     = 0b00010000;
+    public const AWAY             = 0b00100000;
+    public const PINGING          = 0b01000000;
+    public const BREAK_CONNECTION = 0b10000000;
+
     private array $data;
     private ConnectionInterface $connection;
     private Server $server;

@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC;
 
+use PE\Component\IRC\Message\Replies;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
@@ -11,17 +12,21 @@ use React\Socket\SocketServer;
 
 class Server
 {
-    private Handler $handler;
+    private string $name;
     private Parser $parser;
+
+    /**
+     * @var \SplObjectStorage|Session[]
+     */
     private \SplObjectStorage $sessions;
 
     private ?SocketServer $socket = null;
     private LoopInterface $loop;
     private LoggerInterface $logger;
 
-    public function __construct(Handler $handler, LoopInterface $loop = null, LoggerInterface $logger = null)
+    public function __construct(string $name, LoopInterface $loop = null, LoggerInterface $logger = null)
     {
-        $this->handler  = $handler;
+        $this->name     = $name;
         $this->parser   = new Parser();
         $this->sessions = new \SplObjectStorage();
 
@@ -58,16 +63,67 @@ class Server
         $this->logger->info('Listening on ' . $this->socket->getAddress());
     }
 
-    private function processMessageReceived(ConnectionInterface $connection, Command $command)
+    private function processMessageReceived(ConnectionInterface $conn, Command $cmd)
     {
-        $this->logger->info('<-- ' . $command);
-        $this->handler->handle($command, $this->sessions[$connection]);
+        $this->logger->info('<-- ' . $cmd);
+        //$this->handler->handle($command, $this->sessions[$connection]);
+
+        $sess = $this->sessions[$conn];
+        switch ($cmd->getName()) {
+            case 'PASS':
+                if (empty($cmd->getArg(0))) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
+                    $sess->send(new Command(Replies::ERR_ALREADYREGISTRED, [$cmd->getName()], 'You may not re-register'));
+                } else {
+                    $sess->password = $cmd->getArg(0);
+                }
+                break;
+            case 'NICK':
+                if (empty($cmd->getArg(0))) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } elseif (
+                    strlen($cmd->getArg(0)) > 9 ||
+                    !preg_match('/^[^0-9-][\w\-_\[\]\\\`^{}]{0,8}$/', $cmd->getArg(0)) ||
+                    $this->name !== $cmd->getArg(0)
+                ) {
+                    $sess->send(new Command(Replies::ERR_ERRONEUSNICKNAME, [$cmd->getName()], 'Erroneous nickname'));
+                } else {
+                    // Check contain nick
+                    foreach ($this->sessions as $k) {
+                        if ($this->sessions[$k]->nickname === $cmd->getArg(0)) {
+                            $sess->send(new Command(Replies::ERR_NICKNAMEINUSE, [$cmd->getName()], 'Nickname is already in use'));
+                            break 2;
+                        }
+                    }
+                    if ($this->sessions[$conn]->flags & Session::REGISTERED) {
+                        //TODO Notify users (search in user channels) - check validity
+                        //TODO format ":" + user.getPrefix() + " " + msg.getCommand() + " " + msg.getParams()[0] + "\n"
+                        foreach ($this->sessions as $k) {
+                            $this->sessions[$k]->send(new Command($cmd->getName(), [$cmd->getName()], null, $cmd->getArg(0)));
+                        }
+                    }
+                    $sess->nickname = $cmd->getArg(0);
+                }
+                //TODO check registration & set registered and send MODT
+                break;
+            case 'USER':
+                if (count($cmd->getArgs()) < 4) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
+                    $sess->send(new Command(Replies::ERR_ALREADYREGISTRED, [$cmd->getName()], 'You may not re-register'));
+                } else {
+                    $sess->username = $cmd->getArg(0);
+                    $sess->realname = $cmd->getArg(3);
+                }
+                //TODO check registration & set registered and send MODT
+        }
     }
 
-    public function processMessageSend(ConnectionInterface $connection, Command $command)
+    public function processMessageSend(ConnectionInterface $conn, Command $cmd)
     {
-        $this->logger->info('--> ' . $command);
-        $connection->write($command . "\r\n");
+        $this->logger->info('--> ' . $cmd);
+        $conn->write($cmd . "\r\n");
     }
 
     public function stop(int $signal = null)

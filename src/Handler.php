@@ -23,13 +23,13 @@ class Handler
         //TODO maybe move to server class???
         switch ($command->getName()) {
             case 'NICK':
-                $session->nick = $command->getParam(0);
+                $session->nickname = $command->getArg(0);
                 break;
             case 'USER':
                 $session->send(new Command(
                     Replies::RPL_WELCOME,
-                    [$command->getParam(0)],
-                    'Welcome to the Internet Relay Network ' . $session->nick
+                    [$command->getArg(0)],
+                    'Welcome to the Internet Relay Network ' . $session->nickname
                 ));
                 break;
             case 'QUIT':
@@ -43,12 +43,12 @@ class Handler
                 ));
                 break;
             case 'JOIN':
-                if (empty($command->getParam(0))) {
+                if (empty($command->getArg(0))) {
                     $session->send(new Command(
                         Replies::ERR_NOSUCHCHANNEL
                     ));
                 } else {
-                    $session->chan = $command->getParams()[0];
+                    $session->chan = $command->getArgs()[0];
                 }
                 break;
             case 'LIST':
@@ -69,8 +69,8 @@ class Handler
                 ));
                 break;
             case 'WHO':
-                $name = $command->getParam(0);
-                $isO  = $command->getParam(1);
+                $name = $command->getArg(0);
+                $isO  = $command->getArg(1);
                 if (empty($name)) {
                     $session->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$command->getName()], 'Not enough parameters'));
                     break;

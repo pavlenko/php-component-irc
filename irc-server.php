@@ -14,5 +14,5 @@ $handler = new Handler([
     new Channel('#foo'),
 ]);
 
-$server = new Server('server', null, $logger);
+$server = new Server('server', null, null, $logger);
 $server->listen('0.0.0.0:6667');

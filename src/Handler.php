@@ -22,13 +22,6 @@ class Handler
         //TODO hierarchy: server->channel->topic
         //TODO maybe move to server class???
         switch ($command->getName()) {
-            case 'TIME':
-                $session->send(new Command(
-                    Replies::RPL_TIME,
-                    [parse_url($session->getConnection()->getLocalAddress(), PHP_URL_HOST)],
-                    date(DATE_RFC3339)
-                ));
-                break;
             case 'JOIN':
                 if (empty($command->getArg(0))) {
                     $session->send(new Command(

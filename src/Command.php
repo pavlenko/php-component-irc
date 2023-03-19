@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC;
 
+//TODO add constants CMD_* with names of commands
+//TODO move here RPL_* and ERR_* codes
 class Command
 {
     private string  $name;

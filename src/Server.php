@@ -134,6 +134,86 @@ class Server
                     $sess->realname = $cmd->getArg(3);
                 }
                 $checkRegistration($sess);
+            case 'OPER':
+                if (count($cmd->getArgs()) < 2) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } elseif (count($operators ?? []) === 0) {
+                    $sess->send(new Command(Replies::ERR_NOOPERHOST, [], 'No O-lines for your host'));
+                } elseif ($operators[$cmd->getArg(0)] ?? null === hash('sha256', $cmd->getArg(1))) {
+                    $sess->send(new Command(Replies::ERR_PASSWDMISMATCH, [], 'Password incorrect'));
+                } else {
+                    $sess->flags |= Session::IRC_OPERATOR;
+                    $sess->send(new Command(Replies::RPL_YOUREOPER, [], 'You are now an IRC operator'));
+                }
+                break;
+            case 'QUIT':
+                //TODO maybe need set quit message
+                $sess->quit();
+                break;
+            case 'PRIVMSG':
+            case 'NOTICE':
+                //TODO
+                break;
+            case 'AWAY':
+                if (empty($cmd->getArg(0))) {
+                    $sess->flags &= ~Session::AWAY;
+                    $sess->send(new Command(Replies::RPL_UNAWAY, [], 'You are no longer marked as being away'));
+                } else {
+                    $sess->flags |= Session::AWAY;
+                    //TODO maybe need set away message
+                    $sess->send(new Command(Replies::RPL_NOWAWAY, [], 'You have been marked as being away'));
+                }
+                break;
+            case 'WHO':
+                if (empty($cmd->getArgs())) {
+                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                } else {
+                    foreach ($this->sessions as $k) {
+                        //TODO check equal by pattern
+                        if (
+                            $cmd->getArg(0) === $this->sessions[$k]->nickname &&
+                            !($this->sessions[$k]->flags & Session::INVISIBLE)
+                        ) {
+                            $channel = '*';
+                            $status  = '';
+
+                            //TODO loop through user channels
+
+                            if (
+                                count($cmd->getArgs()) === 1 ||
+                                $cmd->getArg(1) !== 'o' ||
+                                ($cmd->getArg(1) === 'o' && $this->sessions[$k]->flags & Session::IRC_OPERATOR)
+                            ) {
+                                $sess->send(new Command(Replies::RPL_WHOREPLY, [
+                                    $channel,
+                                    $this->sessions[$k]->username,
+                                    $this->sessions[$k]->hostname,
+                                    $this->sessions[$k]->servername,//TODO
+                                    $this->sessions[$k]->nickname,
+                                    'H' . $status,
+                                    '0',
+                                    $this->sessions[$k]->realname,
+                                ], 'End of /WHO'));
+                            }
+                        }
+                    }
+                    $sess->send(new Command(Replies::RPL_ENDOFWHO, [$this->name], 'End of /WHO'));
+                }
+                break;
+            case 'PING':
+                if (empty($cmd->getArgs())) {
+                    $sess->send(new Command(Replies::ERR_NOORIGIN, [], 'No origin specified'));
+                } else {
+                    $sess->send(new Command('PONG', [], $cmd->getArg(0), $this->name));
+                }
+                break;
+            case 'PONG':
+                if (empty($cmd->getArg(0)) || $cmd->getArg(0) !== $this->name) {
+                    $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No origin specified'));
+                } else {
+                    $sess->flags &= ~Session::PINGING;
+                }
+                break;
         }
     }
 

@@ -22,9 +22,6 @@ class Handler
         //TODO hierarchy: server->channel->topic
         //TODO maybe move to server class???
         switch ($command->getName()) {
-            case 'QUIT':
-                $session->quit();
-                break;
             case 'TIME':
                 $session->send(new Command(
                     Replies::RPL_TIME,

@@ -63,7 +63,7 @@ class Handler
                     $session->send(new Command(
                         null,
                         Replies::RPL_LIST,
-                        [$channel->getName(), 'NUMBER OF VISIBLE USERS'],
+                        [$channel->getName(), /*'NUMBER OF VISIBLE USERS'*/count($channel->getUsers())],
                         '[+' . $channel->getFlags() . '] ' . $channel->getTopic()
                     ));
                 }

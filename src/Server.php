@@ -67,7 +67,7 @@ class Server
     public function processMessageSend(ConnectionInterface $connection, Command $command)
     {
         $this->logger->info('--> ' . $command);
-        $connection->write($command);
+        $connection->write($command . "\r\n");
     }
 
     public function stop(int $signal = null)

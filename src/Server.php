@@ -2,7 +2,6 @@
 
 namespace PE\Component\IRC;
 
-use PE\Component\IRC\Message\Replies;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
@@ -111,27 +110,27 @@ class Server
         switch ($cmd->getName()) {
             case Command::CMD_PASSWORD:
                 if (empty($cmd->getArg(0))) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
-                    $sess->send(new Command(Replies::ERR_ALREADYREGISTRED, [$cmd->getName()], 'You may not re-register'));
+                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getName()]));
                 } else {
                     $sess->password = $cmd->getArg(0);
                 }
                 break;
             case Command::CMD_NICK:
                 if (empty($cmd->getArg(0))) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } elseif (
                     strlen($cmd->getArg(0)) > 9 ||
                     !preg_match('/^[^0-9-][\w\-_\[\]\\\`^{}]{0,8}$/', $cmd->getArg(0)) ||
                     $this->config->getName() === $cmd->getArg(0)
                 ) {
-                    $sess->send(new Command(Replies::ERR_ERRONEUSNICKNAME, [$cmd->getName()], 'Erroneous nickname'));
+                    $sess->send(new Command(Command::ERR_ERRONEOUS_NICKNAME, [$cmd->getName()]));
                 } else {
                     // Check contain nick
                     foreach ($this->sessions as $k) {
                         if ($this->sessions[$k]->nickname === $cmd->getArg(0)) {
-                            $sess->send(new Command(Replies::ERR_NICKNAMEINUSE, [$cmd->getName()], 'Nickname is already in use'));
+                            $sess->send(new Command(Command::ERR_NICKNAME_IN_USE, [$cmd->getName()]));
                             break 2;
                         }
                     }
@@ -148,9 +147,9 @@ class Server
                 break;
             case Command::CMD_USER:
                 if (count($cmd->getArgs()) < 3) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
-                    $sess->send(new Command(Replies::ERR_ALREADYREGISTRED, [$cmd->getName()], 'You may not re-register'));
+                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getName()]));
                 } else {
                     $sess->username = $cmd->getArg(0);
                     $sess->realname = $cmd->getComment() ?: $sess->username;
@@ -159,11 +158,11 @@ class Server
                 break;
             case Command::CMD_OPERATOR:
                 if (count($cmd->getArgs()) < 2) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } elseif (count($operators ?? []) === 0) {
-                    $sess->send(new Command(Replies::ERR_NOOPERHOST, [], 'No O-lines for your host'));
+                    $sess->send(new Command(Command::ERR_NO_OPERATOR_HOST));
                 } elseif ($operators[$cmd->getArg(0)] ?? null === hash('sha256', $cmd->getArg(1))) {
-                    $sess->send(new Command(Replies::ERR_PASSWDMISMATCH, [], 'Password incorrect'));
+                    $sess->send(new Command(Command::ERR_PASSWORD_MISMATCH));
                 } else {
                     $sess->flags |= Session::IRC_OPERATOR;
                     $sess->send(new Command(Command::RPL_YOU_ARE_OPERATOR));
@@ -188,7 +187,7 @@ class Server
                 break;
             case Command::CMD_WHO:
                 if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } else {
                     foreach ($this->sessions as $k) {
                         //TODO check equal by pattern
@@ -222,21 +221,21 @@ class Server
                 break;
             case Command::CMD_PING:
                 if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Replies::ERR_NOORIGIN, [], 'No origin specified'));
+                    $sess->send(new Command(Command::ERR_NO_ORIGIN));
                 } else {
                     $sess->send(new Command('PONG', [], $cmd->getArg(0), $this->config->getName()));
                 }
                 break;
             case Command::CMD_PONG:
                 if (empty($cmd->getArg(0)) || $cmd->getArg(0) !== $this->config->getName()) {
-                    $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No origin specified'));
+                    $sess->send(new Command(Command::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]));
                 } else {
                     $sess->flags &= ~Session::PINGING;
                 }
                 break;
             case Command::CMD_USER_HOST:
                 if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Replies::ERR_NEEDMOREPARAMS, [$cmd->getName()], 'Not enough parameters'));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
                 } else {
                     $replies = [];
                     for ($n = 0; $n < min(count($cmd->getArgs()), 5); $n++) {
@@ -257,7 +256,7 @@ class Server
                 break;
             case Command::CMD_TIME:
                 if (empty($cmd->getArgs()) || $cmd->getArg(0) !== $sess->servername) {
-                    $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No such server'));
+                    $sess->send(new Command(Command::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]));
                 } else {
                     $sess->send(new Command(Command::RPL_TIME, [$sess->servername], date('D M d Y H:i:s e')));
                 }
@@ -276,7 +275,7 @@ class Server
                     }
                     $sess->send(new Command(Command::RPL_END_OF_MOTD));
                 } else {
-                    $sess->send(new Command(Replies::ERR_NOMOTD));
+                    $sess->send(new Command(Command::ERR_NO_MOTD));
                 }
                 break;
         }

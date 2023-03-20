@@ -84,20 +84,24 @@ class Server
                         ));
                         $sess->send(new Command(
                             Command::RPL_YOUR_HOST,
-                            [],
+                            [$sess->nickname],
                             "Your host is {$this->config->getName()}, running version {$this->config->getVersion()}"
                         ));
                         $sess->send(new Command(
                             Command::RPL_CREATED,
-                            [],
+                            [$sess->nickname],
                             "This server was created {$this->config->getCreatedAt()->format('D M d Y H:i:s e')}"
                         ));
                         $sess->send(new Command(
                             Command::RPL_MY_INFO,
-                            [],
-                            "Server {$this->config->getName()} (Version {$this->config->getVersion()}), " .
-                            "User modes: DGMQRSZaghilopsuwz, " .//TODO
-                            "Channel modes CFILMPQRSTbcefgijklmnopqrstuvz"//TODO
+                            [
+                                $sess->nickname,
+                                $this->config->getName(),
+                                $this->config->getVersion(),
+                                'DGMQRSZaghilopsuwz',
+                                'CFILMPQRSTbcefgijklmnopqrstuvz',
+                                'bkloveqjfI'
+                            ]
                         ));
                     }
                 } else {
@@ -283,16 +287,16 @@ class Server
                 if (!empty($modt)) {
                     $sess->send(new Command(
                         Command::RPL_MOTD_START,
-                        [],
+                        [$sess->nickname],
                         'Message of the day:',
                         $this->config->getName()
                     ));
                     foreach ($modt as $line) {
-                        $sess->send(new Command(Command::RPL_MOTD, [], '- ' . $line, $this->config->getName()));
+                        $sess->send(new Command(Command::RPL_MOTD, [$sess->nickname], '- ' . $line, $this->config->getName()));
                     }
-                    $sess->send(new Command(Command::RPL_END_OF_MOTD, [], null, $this->config->getName()));
+                    $sess->send(new Command(Command::RPL_END_OF_MOTD, [$sess->nickname], null, $this->config->getName()));
                 } else {
-                    $sess->send(new Command(Command::ERR_NO_MOTD, [], null, $this->config->getName()));
+                    $sess->send(new Command(Command::ERR_NO_MOTD, [$sess->nickname], null, $this->config->getName()));
                 }
                 break;
         }

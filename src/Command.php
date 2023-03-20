@@ -95,9 +95,9 @@ class Command
     public const ERR_USERS_DONT_MATCH           = 502;//<rpl code> :Cant change mode for other users
 
     public const RPL_WELCOME          = 001;//<rpl code> <nick> :Welcome to the Internet Relay Network <nick>!<user>@<host>
-    public const RPL_YOUR_HOST        = 002;//<rpl code> :Your host is <servername>, running version <ver>
-    public const RPL_CREATED          = 003;//<rpl code> :This server was created <date>
-    public const RPL_MY_INFO          = 004;//<rpl code> :<servername> <version> <available user modes> <available channel modes>
+    public const RPL_YOUR_HOST        = 002;//<rpl code> <nick> :Your host is <servername>, running version <ver>
+    public const RPL_CREATED          = 003;//<rpl code> <nick> :This server was created <date>
+    public const RPL_MY_INFO          = 004;//<rpl code> <servername> <version> <available user modes> <available channel modes> [<channel modes that take a parameter>]
     public const RPL_BOUNCE           = 005;//<rpl code> :Try server <server name>, port <port number>
     public const RPL_NONE             = 300;//Dummy reply number. Not used.
     public const RPL_USER_HOST        = 302;//<rpl code> :[<reply>{<space><reply>}] <reply> ::= <nick>[’*’] ’=’ <’+’|’-’><hostname>

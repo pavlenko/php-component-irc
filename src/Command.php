@@ -132,9 +132,9 @@ class Command
     public const RPL_END_OF_BAN_LIST  = 368;//<rpl code> <channel> :End of channel ban list
     public const RPL_INFO             = 371;//<rpl code> :<string>
     public const RPL_END_OF_INFO      = 374;//<rpl code> :End of /INFO
-    public const RPL_MOTD_START       = 375;//<rpl code> :- <server> Message of the day -
-    public const RPL_MOTD             = 372;//<rpl code> :- <text>
-    public const RPL_END_OF_MOTD      = 376;//<rpl code> :End of /MOTD
+    public const RPL_MOTD_START       = 375;//<rpl code> <nick> :- <server> Message of the day -
+    public const RPL_MOTD             = 372;//<rpl code> <nick> :- <text>
+    public const RPL_END_OF_MOTD      = 376;//<rpl code> <nick> :End of /MOTD
     public const RPL_YOU_ARE_OPERATOR = 381;//<rpl code> :You are now an IRC operator
     public const RPL_REHASHING        = 382;//<rpl code> <config file> :Rehashing
     public const RPL_TIME             = 391;//<rpl code> <server> :<string showing server’s local time>

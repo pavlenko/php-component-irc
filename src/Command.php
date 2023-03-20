@@ -24,10 +24,10 @@ class Command
     public const CMD_NOTICE      = 'NOTICE';
     public const CMD_OPERATOR    = 'OPER';
     public const CMD_PART        = 'PART';
-    public const CMD_PASSWORD    = 'PASSWORD';
+    public const CMD_PASSWORD    = 'PASS';
     public const CMD_PING        = 'PING';
     public const CMD_PONG        = 'PONG';
-    public const CMD_PRIVATE     = 'PRIVATE';
+    public const CMD_PRIVATE_MSG = 'PRIVMSG';
     public const CMD_QUIT        = 'QUIT';
     public const CMD_REHASH      = 'REHASH';
     public const CMD_RESTART     = 'RESTART';

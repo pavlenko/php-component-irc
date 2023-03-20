@@ -236,8 +236,18 @@ class Command
                 return 'You are no longer marked as being away';
             case self::RPL_NOW_AWAY:
                 return 'You have been marked as being away';
+            case self::RPL_WHO_IS_OPERATOR:
+                return 'is an IRC operator';
+            case self::RPL_WHO_IS_IDLE:
+                return 'seconds idle';
+            case self::RPL_END_OF_WHOIS:
+                return 'End of /WHOIS list';
+            case self::RPL_END_OF_WHO_WAS:
+                return 'End of /WHOWAS';
             case self::RPL_LIST_END:
                 return 'End of /LIST';
+            case self::RPL_NO_TOPIC:
+                return 'No topic is set';
             case self::RPL_SUMMONING:
                 return 'Summoning user to IRC';
             case self::RPL_END_OF_WHO:
@@ -254,6 +264,8 @@ class Command
                 return 'End of /MOTD command';
             case self::RPL_YOU_ARE_OPERATOR:
                 return 'You are now an IRC operator';
+            case self::RPL_REHASHING:
+                return 'Rehashing';
             case self::RPL_USERS_START:
                 return 'UserID Terminal Host';
             case self::RPL_END_OF_USERS:

@@ -12,8 +12,9 @@ use React\Socket\SocketServer;
 
 class Server
 {
-    private string $name;
-    private ?string $password;
+    private Config $config;
+    //private string $name;
+    //private ?string $password;
 
     private Parser $parser;
 
@@ -26,11 +27,9 @@ class Server
     private LoopInterface $loop;
     private LoggerInterface $logger;
 
-    //TODO config file instead of $name, $password, $modt file
-    public function __construct(string $name, string $pass = null, LoopInterface $loop = null, LoggerInterface $logger = null)
+    public function __construct(Config $config, LoopInterface $loop = null, LoggerInterface $logger = null)
     {
-        $this->name     = $name;
-        $this->password = $pass;
+        $this->config   = $config;
         $this->parser   = new Parser();
         $this->sessions = new \SplObjectStorage();
 
@@ -51,7 +50,7 @@ class Server
         $this->socket->on('connection', function (ConnectionInterface $connection) {
             $this->logger->info('New connection from ' . $connection->getRemoteAddress());
             $this->sessions->attach($connection, new Session($connection, $this, [
-                'servername' => $this->name,
+                'servername' => $this->config->getName(),
                 'hostname'   => $connection->getRemoteAddress(),
             ]));
 
@@ -63,7 +62,6 @@ class Server
                 }
             });
 
-            //TODO on close, on error
             $connection->on('close', fn() => $this->logger->info('Close connection from ' . $connection->getRemoteAddress()));
         });
 
@@ -73,15 +71,35 @@ class Server
     private function processMessageReceived(ConnectionInterface $conn, Command $cmd)
     {
         $this->logger->info('<-- ' . $cmd);
-        //$this->handler->handle($command, $this->sessions[$connection]);
 
         $checkRegistration = function (Session $sess) {
             if (!empty($sess->nickname) && !empty($sess->username)) {
                 if (empty($this->password) || $sess->password === $this->password) {
                     if (!($sess->flags & Session::REGISTERED)) {
                         $sess->flags |= Session::REGISTERED;
-                        //TODO send MODT or welcome if modt not configured
-                        $sess->send(new Command(Command::RPL_WELCOME, [$sess->nickname], 'Welcome to the Internet Relay Network ' . $sess->nickname));
+
+                        $sess->send(new Command(
+                            Command::RPL_WELCOME,
+                            [$sess->nickname],
+                            "Welcome to the Internet Relay Network {$sess->nickname}"
+                        ));
+                        $sess->send(new Command(
+                            Command::RPL_YOUR_HOST,
+                            [],
+                            "Your host is {$this->config->getName()}, running version {$this->config->getVersion()}"
+                        ));
+                        $sess->send(new Command(
+                            Command::RPL_CREATED,
+                            [],
+                            "This server was created {$this->config->getCreatedAt()->format('D M d Y H:i:s e')}"
+                        ));
+                        $sess->send(new Command(
+                            Command::RPL_MY_INFO,
+                            [],
+                            "Server {$this->config->getName()} (Version {$this->config->getVersion()}), " .
+                            "User modes: DGMQRSZaghilopsuwz, " .//TODO
+                            "Channel modes CFILMPQRSTbcefgijklmnopqrstuvz"//TODO
+                        ));
                     }
                 } else {
                     $sess->quit();
@@ -106,7 +124,7 @@ class Server
                 } elseif (
                     strlen($cmd->getArg(0)) > 9 ||
                     !preg_match('/^[^0-9-][\w\-_\[\]\\\`^{}]{0,8}$/', $cmd->getArg(0)) ||
-                    $this->name === $cmd->getArg(0)
+                    $this->config->getName() === $cmd->getArg(0)
                 ) {
                     $sess->send(new Command(Replies::ERR_ERRONEUSNICKNAME, [$cmd->getName()], 'Erroneous nickname'));
                 } else {
@@ -151,8 +169,8 @@ class Server
                     $sess->send(new Command(Command::RPL_YOU_ARE_OPERATOR));
                 }
                 break;
+            case Command::CMD_SERVER_QUIT:
             case Command::CMD_QUIT:
-                //TODO maybe need set quit message
                 $sess->quit();
                 break;
             case Command::CMD_PRIVATE_MSG:
@@ -165,7 +183,6 @@ class Server
                     $sess->send(new Command(Command::RPL_UN_AWAY));
                 } else {
                     $sess->flags |= Session::AWAY;
-                    //TODO maybe need set away message
                     $sess->send(new Command(Command::RPL_NOW_AWAY));
                 }
                 break;
@@ -200,18 +217,18 @@ class Server
                             }
                         }
                     }
-                    $sess->send(new Command(Command::RPL_END_OF_WHO, [$this->name]));
+                    $sess->send(new Command(Command::RPL_END_OF_WHO, [$this->config->getName()]));
                 }
                 break;
             case Command::CMD_PING:
                 if (empty($cmd->getArgs())) {
                     $sess->send(new Command(Replies::ERR_NOORIGIN, [], 'No origin specified'));
                 } else {
-                    $sess->send(new Command('PONG', [], $cmd->getArg(0), $this->name));
+                    $sess->send(new Command('PONG', [], $cmd->getArg(0), $this->config->getName()));
                 }
                 break;
             case Command::CMD_PONG:
-                if (empty($cmd->getArg(0)) || $cmd->getArg(0) !== $this->name) {
+                if (empty($cmd->getArg(0)) || $cmd->getArg(0) !== $this->config->getName()) {
                     $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No origin specified'));
                 } else {
                     $sess->flags &= ~Session::PINGING;
@@ -242,7 +259,24 @@ class Server
                 if (empty($cmd->getArgs()) || $cmd->getArg(0) !== $sess->servername) {
                     $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No such server'));
                 } else {
-                    $sess->send(new Command(Command::RPL_TIME, [$sess->servername], date(DATE_RFC3339)));
+                    $sess->send(new Command(Command::RPL_TIME, [$sess->servername], date('D M d Y H:i:s e')));
+                }
+                break;
+            case Command::CMD_MOTD:
+                //TODO check for server arg
+                $modt = $this->config->getMODT();
+                if (!empty($modt)) {
+                    $sess->send(new Command(
+                        Command::RPL_MOTD_START,
+                        [],
+                        "- Message of the day - "
+                    ));
+                    foreach ($modt as $line) {
+                        $sess->send(new Command(Command::RPL_MOTD, [], '- ' . $line));
+                    }
+                    $sess->send(new Command(Command::RPL_END_OF_MOTD));
+                } else {
+                    $sess->send(new Command(Replies::ERR_NOMOTD));
                 }
                 break;
         }

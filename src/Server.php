@@ -81,7 +81,7 @@ class Server
                     if (!($sess->flags & Session::REGISTERED)) {
                         $sess->flags |= Session::REGISTERED;
                         //TODO send MODT or welcome if modt not configured
-                        $sess->send(new Command(Replies::RPL_WELCOME, [$sess->nickname], 'Welcome to the Internet Relay Network ' . $sess->nickname));
+                        $sess->send(new Command(Command::RPL_WELCOME, [$sess->nickname], 'Welcome to the Internet Relay Network ' . $sess->nickname));
                     }
                 } else {
                     $sess->quit();
@@ -148,7 +148,7 @@ class Server
                     $sess->send(new Command(Replies::ERR_PASSWDMISMATCH, [], 'Password incorrect'));
                 } else {
                     $sess->flags |= Session::IRC_OPERATOR;
-                    $sess->send(new Command(Replies::RPL_YOUREOPER, [], 'You are now an IRC operator'));
+                    $sess->send(new Command(Command::RPL_YOU_ARE_OPERATOR));
                 }
                 break;
             case 'QUIT':
@@ -162,11 +162,11 @@ class Server
             case 'AWAY':
                 if (empty($cmd->getArg(0))) {
                     $sess->flags &= ~Session::AWAY;
-                    $sess->send(new Command(Replies::RPL_UNAWAY, [], 'You are no longer marked as being away'));
+                    $sess->send(new Command(Command::RPL_UN_AWAY));
                 } else {
                     $sess->flags |= Session::AWAY;
                     //TODO maybe need set away message
-                    $sess->send(new Command(Replies::RPL_NOWAWAY, [], 'You have been marked as being away'));
+                    $sess->send(new Command(Command::RPL_NOW_AWAY));
                 }
                 break;
             case 'WHO':
@@ -189,7 +189,7 @@ class Server
                                 $cmd->getArg(1) !== 'o' ||
                                 ($cmd->getArg(1) === 'o' && $this->sessions[$k]->flags & Session::IRC_OPERATOR)
                             ) {
-                                $sess->send(new Command(Replies::RPL_WHOREPLY, [
+                                $sess->send(new Command(Command::RPL_WHO_REPLY, [
                                     $channel,
                                     $this->sessions[$k]->username,
                                     $this->sessions[$k]->hostname,
@@ -200,7 +200,7 @@ class Server
                             }
                         }
                     }
-                    $sess->send(new Command(Replies::RPL_ENDOFWHO, [$this->name], 'End of /WHO'));
+                    $sess->send(new Command(Command::RPL_END_OF_WHO, [$this->name]));
                 }
                 break;
             case 'PING':
@@ -235,14 +235,14 @@ class Server
                             }
                         }
                     }
-                    $sess->send(new Command(Replies::RPL_USERHOST, [], implode(' ', $replies)));
+                    $sess->send(new Command(Command::RPL_USER_HOST, [], implode(' ', $replies)));
                 }
                 break;
             case 'TIME':
                 if (empty($cmd->getArgs()) || $cmd->getArg(0) !== $sess->servername) {
                     $sess->send(new Command(Replies::ERR_NOSUCHSERVER, [$cmd->getArg(0)], 'No such server'));
                 } else {
-                    $sess->send(new Command(Replies::RPL_TIME, [$sess->servername], date(DATE_RFC3339)));
+                    $sess->send(new Command(Command::RPL_TIME, [$sess->servername], date(DATE_RFC3339)));
                 }
                 break;
         }

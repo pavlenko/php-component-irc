@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 require_once __DIR__ . '/vendor/autoload.php';
 
 $config = new Config(
-    'server[127.0.0.1:6667]',
+    'server',
     new \DateTime(),
     'v0.1',
     null,

@@ -19,7 +19,8 @@ class Command
     public const CMD_LINKS       = 'LINKS';
     public const CMD_LIST        = 'LIST';
     public const CMD_MODE        = 'MODE';
-    public const CMD_MOTD        = 'MOTD';
+    public const CMD_MOTD        = 'MOTD';//MODT [<target>]
+    public const CMD_LIST_USERS  = 'LUSERS';//LUSERS [<mask>[<target>]]
     public const CMD_NAMES       = 'NAMES';
     public const CMD_NICK        = 'NICK';
     public const CMD_NOTICE      = 'NOTICE';
@@ -173,22 +174,22 @@ class Command
     public const RPL_ADMIN_LOC2       = 258;//<rpl code> :<admin info>
     public const RPL_ADMIN_EMAIL      = 259;//<rpl code> :<admin info>
 
-    private string  $name;
+    private string  $code;
     private array   $args;
     private ?string $comment;
     private ?string $prefix;
 
-    public function __construct(string $name, array $args = [], ?string $comment = null, ?string $prefix = null)
+    public function __construct(string $code, array $args = [], ?string $comment = null, ?string $prefix = null)
     {
-        $this->name    = is_numeric($name) ? sprintf('%03d', $name) : $name;
+        $this->code    = is_numeric($code) ? sprintf('%03d', $code) : $code;
         $this->args    = $args;
-        $this->comment = $comment ?: $this->resolveComment($name);
+        $this->comment = $comment ?: $this->resolveComment($code);
         $this->prefix  = $prefix;
     }
 
-    public function getName(): string
+    public function getCode(): string
     {
-        return $this->name;
+        return $this->code;
     }
 
     public function getArgs(): array
@@ -221,7 +222,7 @@ class Command
         if ($this->prefix) {
             $parts[] = ':' . $this->prefix;
         }
-        array_push($parts, $this->name, ...$this->args);
+        array_push($parts, $this->code, ...$this->args);
         if ($this->comment) {
             $parts[] = ':' . $this->comment;
         }

@@ -72,7 +72,7 @@ class Server
         $this->logger->info('<-- ' . $cmd);
 
         $checkRegistration = function (Session $sess) {
-            if (!empty($sess->nickname) && !empty($sess->username)) {
+            if (!$sess->capabilities && !empty($sess->nickname) && !empty($sess->username)) {
                 if (empty($this->password) || $sess->password === $this->password) {
                     if (!($sess->flags & Session::REGISTERED)) {
                         $sess->flags |= Session::REGISTERED;
@@ -107,30 +107,46 @@ class Server
         };
 
         $sess = $this->sessions[$conn];
-        switch ($cmd->getName()) {
+        switch ($cmd->getCode()) {
+            case 'CAP':
+                if ($cmd->getArg(0) === 'LS') {
+                    $sess->capabilities = true;
+                    $sess->send(new Command('CAP', ['*', 'LS'], 'cap-notify'));
+                } elseif ($cmd->getArg(0) === 'REQ') {
+                    $capabilities = explode(' ', (string) $cmd->getComment());
+                    if (in_array('cap-notify', $capabilities)) {
+                        $sess->send(new Command('CAP', ['*', 'ACK'], 'cap-notify'));
+                    } else {
+                        $sess->send(new Command('CAP', ['*', 'NAK'], 'cap-notify'));
+                    }
+                } elseif ($cmd->getArg(0) === 'END') {
+                    $sess->capabilities = false;
+                    $checkRegistration($sess);
+                }
+                break;
             case Command::CMD_PASSWORD:
                 if (empty($cmd->getArg(0))) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
-                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getCode()]));
                 } else {
                     $sess->password = $cmd->getArg(0);
                 }
                 break;
             case Command::CMD_NICK:
                 if (empty($cmd->getArg(0))) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } elseif (
                     strlen($cmd->getArg(0)) > 9 ||
                     !preg_match('/^[^0-9-][\w\-_\[\]\\\`^{}]{0,8}$/', $cmd->getArg(0)) ||
                     $this->config->getName() === $cmd->getArg(0)
                 ) {
-                    $sess->send(new Command(Command::ERR_ERRONEOUS_NICKNAME, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_ERRONEOUS_NICKNAME, [$cmd->getCode()]));
                 } else {
                     // Check contain nick
                     foreach ($this->sessions as $k) {
                         if ($this->sessions[$k]->nickname === $cmd->getArg(0)) {
-                            $sess->send(new Command(Command::ERR_NICKNAME_IN_USE, [$cmd->getName()]));
+                            $sess->send(new Command(Command::ERR_NICKNAME_IN_USE, [$cmd->getCode()]));
                             break 2;
                         }
                     }
@@ -138,7 +154,7 @@ class Server
                         //TODO Notify users (search in user channels) - check validity
                         //TODO format ":" + user.getPrefix() + " " + msg.getCommand() + " " + msg.getParams()[0] + "\n"
                         foreach ($this->sessions as $k) {
-                            $this->sessions[$k]->send(new Command($cmd->getName(), [$cmd->getArg(0)], null, $sess->nickname));
+                            $this->sessions[$k]->send(new Command($cmd->getCode(), [$cmd->getArg(0)], null, $sess->nickname));
                         }
                     }
                     $sess->nickname = $cmd->getArg(0);
@@ -147,9 +163,9 @@ class Server
                 break;
             case Command::CMD_USER:
                 if (count($cmd->getArgs()) < 3) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } elseif ($this->sessions[$conn]->flags & Session::REGISTERED) {
-                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_ALREADY_REGISTERED, [$cmd->getCode()]));
                 } else {
                     $sess->username = $cmd->getArg(0);
                     $sess->realname = $cmd->getComment() ?: $sess->username;
@@ -158,7 +174,7 @@ class Server
                 break;
             case Command::CMD_OPERATOR:
                 if (count($cmd->getArgs()) < 2) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } elseif (count($operators ?? []) === 0) {
                     $sess->send(new Command(Command::ERR_NO_OPERATOR_HOST));
                 } elseif ($operators[$cmd->getArg(0)] ?? null === hash('sha256', $cmd->getArg(1))) {
@@ -187,7 +203,7 @@ class Server
                 break;
             case Command::CMD_WHO:
                 if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } else {
                     foreach ($this->sessions as $k) {
                         //TODO check equal by pattern
@@ -235,7 +251,7 @@ class Server
                 break;
             case Command::CMD_USER_HOST:
                 if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getName()]));
+                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
                 } else {
                     $replies = [];
                     for ($n = 0; $n < min(count($cmd->getArgs()), 5); $n++) {
@@ -268,14 +284,15 @@ class Server
                     $sess->send(new Command(
                         Command::RPL_MOTD_START,
                         [],
-                        "- Message of the day - "
+                        'Message of the day:',
+                        $this->config->getName()
                     ));
                     foreach ($modt as $line) {
-                        $sess->send(new Command(Command::RPL_MOTD, [], '- ' . $line));
+                        $sess->send(new Command(Command::RPL_MOTD, [], '- ' . $line, $this->config->getName()));
                     }
-                    $sess->send(new Command(Command::RPL_END_OF_MOTD));
+                    $sess->send(new Command(Command::RPL_END_OF_MOTD, [], null, $this->config->getName()));
                 } else {
-                    $sess->send(new Command(Command::ERR_NO_MOTD));
+                    $sess->send(new Command(Command::ERR_NO_MOTD, [], null, $this->config->getName()));
                 }
                 break;
         }

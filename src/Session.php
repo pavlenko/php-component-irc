@@ -60,6 +60,10 @@ class Session
         unset($this->data[$name]);
     }
 
+    //TODO maybe split to:
+    //TODO sendCMD() [:<prefix>] <command> [<args>] [:<comment>]
+    //TODO sendRPL() :<server name> <code> <nick> [<additional args>] [:<comment>]
+    //TODO sendERR() :<server name> <code> <nick> [<additional args>] [:<comment>]
     public function send(Command $command): void
     {
         $this->server->processMessageSend($this->connection, $command);

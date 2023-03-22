@@ -76,30 +76,30 @@ class User {
     public function setFlag(int $flag): void;
     public function clrFlag(int $flag): void;
     public function getPrefix(): string;
+    public function getAwayMessage(): string;
     public function setAwayMessage(string $message): void;//TODO getter
+    public function getQuitMessage(): string;
     public function setQuitMessage(string $message): void;//TODO getter
     public function getChannels(): array;
     public function attachChannel(Channel $channel): void;
     public function detachChannel(Channel $channel): void;
 }
 class Server {
-public $name;
-public $port;
-public $users;
-public $password;
-public $info;// for info cmd
-public $describe;// for info cmd multiline, why???
-public $version;
-public $debugLevel;
-public $adminInfo;
-public $channels;
-public $users;
-public $motd;
-public $nickHistory;//for who was cmd
-//TODO timeouts???
-public $maxInactiveTimeout;
-public $maxResponseTimeout;
-public $maxChannels;
+    public $name;//config
+    public $port;//config
+    public $password;//config
+    public $info;//config for info cmd
+    public $describe;// for info cmd multiline, why???
+    public $version;//config
+    public $debugLevel;//config
+    public $adminInfo;//config
+    public $channels;
+    public $users;
+    public $motd;//config
+    public $nickHistory;//for who was cmd
+    public $maxInactiveTimeout;//config
+    public $maxResponseTimeout;//config
+    public $maxChannels;//config
 }
 
 

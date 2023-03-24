@@ -35,6 +35,8 @@ class Channel {
     public function setPass(string $pass): void;
     public function getTopic(): string;
     public function setTopic(string $topic): void;
+    public function getLimit(): int;
+    public function setLimit(int $limit): void;
     public function getFlags(): int;
     public function setFlag(int $flag): void;
     public function clrFlag(int $flag): void;

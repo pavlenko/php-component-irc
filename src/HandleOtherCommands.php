@@ -5,13 +5,30 @@ namespace PE\Component\IRC;
 trait HandleOtherCommands
 {
     //TODO helpers
-    public function handlePING(CMD $cmd){}
-    public function handlePONG(CMD $cmd){}
-    public function handleISON(CMD $cmd){}
-    public function handleINFO(CMD $cmd){}
-    public function handleTIME(CMD $cmd){}
-    public function handleADMIN(CMD $cmd){}
-    public function handleUSERHOST(CMD $cmd){}
-    public function handleVERSION(CMD $cmd){}
-    public function handleWALLOPS(CMD $cmd){}
+    public function handlePING(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handlePONG(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleISON(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleINFO(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleTIME(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleADMIN(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleUSERHOST(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleVERSION(CMD $cmd, Connection $conn): void
+    {}
+
+    public function handleWALLOPS(CMD $cmd, Connection $conn): void
+    {}
 }

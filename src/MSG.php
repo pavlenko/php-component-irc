@@ -9,7 +9,7 @@ abstract class MSG
     private ?string $comment;
     private ?string $prefix;
 
-    public function __construct(string $code, array $args = [], ?string $comment = null, ?string $prefix = null)
+    public function __construct(string $code, array $args = [], string $comment = null, string $prefix = null)
     {
         $this->code    = is_numeric($code) ? sprintf('%03d', $code) : $code;
         $this->args    = $args;
@@ -51,13 +51,13 @@ abstract class MSG
     {
         $parts = [];
 
-        if ($this->prefix) {
+        if (!empty($this->prefix)) {
             $parts[] = ':' . $this->prefix;
         }
 
         array_push($parts, $this->code, ...$this->args);
 
-        if ($this->comment) {
+        if (null !== $this->comment) {
             $parts[] = ':' . $this->comment;
         }
 

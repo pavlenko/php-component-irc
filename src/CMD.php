@@ -4,6 +4,7 @@ namespace PE\Component\IRC;
 
 final class CMD extends MSG
 {
+    public const CMD_CAP         = 'CAP';
     public const CMD_ADMIN       = 'ADMIN';
     public const CMD_AWAY        = 'AWAY';
     public const CMD_CONNECT     = 'CONNECT';

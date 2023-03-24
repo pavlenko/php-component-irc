@@ -11,6 +11,12 @@ use React\Socket\SocketServer;
 
 class Server
 {
+    use HandleRegistrationCommands;
+    use HandleUserCommands;
+    use HandleChannelCommands;
+    use HandleOperatorCommands;
+    use HandleOtherCommands;
+
     private Config $config;
     //private string $name;
     //private ?string $password;
@@ -18,9 +24,10 @@ class Server
     private Parser $parser;
 
     /**
-     * @var \SplObjectStorage|Session[]
+     * @var \SplObjectStorage|Session[]|SessionInterface[]
      */
     private \SplObjectStorage $sessions;
+    private array $channels = [];
 
     private ?SocketServer $socket = null;
     private LoopInterface $loop;

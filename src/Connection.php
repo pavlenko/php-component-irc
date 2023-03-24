@@ -90,22 +90,22 @@ final class Connection
         return new CMD($code, $args, $comment, $prefix);
     }
 
-    public function sendCMD(CMD $cmd): void
+    public function sendCMD(CMD $cmd): bool
     {
         $this->logger->log(LogLevel::NOTICE, '> ' . $cmd->toLogger());
-        $this->socket->write($cmd->toString() . "\r\n");
+        return $this->socket->write($cmd->toString() . "\r\n");
     }
 
-    public function sendERR(ERR $err)
+    public function sendERR(ERR $err): bool
     {
         $this->logger->log(LogLevel::ERROR, '> ' . $err->toLogger());
-        $this->socket->write($err->toString() . "\r\n");
+        return $this->socket->write($err->toString() . "\r\n");
     }
 
-    public function sendRPL(RPL $rpl)
+    public function sendRPL(RPL $rpl): bool
     {
         $this->logger->log(LogLevel::NOTICE, '> ' . $rpl->toLogger());
-        $this->socket->write($rpl->toString() . "\r\n");
+        return $this->socket->write($rpl->toString() . "\r\n");
     }
 
     public function close(): void

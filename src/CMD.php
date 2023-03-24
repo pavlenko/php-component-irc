@@ -29,7 +29,7 @@ final class CMD extends MSG
     public const CMD_PING        = 'PING';
     public const CMD_PONG        = 'PONG';
     public const CMD_PRIVATE_MSG = 'PRIVMSG';
-    public const CMD_QUIT        = 'QUIT';
+    public const CMD_QUIT        = 'QUIT';//QUIT [<quit message>]
     public const CMD_REHASH      = 'REHASH';
     public const CMD_RESTART     = 'RESTART';
     public const CMD_SERVER      = 'SERVER';

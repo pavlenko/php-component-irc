@@ -52,15 +52,34 @@ trait HandleRegistrationCommands
         } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ALREADY_REGISTERED, [$sess->getNickname(), $cmd->getCode()]));
         } else {
-            $sess->username = $cmd->getArg(0);
-            $sess->realname = $cmd->getComment();
+            $sess->setUsername($cmd->getArg(0));
+            $sess->setRealname($cmd->getComment());
         }
         //TODO continue registration
     }
 
     public function handleOPER(CMD $cmd, Connection $conn): void
-    {}
+    {
+        $sess = $this->sessions[$conn];
+        if ($cmd->numArgs() < 2) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } elseif (count($this->operators) === 0) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_OPERATOR_HOST, [$sess->getNickname()]));
+        } elseif (hash('sha256', $cmd->getArg(1)) === ($this->operators[$cmd->getArg(0)] ?? null)) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_PASSWORD_MISMATCH, [$sess->getNickname()]));
+        } else {
+            $sess->setFlag($sess::FLAG_IS_OPERATOR);
+            $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_YOU_ARE_OPERATOR, [$sess->getNickname()]));
+        }
+    }
 
     public function handleQUIT(CMD $cmd, Connection $conn): void
-    {}
+    {
+        if ($cmd->getArg(0)) {
+            $sess = $this->sessions[$conn];
+            $sess->setQuitMessage($cmd->getArg(0));
+        }
+        //TODO add nickname to history
+        $conn->close();
+    }
 }

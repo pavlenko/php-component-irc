@@ -28,6 +28,7 @@ class Server
      */
     private \SplObjectStorage $sessions;
     private array $channels = [];
+    private array $operators = [];
 
     private ?SocketServer $socket = null;
     private LoopInterface $loop;

@@ -37,12 +37,51 @@ class Connection
         while (($len = strlen($this->buffer)) > 0) {
             $pos  = strpos($this->buffer, "\n");
             $line = substr($this->buffer, 0, $pos ?: $len);
+            $line = trim($line);
 
-            //TODO parse input here
+            try {
+                $data = $this->decode($line);
+                $this->logger->log(LogLevel::INFO, '< ' . $data);
+                $this->events->trigger(self::EVT_INPUT, $data);
+            } catch (\Throwable $error) {
+                $this->events->trigger(self::EVT_ERROR, $error, $line);
+            }
 
-            $this->logger->log(LogLevel::INFO, '< ' . trim($line));
-            $this->events->trigger(self::EVT_INPUT, trim($line));
             $this->buffer = substr($this->buffer, $pos);
+        }
+    }
+
+    private function decode(string $data)
+    {
+        $parts = preg_split('/\s+/', $data, 2, PREG_SPLIT_NO_EMPTY);
+
+        // Resolve prefix
+        $prefix = null;
+        if (!empty($parts) && ':' === $parts[0][0]) {
+            $prefix = substr($parts[0], 1);
+            $data   = $parts[1] ?? '';
+        }
+
+        // Resolve command
+        $parts = preg_split('/\s+/', $data, 2, PREG_SPLIT_NO_EMPTY);
+        $code  = strtoupper(array_shift($parts) ?? '');
+
+        if (empty($code)) {
+            throw new \UnexpectedValueException('Malformed data, no command code exists');
+        }
+
+        // Resolve comment & params
+        $parts   = preg_split('/:/', $parts[0] ?? '', 2, PREG_SPLIT_NO_EMPTY);
+        $params  = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
+        $comment = !empty($parts[1]) ? trim($parts[1]) : null;
+
+        if (is_numeric($code)) {
+            if ($code < 400) {
+                return new RPL($prefix, $code, $params, $comment);
+            }
+            return new ERR($prefix, $code, $params, $comment);
+        } else {
+            return new CMD($code, $params, $comment, $prefix);
         }
     }
 

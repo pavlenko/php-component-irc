@@ -46,4 +46,26 @@ abstract class MSG
     {
         return $this->prefix;
     }
+
+    public function toString(): string
+    {
+        $parts = [];
+
+        if ($this->prefix) {
+            $parts[] = ':' . $this->prefix;
+        }
+
+        array_push($parts, $this->code, ...$this->args);
+
+        if ($this->comment) {
+            $parts[] = ':' . $this->comment;
+        }
+
+        return implode(' ', $parts);
+    }
+
+    public function toLogger(): string
+    {
+        return (new \ReflectionObject($this))->getShortName() . '(' . $this->toString() . ')';
+    }
 }

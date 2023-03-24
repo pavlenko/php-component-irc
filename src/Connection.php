@@ -7,7 +7,7 @@ use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
 use React\Socket\ConnectionInterface as SocketConnection;
 
-class Connection
+final class Connection
 {
     public const EVT_ERROR = 'conn.error';
     public const EVT_CLOSE = 'conn.close';
@@ -30,6 +30,12 @@ class Connection
         $this->socket->on('close', fn() => $this->events->trigger(self::EVT_CLOSE));
     }
 
+    /**
+     * Decode message to specific command
+     *
+     * @param string $input
+     * @internal
+     */
     public function onInput(string $input): void
     {
         $this->buffer .= $input;
@@ -40,9 +46,9 @@ class Connection
             $line = trim($line);
 
             try {
-                $data = $this->decode($line);
-                $this->logger->log(LogLevel::INFO, '< ' . $data);
-                $this->events->trigger(self::EVT_INPUT, $data);
+                $msg = $this->decode($line);
+                $this->logger->log(LogLevel::INFO, '< ' . $msg->toLogger());
+                $this->events->trigger(self::EVT_INPUT, $msg);
             } catch (\Throwable $error) {
                 $this->events->trigger(self::EVT_ERROR, $error, $line);
             }
@@ -86,20 +92,20 @@ class Connection
 
     public function sendCMD(CMD $cmd): void
     {
-        $this->logger->log(LogLevel::NOTICE, '> CMD:' . $cmd);
-        $this->socket->write($cmd . "\r\n");
+        $this->logger->log(LogLevel::NOTICE, '> ' . $cmd->toLogger());
+        $this->socket->write($cmd->toString() . "\r\n");
     }
 
     public function sendERR(ERR $err)
     {
-        $this->logger->log(LogLevel::ERROR, '> ERR:' . $err);
-        $this->socket->write($err . "\r\n");
+        $this->logger->log(LogLevel::ERROR, '> ' . $err->toLogger());
+        $this->socket->write($err->toString() . "\r\n");
     }
 
     public function sendRPL(RPL $rpl)
     {
-        $this->logger->log(LogLevel::NOTICE, '> RPL:' . $rpl);
-        $this->socket->write($rpl . "\r\n");
+        $this->logger->log(LogLevel::NOTICE, '> ' . $rpl->toLogger());
+        $this->socket->write($rpl->toString() . "\r\n");
     }
 
     public function close(): void

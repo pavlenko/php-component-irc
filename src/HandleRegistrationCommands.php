@@ -23,20 +23,40 @@ trait HandleRegistrationCommands
                     break;
                 case 'END':
                     //TODO set session capabilities resolved flag
-                    //TODO continue registration
                     break;
             }
         }
+        //TODO continue registration
     }
 
     public function handlePASS(CMD $cmd, Connection $conn): void
-    {}
+    {
+        $sess = $this->sessions[$conn];
+        if ($cmd->numArgs() === 0) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ALREADY_REGISTERED, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            $sess->setPassword($cmd->getArg(0));
+        }
+    }
 
     public function handleNICK(CMD $cmd, Connection $conn): void
     {}
 
     public function handleUSER(CMD $cmd, Connection $conn): void
-    {}
+    {
+        $sess = $this->sessions[$conn];
+        if (count($cmd->getArgs()) < 3 || empty($cmd->getComment())) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ALREADY_REGISTERED, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            $sess->username = $cmd->getArg(0);
+            $sess->realname = $cmd->getComment();
+        }
+        //TODO continue registration
+    }
 
     public function handleOPER(CMD $cmd, Connection $conn): void
     {}

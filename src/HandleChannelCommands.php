@@ -4,6 +4,7 @@ namespace PE\Component\IRC;
 
 trait HandleChannelCommands
 {
+    //TODO helpers
     public function handleMODE(CMD $cmd)
     {}
 

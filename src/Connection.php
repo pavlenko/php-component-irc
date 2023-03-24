@@ -72,17 +72,16 @@ class Connection
 
         // Resolve comment & params
         $parts   = preg_split('/:/', $parts[0] ?? '', 2, PREG_SPLIT_NO_EMPTY);
-        $params  = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
+        $args    = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
         $comment = !empty($parts[1]) ? trim($parts[1]) : null;
 
         if (is_numeric($code)) {
             if ($code < 400) {
-                return new RPL($prefix, $code, $params, $comment);
+                return new RPL($prefix, $code, $args, $comment);
             }
-            return new ERR($prefix, $code, $params, $comment);
-        } else {
-            return new CMD($code, $params, $comment, $prefix);
+            return new ERR($prefix, $code, $args, $comment);
         }
+        return new CMD($code, $args, $comment, $prefix);
     }
 
     public function sendCMD(CMD $cmd): void
@@ -107,29 +106,5 @@ class Connection
     {
         $this->logger->log(LogLevel::NOTICE, '> ' . self::EVT_CLOSE);
         $this->socket->close();
-    }
-}
-
-class CMD
-{
-    public function __toString(): string
-    {
-        return '';// TODO: Implement __toString() method.
-    }
-}
-
-class ERR
-{
-    public function __toString(): string
-    {
-        return '';// TODO: Implement __toString() method.
-    }
-}
-
-class RPL
-{
-    public function __toString(): string
-    {
-        return '';// TODO: Implement __toString() method.
     }
 }

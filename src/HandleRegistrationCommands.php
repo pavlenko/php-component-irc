@@ -43,9 +43,8 @@ trait HandleRegistrationCommands
         return true;
     }
 
-    public function handleCAP(CMD $cmd, Connection $conn)
+    public function handleCAP(CMD $cmd, Connection $conn, SessionInterface $sess)
     {
-        $sess = $this->sessions[$conn];
         if ($cmd->numArgs() < 1) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } else {
@@ -67,9 +66,8 @@ trait HandleRegistrationCommands
         //TODO continue registration
     }
 
-    public function handlePASS(CMD $cmd, Connection $conn): void
+    public function handlePASS(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        $sess = $this->sessions[$conn];
         if ($cmd->numArgs() === 0) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
@@ -79,9 +77,8 @@ trait HandleRegistrationCommands
         }
     }
 
-    public function handleNICK(CMD $cmd, Connection $conn): void
+    public function handleNICK(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        $sess = $this->sessions[$conn];
         if (empty($cmd->getArg(0))) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } elseif (!$this->isValidSessionName($cmd->getArg(0))) {
@@ -98,9 +95,8 @@ trait HandleRegistrationCommands
         //TODO continue registration
     }
 
-    public function handleUSER(CMD $cmd, Connection $conn): void
+    public function handleUSER(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        $sess = $this->sessions[$conn];
         if (count($cmd->getArgs()) < 3 || empty($cmd->getComment())) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
@@ -112,9 +108,8 @@ trait HandleRegistrationCommands
         //TODO continue registration
     }
 
-    public function handleOPER(CMD $cmd, Connection $conn): void
+    public function handleOPER(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        $sess = $this->sessions[$conn];
         if ($cmd->numArgs() < 2) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } elseif (count($this->operators) === 0) {
@@ -127,10 +122,9 @@ trait HandleRegistrationCommands
         }
     }
 
-    public function handleQUIT(CMD $cmd, Connection $conn): void
+    public function handleQUIT(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
         if ($cmd->getArg(0)) {
-            $sess = $this->sessions[$conn];
             $sess->setQuitMessage($cmd->getArg(0));
         }
         //TODO add nickname to history

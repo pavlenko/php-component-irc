@@ -8,6 +8,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+//class KEY {};
+//class VAL {};
+//$key = new KEY();
+//$val = new VAL();
+//$map = new \SplObjectStorage();
+//$map->attach($key, $val);
+//var_dump($map);
+//$map->detach($key);
+//var_dump($map);
+//die;
+
+
 $config = new Config(
     'server',
     new \DateTime(),

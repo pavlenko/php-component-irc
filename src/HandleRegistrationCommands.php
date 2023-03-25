@@ -4,7 +4,39 @@ namespace PE\Component\IRC;
 
 trait HandleRegistrationCommands
 {
-    //TODO helpers
+    private function isValidChannelName(string $name): bool
+    {
+        return false;
+    }
+
+    private function isValidSessionName(string $name): bool
+    {
+        if (strlen($name) > 9) {
+            $this->logger->debug('Session name must be less than 10 chars');
+            return false;
+        }
+        if (!preg_match('/^[^0-9-][\w\-\[\]\\\`^{}]{0,8}$/', $name)) {
+            $this->logger->debug('Session name contain invalid chars');
+            return false;
+        }
+        if ($this->config->getName() === $name) {
+            $this->logger->debug('Session name must not equal server name');
+            return false;
+        }
+        return true;
+    }
+
+    //TODO create SessionMap class
+    private function containsNickname(\SplObjectStorage $storage, string $name): bool
+    {
+        foreach ($storage as $key) {
+            if ($storage[$key]->getNickname() === $name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function handleCAP(CMD $cmd, Connection $conn)
     {
         $sess = $this->sessions[$conn];
@@ -42,7 +74,23 @@ trait HandleRegistrationCommands
     }
 
     public function handleNICK(CMD $cmd, Connection $conn): void
-    {}
+    {
+        $sess = $this->sessions[$conn];
+        if (empty($cmd->getArg(0))) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } elseif (!$this->isValidSessionName($cmd->getArg(0))) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ERRONEOUS_NICKNAME, [$sess->getNickname(), $cmd->getCode()]));
+        } elseif ($this->containsNickname($cmd->getArg(0))) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NICKNAME_IN_USE, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+                //TODO notify users
+                //TODO upd history
+            }
+            $sess->setNickname($cmd->getArg(0));
+        }
+        //TODO continue registration
+    }
 
     public function handleUSER(CMD $cmd, Connection $conn): void
     {

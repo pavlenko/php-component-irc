@@ -47,7 +47,7 @@ final class Connection
 
             try {
                 $msg = $this->decode($line);
-                $this->logger->log(LogLevel::INFO, '< ' . $msg->toLogger());
+                $this->logger->notice('< ' . $msg->toLogger());
                 $this->events->trigger(self::EVT_INPUT, $msg);
             } catch (\Throwable $error) {
                 $this->events->trigger(self::EVT_ERROR, $error, $line);
@@ -90,27 +90,27 @@ final class Connection
         return new CMD($code, $args, $comment, $prefix);
     }
 
-    public function sendCMD(CMD $cmd): bool
+    public function sendCMD(CMD $cmd): void
     {
-        $this->logger->log(LogLevel::NOTICE, '> ' . $cmd->toLogger());
-        return $this->socket->write($cmd->toString() . "\r\n");
+        $this->logger->notice('> ' . $cmd->toLogger());
+        $this->socket->write($cmd->toString() . "\r\n");
     }
 
-    public function sendERR(ERR $err): bool
+    public function sendERR(ERR $err): void
     {
-        $this->logger->log(LogLevel::ERROR, '> ' . $err->toLogger());
-        return $this->socket->write($err->toString() . "\r\n");
+        $this->logger->notice('> ' . $err->toLogger());
+        $this->socket->write($err->toString() . "\r\n");
     }
 
-    public function sendRPL(RPL $rpl): bool
+    public function sendRPL(RPL $rpl): void
     {
-        $this->logger->log(LogLevel::NOTICE, '> ' . $rpl->toLogger());
-        return $this->socket->write($rpl->toString() . "\r\n");
+        $this->logger->notice('> ' . $rpl->toLogger());
+        $this->socket->write($rpl->toString() . "\r\n");
     }
 
     public function close(): void
     {
-        $this->logger->log(LogLevel::NOTICE, '> ' . self::EVT_CLOSE);
+        $this->logger->notice(self::EVT_CLOSE);
         $this->socket->close();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PE\Component\IRC;
 
-class SessionMap implements \Iterator
+final class SessionMap implements \Iterator
 {
     /**
      * @var array<string, array<Connection|SessionInterface>>

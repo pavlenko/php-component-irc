@@ -87,8 +87,15 @@ trait HandleRegistrationCommands
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NICKNAME_IN_USE, [$sess->getNickname(), $cmd->getCode()]));
         } else {
             if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-                //TODO notify users
-                //TODO upd history
+                foreach ($this->sessions as [$chan, $session]) {
+                    foreach ($sess->getChannels() as $channel) {
+                        if ($channel->containsName($session->getNickname())) {
+                            $chan->sendCMD(new CMD($cmd->getCode(), [$cmd->getArg(0), null, $sess->getPrefix()]));
+                            break;
+                        }
+                    }
+                }
+                $this->history->addSession($sess);
             }
             $sess->setNickname($cmd->getArg(0));
         }

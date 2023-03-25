@@ -29,6 +29,9 @@ final class SessionMap implements \Iterator
         return false;
     }
 
+    /**
+     * @return array<Connection|SessionInterface>
+     */
     public function current(): array
     {
         return current($this->items);

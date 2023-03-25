@@ -14,18 +14,18 @@ interface SessionInterface
     public const FLAG_PINGING          = 0b010000000;
     public const FLAG_BREAK_CONNECTION = 0b100000000;
 
-    public function __construct(Connection $connection, string $servername, string $hostname);
+    public function __construct(string $servername, string $hostname);
     public function getServername(): string;
     public function getPassword(): string;
     public function setPassword(string $password): void;
     public function getNickname(): string;
-    public function setNickname(string $password): void;
+    public function setNickname(string $nickname): void;
     public function getUsername(): string;
-    public function setUsername(string $password): void;
+    public function setUsername(string $username): void;
     public function getHostname(): string;
-    public function setHostname(string $password): void;
+    public function setHostname(string $hostname): void;
     public function getRealname(): string;
-    public function setRealname(string $password): void;
+    public function setRealname(string $realname): void;
     public function getFlags(): int;
     public function hasFlag(int $flag): bool;
     public function setFlag(int $flag): void;
@@ -35,7 +35,7 @@ interface SessionInterface
     public function setAwayMessage(string $message): void;
     public function getQuitMessage(): string;
     public function setQuitMessage(string $message): void;
-    public function getChannels(): array;
+    public function getChannels(): ChannelMap;
     public function attachChannel(Channel $channel): void;
     public function detachChannel(Channel $channel): void;
 }

@@ -2,7 +2,7 @@
 
 namespace PE\Component\IRC;
 
-class Session2 implements SessionInterface
+final class Session2 implements SessionInterface
 {
     private string $servername;
     private string $hostname;
@@ -11,10 +11,19 @@ class Session2 implements SessionInterface
     private string $username = '';
     private string $realname = '';
 
-    public function __construct(Connection $connection, string $servername, string $hostname)
+    private int $flags = 0;
+
+    private string $awayMessage = '';
+    private string $quitMessage = '';
+
+    private ChannelMap $channels;
+
+    public function __construct(string $servername, string $hostname)
     {
         $this->servername = $servername;
         $this->hostname   = $hostname;
+
+        $this->channels = new ChannelMap();
     }
 
     public function getServername(): string
@@ -34,101 +43,102 @@ class Session2 implements SessionInterface
 
     public function getNickname(): string
     {
-        // TODO: Implement getNickname() method.
+
+        return $this->nickname;
     }
 
-    public function setNickname(string $password): void
+    public function setNickname(string $nickname): void
     {
-        // TODO: Implement setNickname() method.
+        $this->nickname = $nickname;
     }
 
     public function getUsername(): string
     {
-        // TODO: Implement getUsername() method.
+        return $this->username;
     }
 
-    public function setUsername(string $password): void
+    public function setUsername(string $username): void
     {
-        // TODO: Implement setUsername() method.
+        $this->username = $username;
     }
 
     public function getHostname(): string
     {
-        // TODO: Implement getHostname() method.
+        return $this->hostname;
     }
 
-    public function setHostname(string $password): void
+    public function setHostname(string $hostname): void
     {
-        // TODO: Implement setHostname() method.
+        $this->hostname = $hostname;
     }
 
     public function getRealname(): string
     {
-        // TODO: Implement getRealname() method.
+        return $this->realname;
     }
 
-    public function setRealname(string $password): void
+    public function setRealname(string $realname): void
     {
-        // TODO: Implement setRealname() method.
+        $this->realname = $realname;
     }
 
     public function getFlags(): int
     {
-        // TODO: Implement getFlags() method.
+        return $this->flags;
     }
 
     public function hasFlag(int $flag): bool
     {
-        // TODO: Implement hasFlag() method.
+        return $this->flags & $flag;
     }
 
     public function setFlag(int $flag): void
     {
-        // TODO: Implement setFlag() method.
+        $this->flags |= $flag;
     }
 
     public function clrFlag(int $flag): void
     {
-        // TODO: Implement clrFlag() method.
+        $this->flags &= ~$flag;
     }
 
     public function getPrefix(): string
     {
-        // TODO: Implement getPrefix() method.
+        return $this->nickname . "!" . $this->username . "@" . $this->hostname;
     }
 
     public function getAwayMessage(): string
     {
-        // TODO: Implement getAwayMessage() method.
+        return $this->awayMessage;
     }
 
     public function setAwayMessage(string $message): void
     {
-        // TODO: Implement setAwayMessage() method.
+        $this->awayMessage = $message;
     }
 
     public function getQuitMessage(): string
     {
-        // TODO: Implement getQuitMessage() method.
+        return $this->quitMessage;
     }
 
     public function setQuitMessage(string $message): void
     {
-        // TODO: Implement setQuitMessage() method.
+        $this->quitMessage = $message;
     }
 
-    public function getChannels(): array
+    public function getChannels(): ChannelMap
     {
-        // TODO: Implement getChannels() method.
+        return $this->channels;
     }
 
     public function attachChannel(Channel $channel): void
     {
-        // TODO: Implement attachChannel() method.
+        $this->channels->attach($channel);
     }
 
     public function detachChannel(Channel $channel): void
     {
-        // TODO: Implement detachChannel() method.
+        $this->channels->detach($channel);
     }
 }

@@ -43,28 +43,6 @@ trait HandleRegistrationCommands
         return true;
     }
 
-    //TODO create SessionMap<conn, sess> class instead of SplObjectStorage
-    private function containsSessionName(\SplObjectStorage $storage, string $name): bool
-    {
-        foreach ($storage as $key) {
-            if ($storage[$key]->getNickname() === $name) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    //TODO create ChannelMap<name, chan> class instead of SplObjectStorage
-    private function containsChannelName(\SplObjectStorage $storage, string $name): bool
-    {
-        foreach ($storage as $key) {
-            if ($storage[$key]->getName() === $name) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function handleCAP(CMD $cmd, Connection $conn)
     {
         $sess = $this->sessions[$conn];
@@ -108,7 +86,7 @@ trait HandleRegistrationCommands
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } elseif (!$this->isValidSessionName($cmd->getArg(0))) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ERRONEOUS_NICKNAME, [$sess->getNickname(), $cmd->getCode()]));
-        } elseif ($this->containsSessionName($cmd->getArg(0))) {
+        } elseif ($this->sessions->containsName($cmd->getArg(0))) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NICKNAME_IN_USE, [$sess->getNickname(), $cmd->getCode()]));
         } else {
             if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {

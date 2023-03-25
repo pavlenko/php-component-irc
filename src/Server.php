@@ -23,11 +23,8 @@ class Server
 
     private Parser $parser;
 
-    /**
-     * @var \SplObjectStorage|Session[]|SessionInterface[]
-     */
-    private \SplObjectStorage $sessions;
-    private array $channels = [];
+    private SessionMap $sessions;
+    private ChannelMap $channels;
     private array $operators = [];
     private ?string $capabilities = null;
 
@@ -39,7 +36,8 @@ class Server
     {
         $this->config   = $config;
         $this->parser   = new Parser();
-        $this->sessions = new \SplObjectStorage();
+        $this->channels = new ChannelMap();
+        $this->sessions = new SessionMap();
 
         $this->loop   = $loop ?: Loop::get();
         $this->logger = $logger ?: new NullLogger();

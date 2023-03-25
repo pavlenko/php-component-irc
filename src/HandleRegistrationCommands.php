@@ -6,6 +6,19 @@ trait HandleRegistrationCommands
 {
     private function isValidChannelName(string $name): bool
     {
+        if (strlen($name) > 50) {
+            $this->logger->debug('Session name must be less than 51 chars');
+            return false;
+        }
+        if (!preg_match('/^[#@+!].+$/', $name)) {
+            $this->logger->debug('Channel name must starts with "#", "@", "+" or "!"');
+            return false;
+        }
+        if (!preg_match('/^[\w\-\[\]\\\`^{}]+$/', $name)) {
+            $this->logger->debug('Channel name contain invalid chars');
+            return false;
+        }
+
         return false;
     }
 
@@ -15,7 +28,11 @@ trait HandleRegistrationCommands
             $this->logger->debug('Session name must be less than 10 chars');
             return false;
         }
-        if (!preg_match('/^[^0-9-][\w\-\[\]\\\`^{}]{0,8}$/', $name)) {
+        if (preg_match('/^[^0-9-].+$/', $name)) {
+            $this->logger->debug('Session name must not starts with number or "-"');
+            return false;
+        }
+        if (!preg_match('/^[\w\-\[\]\\\`^{}]+$/', $name)) {
             $this->logger->debug('Session name contain invalid chars');
             return false;
         }

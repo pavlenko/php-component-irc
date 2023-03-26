@@ -42,15 +42,13 @@ trait HandleOtherCommands
 
     public function handleTIME(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        //time format: Www Mmm dd hh:mm:ss yyyy
-        //other variant ISO 8601: YYYY-MM-DDThh:mm:ss.sssZ
         if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]));
         } else {
             $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_TIME, [
                 $sess->getNickname(),
                 $sess->getServername()
-            ], date('D M d H:i:s Y')));
+            ], date(DATE_ATOM)));
         }
     }
 

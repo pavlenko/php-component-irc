@@ -33,7 +33,7 @@ trait HandleOtherCommands
                     $resp[] = $arg;
                 }
             }
-            $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_IS_ON, [$sess->getNickname(), ...$resp]));
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_IS_ON, [$sess->getNickname(), ...$resp]));
         }
     }
 
@@ -41,17 +41,38 @@ trait HandleOtherCommands
     {}
 
     public function handleTIME(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    {
+        //time format: Www Mmm dd hh:mm:ss yyyy
+        //other variant ISO 8601: YYYY-MM-DDThh:mm:ss.sssZ
+        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]));
+        } else {
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_TIME, [
+                $sess->getNickname(),
+                $sess->getServername()
+            ], date('D M d H:i:s Y')));
+        }
+    }
 
     public function handleADMIN(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}
 
-    public function handleUSERHOST(CMD $cmd, Connection $conn): void
+    public function handleUSERHOST(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}
 
-    public function handleVERSION(CMD $cmd, Connection $conn): void
-    {}
+    public function handleVERSION(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    {
+        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]));
+        } else {
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_VERSION, [
+                $sess->getNickname(),
+                $this->config->getVersion(),//<-- format <version>.<debug_lvl>???
+                $this->config->getName()
+            ], /*TODO comments???*/));
+        }
+    }
 
-    public function handleWALLOPS(CMD $cmd, Connection $conn): void
+    public function handleWALLOPS(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}
 }

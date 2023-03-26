@@ -56,7 +56,22 @@ trait HandleOtherCommands
     {}
 
     public function handleUSERHOST(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() === 0) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            $resp = [];
+            foreach ($cmd->getArgs() as $arg) {
+                if ([, $s] = $this->sessions->searchByName($arg)) {
+                    $resp[] = $arg
+                        . ($s->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
+                        . ($s->hasFlag(SessionInterface::FLAG_AWAY) ? '=-@' : '=+@')
+                        . $s->getHostname();
+                }
+            }
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_USER_HOST, [$sess->getNickname(), ...$resp]));
+        }
+    }
 
     public function handleVERSION(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {

@@ -39,7 +39,7 @@ final class CMD extends MSG
     public const CMD_TIME        = 'TIME';
     public const CMD_TOPIC       = 'TOPIC';
     public const CMD_TRACE       = 'TRACE';
-    public const CMD_USER_HOST   = 'USERHOST';
+    public const CMD_USER_HOST   = 'USERHOST';//USERHOST <nickname> [...<nickname>]
     public const CMD_USER        = 'USER';
     public const CMD_USERS       = 'USERS';
     public const CMD_VERSION     = 'VERSION';//VERSION [<server>]

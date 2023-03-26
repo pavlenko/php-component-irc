@@ -19,6 +19,16 @@ final class SessionMap implements \Iterator
         unset($this->items[spl_object_hash($conn)]);
     }
 
+    public function searchByName(string $name): ?array
+    {
+        foreach ($this->items as [$conn, $sess]) {
+            if ($sess->getNickname() === $name) {
+                return [$conn, $sess];
+            }
+        }
+        return null;
+    }
+
     public function containsName(string $name): bool
     {
         foreach ($this->items as [$conn, $sess]) {

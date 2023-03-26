@@ -4,7 +4,6 @@ namespace PE\Component\IRC;
 
 trait HandleOtherCommands
 {
-    //TODO helpers
     public function handlePING(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
         if (!$cmd->numArgs()) {
@@ -54,7 +53,16 @@ trait HandleOtherCommands
     }
 
     public function handleADMIN(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_ADMIN_ME, [$sess->getNickname(), $sess->getServername()]));
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_ADMIN_LOC1, [$sess->getNickname(), $this->config->getAdminLocation1()]));
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_ADMIN_LOC2, [$sess->getNickname(), $this->config->getAdminLocation2()]));
+            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_ADMIN_ME, [$sess->getNickname(), $this->config->getAdminEmail()]));
+        }
+    }
 
     public function handleUSERHOST(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
@@ -81,9 +89,9 @@ trait HandleOtherCommands
         } else {
             $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_VERSION, [
                 $sess->getNickname(),
-                $this->config->getVersion(),//<-- format <version>.<debug_lvl>???
+                $this->config->getVersionNumber() . '.' . $this->config->getVersionDebug(),
                 $this->config->getName()
-            ], /*TODO comments???*/));
+            ], $this->config->getVersionComment() ?: null));
         }
     }
 

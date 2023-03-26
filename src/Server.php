@@ -92,7 +92,7 @@ class Server
                         $sess->send(new Command(
                             Command::RPL_YOUR_HOST,
                             [$sess->nickname],
-                            "Your host is {$this->config->getName()}, running version {$this->config->getVersion()}"
+                            "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}"
                         ));
                         $sess->send(new Command(
                             Command::RPL_CREATED,
@@ -104,7 +104,7 @@ class Server
                             [
                                 $sess->nickname,
                                 $this->config->getName(),
-                                $this->config->getVersion(),
+                                $this->config->getVersionNumber(),
                                 'DGMQRSZaghilopsuwz',
                                 'CFILMPQRSTbcefgijklmnopqrstuvz',
                                 'bkloveqjfI'

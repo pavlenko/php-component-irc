@@ -153,24 +153,6 @@ class Server
                     $sess->send(new Command(Command::RPL_END_OF_WHO, [$this->config->getName()]));
                 }
                 break;
-            case Command::CMD_MOTD:
-                //TODO check for server arg
-                $modt = $this->config->getMOTD();
-                if (!empty($modt)) {
-                    $sess->send(new Command(
-                        Command::RPL_MOTD_START,
-                        [$sess->nickname],
-                        'Message of the day:',
-                        $this->config->getName()
-                    ));
-                    foreach ($modt as $line) {
-                        $sess->send(new Command(Command::RPL_MOTD, [$sess->nickname], '- ' . $line, $this->config->getName()));
-                    }
-                    $sess->send(new Command(Command::RPL_END_OF_MOTD, [$sess->nickname], null, $this->config->getName()));
-                } else {
-                    $sess->send(new Command(Command::ERR_NO_MOTD, [$sess->nickname], null, $this->config->getName()));
-                }
-                break;
         }
     }
 

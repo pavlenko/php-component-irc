@@ -16,10 +16,11 @@ trait HandleOtherCommands
 
     public function handlePONG(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
-        if (!$cmd->numArgs() || $cmd->getArg(0) !== $this->config->getName()) {
+        if ($cmd->numArgs() === 0 || $cmd->getArg(0) !== $this->config->getName()) {
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname()]));
-        }
-        $sess->clrFlag(SessionInterface::FLAG_PINGING);//TODO flag set in server ping timer
+        } else {
+            $sess->clrFlag(SessionInterface::FLAG_PINGING);
+        }//TODO flag set in server ping timer
     }
 
     public function handleISON(CMD $cmd, Connection $conn, SessionInterface $sess): void
@@ -87,5 +88,15 @@ trait HandleOtherCommands
     }
 
     public function handleWALLOPS(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    {
+        if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_PRIVILEGES, [$sess->getNickname()]));
+        } elseif ($cmd->numArgs() === 0) {
+            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+        } else {
+            foreach ($this->sessions as [$c, $s]) {
+                $c->sendCMD(new CMD($cmd->getCode(), [], $cmd->getArg(0), $s->getPrefix()));
+            }
+        }
+    }
 }

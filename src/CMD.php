@@ -43,7 +43,7 @@ final class CMD extends MSG
     public const CMD_USER        = 'USER';
     public const CMD_USERS       = 'USERS';
     public const CMD_VERSION     = 'VERSION';//VERSION [<server>]
-    public const CMD_WALLOPS     = 'WALLOPS';
+    public const CMD_WALLOPS     = 'WALLOPS';//WALLOPS <text>
     public const CMD_WHOIS       = 'WHOIS';
     public const CMD_WHO         = 'WHO';
     public const CMD_WHO_WAS     = 'WHOWAS';

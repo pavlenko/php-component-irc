@@ -17,7 +17,7 @@ class Config
     private string $versionComment;
 
     private ?string $password;
-    private ?string $modtFile;
+    private ?string $motdFile;
 
     private string $info = '';
 
@@ -52,7 +52,7 @@ class Config
 
         $this->createdAt = $createdAt;
         $this->password = $password;
-        $this->modtFile = $modtFile;
+        $this->motdFile = $modtFile;
 
         $this->maxChannels        = $maxChannels;
         $this->maxInactiveTimeout = $maxInactiveTimeout;
@@ -109,10 +109,10 @@ class Config
         return $this->password;
     }
 
-    public function getMODT(): ?array
+    public function getMOTD(): ?array
     {
-        if (null !== $this->modtFile && is_readable($this->modtFile)) {
-            return file($this->modtFile, FILE_IGNORE_NEW_LINES) ?: null;
+        if (null !== $this->motdFile && is_readable($this->motdFile)) {
+            return file($this->motdFile, FILE_IGNORE_NEW_LINES) ?: null;
         }
         return null;
     }

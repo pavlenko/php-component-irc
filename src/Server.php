@@ -153,51 +153,9 @@ class Server
                     $sess->send(new Command(Command::RPL_END_OF_WHO, [$this->config->getName()]));
                 }
                 break;
-            case Command::CMD_PING:
-                if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Command::ERR_NO_ORIGIN));
-                } else {
-                    $sess->send(new Command('PONG', [], $cmd->getArg(0), $this->config->getName()));
-                }
-                break;
-            case Command::CMD_PONG:
-                if (empty($cmd->getArg(0)) || $cmd->getArg(0) !== $this->config->getName()) {
-                    $sess->send(new Command(Command::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]));
-                } else {
-                    $sess->flags &= ~Session::PINGING;
-                }
-                break;
-            case Command::CMD_USER_HOST:
-                if (empty($cmd->getArgs())) {
-                    $sess->send(new Command(Command::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]));
-                } else {
-                    $replies = [];
-                    for ($n = 0; $n < min(count($cmd->getArgs()), 5); $n++) {
-                        foreach ($this->sessions as $k) {
-                            if ($cmd->getArg($n) === $this->sessions[$k]->nickname) {
-                                $reply = $this->sessions[$k]->nickname;
-                                if ($this->sessions[$k]->flags & Session::IRC_OPERATOR) {
-                                    $reply .= '*';
-                                }
-                                $reply .= $this->sessions[$k]->flags & Session::AWAY ? '=-@' : '=+@';
-                                $reply .= $this->sessions[$k]->hostname;
-                                $replies[] = $reply;
-                            }
-                        }
-                    }
-                    $sess->send(new Command(Command::RPL_USER_HOST, [], implode(' ', $replies)));
-                }
-                break;
-            case Command::CMD_TIME:
-                if (empty($cmd->getArgs()) || $cmd->getArg(0) !== $sess->servername) {
-                    $sess->send(new Command(Command::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]));
-                } else {
-                    $sess->send(new Command(Command::RPL_TIME, [$sess->servername], date('D M d Y H:i:s e')));
-                }
-                break;
             case Command::CMD_MOTD:
                 //TODO check for server arg
-                $modt = $this->config->getMODT();
+                $modt = $this->config->getMOTD();
                 if (!empty($modt)) {
                     $sess->send(new Command(
                         Command::RPL_MOTD_START,

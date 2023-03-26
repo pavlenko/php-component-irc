@@ -18,7 +18,7 @@ final class CMD extends MSG
     public const CMD_LINKS       = 'LINKS';
     public const CMD_LIST        = 'LIST';
     public const CMD_MODE        = 'MODE';
-    public const CMD_MOTD        = 'MOTD';//MODT [<target>]
+    public const CMD_MOTD        = 'MOTD';//MODT [<server>]
     public const CMD_LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]
     public const CMD_NAMES       = 'NAMES';
     public const CMD_NICK        = 'NICK';

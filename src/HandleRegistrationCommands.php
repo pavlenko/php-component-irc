@@ -134,7 +134,8 @@ trait HandleRegistrationCommands
         if ($cmd->getArg(0)) {
             $sess->setQuitMessage($cmd->getArg(0));
         }
-        //TODO add nickname to history
+        $this->history->addSession($sess);
+        //TODO notify users
         $conn->close();
     }
 }

@@ -3,6 +3,10 @@
 namespace PE\Component\IRC;
 
 //TODO move here RPL_* and ERR_* codes
+
+/**
+ * @deprecated
+ */
 class Command
 {
     //TODO add here formats

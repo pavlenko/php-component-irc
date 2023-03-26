@@ -11,7 +11,7 @@ final class CMD extends MSG
     public const CMD_ERROR       = 'ERROR';
     public const CMD_INFO        = 'INFO';
     public const CMD_INVITE      = 'INVITE';
-    public const CMD_IS_ON       = 'ISON';
+    public const CMD_IS_ON       = 'ISON';//ISON <nickname> [...<nickname>]
     public const CMD_JOIN        = 'JOIN';
     public const CMD_KICK        = 'KICK';
     public const CMD_KILL        = 'KILL';
@@ -19,15 +19,15 @@ final class CMD extends MSG
     public const CMD_LIST        = 'LIST';
     public const CMD_MODE        = 'MODE';
     public const CMD_MOTD        = 'MOTD';//MODT [<target>]
-    public const CMD_LIST_USERS  = 'LUSERS';//LUSERS [<mask>[<target>]]
+    public const CMD_LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]
     public const CMD_NAMES       = 'NAMES';
     public const CMD_NICK        = 'NICK';
     public const CMD_NOTICE      = 'NOTICE';
     public const CMD_OPERATOR    = 'OPER';
     public const CMD_PART        = 'PART';
     public const CMD_PASSWORD    = 'PASS';
-    public const CMD_PING        = 'PING';
-    public const CMD_PONG        = 'PONG';
+    public const CMD_PING        = 'PING';//PING <server> [...<server>]
+    public const CMD_PONG        = 'PONG';//PONG <server> [...<server>]
     public const CMD_PRIVATE_MSG = 'PRIVMSG';
     public const CMD_QUIT        = 'QUIT';//QUIT [<quit message>]
     public const CMD_REHASH      = 'REHASH';

@@ -43,6 +43,9 @@ trait HandleRegistrationCommands
         return true;
     }
 
+    private function handleRegistration(Connection $conn, SessionInterface $sess): void
+    {}
+
     public function handleCAP(CMD $cmd, Connection $conn, SessionInterface $sess)
     {
         if ($cmd->numArgs() < 1) {

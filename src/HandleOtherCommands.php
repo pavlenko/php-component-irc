@@ -95,7 +95,9 @@ trait HandleOtherCommands
             $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
         } else {
             foreach ($this->sessions as [$c, $s]) {
-                $c->sendCMD(new CMD($cmd->getCode(), [], $cmd->getArg(0), $s->getPrefix()));
+                if ($s->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+                    $c->sendCMD(new CMD($cmd->getCode(), [], $cmd->getArg(0), $s->getPrefix()));
+                }
             }
         }
     }

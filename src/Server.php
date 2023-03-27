@@ -55,6 +55,7 @@ class Server
         $this->socket->on('connection', function (ConnectionInterface $connection) {
             $this->logger->info('New connection from ' . $connection->getRemoteAddress());
 
+            //TODO maybe store connection in session and remove from map
             $conn = new Connection($connection, new Events(), $this->logger);
             $sess = new Session2($this->config->getName(), $connection->getRemoteAddress());
 

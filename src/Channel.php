@@ -12,13 +12,31 @@ class Channel
     public const FLAG_TOPIC_SET   = 0b010000;//t - topic settable by channel operator only
     public const FLAG_NO_MSG_OUT  = 0b100000;//n - no messages to channel from clients on the outside
 
+    private SessionInterface $creator;
     private string $name;
-    private ?string $pass;
+    private string $pass;
+    private string $topic = '';
+    private int $limit = 0;
+    private int $flags = 0;
+    private SessionMap $sessions;
+    private array $operators = [];
 
-    public function __construct(string $name, ?string $pass = null)
+    public function __construct(SessionInterface $creator, string $name, string $pass = '')
     {
-        $this->name = $name;
-        $this->pass = $pass;
+        $this->creator = $creator;
+        $this->name    = $name;
+        $this->pass    = $pass;
+
+        //TODO add to users
+        //TODO add to operators
+        //TODO send info
+
+        $this->sessions = new SessionMap();
+    }
+
+    public function getCreator(): SessionInterface
+    {
+        return $this->creator;
     }
 
     public function getName(): string
@@ -26,23 +44,70 @@ class Channel
         return $this->name;
     }
 
-    public function getPass(): ?string
+    public function getPass(): string
     {
         return $this->pass;
     }
 
-    public function getUsers(): array
+    public function setPass(string $pass): void
     {
-        return [];//TODO
-    }
-
-    public function getFlags(): string
-    {
-        return '';//TODO
+        $this->pass = $pass;
     }
 
     public function getTopic(): string
     {
-        return '';//TODO
+        return $this->topic;
+    }
+
+    public function setTopic(string $topic): void
+    {
+        $this->topic = $topic;
+    }
+
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    public function setLimit(int $limit): void
+    {
+        $this->limit = $limit;
+    }
+
+    public function getFlags(): int
+    {
+        return $this->flags;
+    }
+
+    public function hasFlag(int $flag): bool
+    {
+        return $this->flags & $flag;
+    }
+
+    public function setFlag(int $flag): void
+    {
+        $this->flags |= $flag;
+    }
+
+    public function clrFlag(int $flag): void
+    {
+        $this->flags &= ~$flag;
+    }
+
+    public function getSessions(): SessionMap
+    {
+        return $this->sessions;
+    }
+
+    //TODO needed?
+    public function attachSession(Connection $conn, SessionInterface $sess): void
+    {
+        $this->sessions->attach($conn, $sess);
+    }
+
+    //TODO needed?
+    public function detachSession(Connection $conn): void
+    {
+        $this->sessions->detach($conn);
     }
 }

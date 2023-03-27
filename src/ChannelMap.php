@@ -19,6 +19,11 @@ final class ChannelMap
         unset($this->items[$chan->getName()]);
     }
 
+    public function searchByName(string $name): ?Channel
+    {
+        return $this->items[$name] ?? null;
+    }
+
     public function containsName(string $name): bool
     {
         return isset($this->items[$name]);

@@ -23,35 +23,58 @@ trait HandleChannelCommands
                     $this->channels->searchByName($name)->delOperator($operator);
                 }
             }
+        } elseif ('p' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_PRIVATE);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_PRIVATE);
+            }
+        } elseif ('s' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_SECRET);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_SECRET);
+            }
+        } elseif ('i' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_INVITE_ONLY);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_INVITE_ONLY);
+            }
+        } elseif ('t' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_TOPIC_SET);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_TOPIC_SET);
+            }
+        } elseif ('m' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_MODERATED);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_MODERATED);
+            }
+        } elseif ('l' === $flag[1]) {
+            //TODO
+            if ('+' === $flag[0]) {
+                $this->channels->searchByName($name)->setFlag(Channel::FLAG_MODERATED);
+            }
+            if ('-' === $flag[0]) {
+                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_MODERATED);
+            }
         }
 
         $ref = <<<'CPP'
 std::string    chanName = msg.getParams()[0];
 std::string    flag = msg.getParams()[1];
-if (flag == "+p")
-    channels[chanName]->setFlag(PRIVATE);
-else if (flag == "-p")
-    channels[chanName]->removeFlag(PRIVATE);
-else if (flag == "+s")
-    channels[chanName]->setFlag(SECRET);
-else if (flag == "-s")
-    channels[chanName]->removeFlag(SECRET);
-else if (flag == "+i")
-    channels[chanName]->setFlag(INVITEONLY);
-else if (flag == "-i")
-    channels[chanName]->removeFlag(INVITEONLY);
-else if (flag == "+t")
-    channels[chanName]->setFlag(TOPICSET);
-else if (flag == "-t")
-    channels[chanName]->removeFlag(TOPICSET);
 else if (flag == "+n")
 {}
 else if (flag == "-n")
 {}
-else if (flag == "+m")
-    channels[chanName]->setFlag(MODERATED);
-else if (flag == "-m")
-    channels[chanName]->removeFlag(MODERATED);
 else if (flag == "+l")
 {
     if (msg.getParams().size() < 3)

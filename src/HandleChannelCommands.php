@@ -8,28 +8,27 @@ trait HandleChannelCommands
 
     private function handleChannelFlags(CMD $cmd, Connection $conn, SessionInterface $sess)
     {
+        $name = $cmd->getArg(0);
+        $flag = $cmd->getArg(1);
+        if ('o' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $conn->sendERR(new ERR($sess->getServername(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            } else {
+                $operator = $this->sessions->searchByName($cmd->getArg(2));
+                if (null === $operator) {
+                    $conn->sendERR(new ERR($sess->getServername(), ERR::ERR_NO_SUCH_NICK, [$sess->getNickname(), $cmd->getArg(2)]));
+                } elseif ('+' === $flag[0]) {
+                    $this->channels->searchByName($name)->addOperator($operator);
+                } elseif ('-' === $flag[0]) {
+                    $this->channels->searchByName($name)->delOperator($operator);
+                }
+            }
+        }
+
         $ref = <<<'CPP'
 std::string    chanName = msg.getParams()[0];
 std::string    flag = msg.getParams()[1];
-if (flag == "+o")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else if (!containsNickname(msg.getParams()[2]))
-        return sendError(user, ERR_NOSUCHNICK, msg.getParams()[2]);
-    else
-        channels[chanName]->addOperator(*(getUserByName(msg.getParams()[2])));
-}
-else if (flag == "-o")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else if (!containsNickname(msg.getParams()[2]))
-        return sendError(user, ERR_NOSUCHNICK, msg.getParams()[2]);
-    else
-        channels[chanName]->removeOperator(*(getUserByName(msg.getParams()[2])));
-}
-else if (flag == "+p")
+if (flag == "+p")
     channels[chanName]->setFlag(PRIVATE);
 else if (flag == "-p")
     channels[chanName]->removeFlag(PRIVATE);

@@ -59,13 +59,29 @@ trait HandleChannelCommands
                 $this->channels->searchByName($name)->clrFlag(Channel::FLAG_MODERATED);
             }
         } elseif ('l' === $flag[1]) {
-            //TODO
-            if ('+' === $flag[0]) {
-                $this->channels->searchByName($name)->setFlag(Channel::FLAG_MODERATED);
+            if ($cmd->numArgs() < 3) {
+                $conn->sendERR(new ERR($sess->getServername(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            } else {
+                if ('+' === $flag[0]) {
+                    $this->channels->searchByName($name)->setLimit((int) $cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $this->channels->searchByName($name)->setLimit(0);
+                }
             }
-            if ('-' === $flag[0]) {
-                $this->channels->searchByName($name)->clrFlag(Channel::FLAG_MODERATED);
+        } elseif ('k' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $conn->sendERR(new ERR($sess->getServername(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            } else {
+                if ('+' === $flag[0]) {
+                    $this->channels->searchByName($name)->setPass($cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $this->channels->searchByName($name)->setPass('');
+                }
             }
+        } else {
+            $conn->sendERR(new ERR($sess->getServername(), ERR::ERR_UNKNOWN_MODE, [$sess->getNickname(), $flag]));
         }
 
         $ref = <<<'CPP'
@@ -75,20 +91,6 @@ else if (flag == "+n")
 {}
 else if (flag == "-n")
 {}
-else if (flag == "+l")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->setLimit(atoi(msg.getParams()[2].c_str()));
-}
-else if (flag == "-l")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->setLimit(0);
-}
 else if (flag == "+b")
 {
     if (msg.getParams().size() < 3)
@@ -121,23 +123,6 @@ else if (flag == "-v")
     else
         channels[chanName]->removeSpeaker(*(getUserByName(msg.getParams()[2])));
 }
-else if (flag == "+k")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->setKey(user, msg.getParams()[2]);
-}
-else if (flag == "-k")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->setKey(user, "");
-}
-else
-    return sendError(user, ERR_UNKNOWNMODE, flag);
-return 0;
 CPP;
     }
 

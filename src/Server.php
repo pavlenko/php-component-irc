@@ -88,6 +88,7 @@ class Server
 
     /**
      * @param string $address Port can be in range 6660–6669,7000
+     * @param LoopInterface|null $loop
      * @return void
      */
     public function listen(string $address, LoopInterface $loop = null): void
@@ -98,8 +99,6 @@ class Server
 
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
-            $this->logger->info('New connection from ' . $connection->getRemoteAddress());
-
             $conn = new Connection($connection, $this->events, $this->logger);
             $sess = new Session($conn, $this->config->getName(), $connection->getRemoteAddress());
 
@@ -120,11 +119,6 @@ class Server
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());
-    }
-
-    private function processMessageReceived(SocketConnection $conn, Command $cmd)
-    {
-        $this->logger->info('<-- ' . $cmd);
     }
 
     public function stop(int $signal = null)

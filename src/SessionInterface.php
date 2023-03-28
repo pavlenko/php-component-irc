@@ -41,6 +41,8 @@ interface SessionInterface
     public function setAwayMessage(string $message): void;
     public function getQuitMessage(): string;
     public function setQuitMessage(string $message): void;
+    public function getPingingTime(): int;
+    public function updPingingTime(): void;
     public function getChannels(): ChannelMap;
     public function attachChannel(Channel $channel): void;
     public function detachChannel(Channel $channel): void;

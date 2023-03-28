@@ -97,6 +97,18 @@ class Server
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
+        $this->loop->addPeriodicTimer(60, function () {//TODO max inactive as interval
+            foreach ($this->sessions as $user) {
+                if ($user->hasFlag(SessionInterface::FLAG_PINGING) && time() - $user->getPingingTime() > $this->config->getMaxInactiveTimeout()) {
+                    $user->close();
+                }
+
+                $user->setFlag(SessionInterface::FLAG_PINGING);
+                $user->updPingingTime();
+                $user->sendCMD(CMD::CMD_PING, [], null, $this->config->getName());
+            }
+        });
+
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
             $conn = new Connection($connection, $this->events, $this->logger);

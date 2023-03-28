@@ -4,6 +4,8 @@ namespace PE\Component\IRC;
 
 final class Session implements SessionInterface
 {
+    private ConnectionInterface $connection;
+
     private string $servername;
     private string $hostname;
     private string $password = '';
@@ -18,14 +20,36 @@ final class Session implements SessionInterface
 
     private ChannelMap $channels;
 
-    public function __construct(string $servername, string $hostname)
+    public function __construct(ConnectionInterface $connection, string $servername, string $hostname)
     {
+        $this->connection = $connection;
         $this->servername = $servername;
         $this->hostname   = $hostname;
 
         $this->channels = new ChannelMap();
 
         $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
+    }
+
+    public function sendCMD(CMD $cmd): bool
+    {
+        return $this->connection->write($cmd);
+    }
+
+    public function sendERR(ERR $err): bool
+    {
+        return $this->connection->write($err);
+    }
+
+    public function sendRPL(RPL $rpl): bool
+    {
+        return $this->connection->write($rpl);
+    }
+
+    public function close(): void
+    {
+        $this->logger->notice(self::EVT_CLOSE);
+        $this->socket->close();
     }
 
     public function getServername(): string

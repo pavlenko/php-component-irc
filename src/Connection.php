@@ -6,17 +6,13 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\Socket\ConnectionInterface as SocketConnection;
 
-final class Connection
+final class Connection implements ConnectionInterface
 {
-    public const EVT_ERROR = 'conn.error';
-    public const EVT_CLOSE = 'conn.close';
-    public const EVT_INPUT = 'conn.input';
-
-    private string $buffer = '';
-
     private SocketConnection $socket;
     private EventsInterface $events;
     private LoggerInterface $logger;
+
+    private string $buffer = '';
 
     public function __construct(SocketConnection $socket, EventsInterface $events, LoggerInterface $logger = null)
     {
@@ -89,22 +85,37 @@ final class Connection
         return new CMD($code, $args, $comment, $prefix);
     }
 
+    /**
+     * @deprecated
+     */
     public function sendCMD(CMD $cmd): void
     {
         $this->logger->notice('> ' . $cmd->toLogger());
         $this->socket->write($cmd->toString() . "\r\n");
     }
 
+    /**
+     * @deprecated
+     */
     public function sendERR(ERR $err): void
     {
         $this->logger->notice('> ' . $err->toLogger());
         $this->socket->write($err->toString() . "\r\n");
     }
 
+    /**
+     * @deprecated
+     */
     public function sendRPL(RPL $rpl): void
     {
         $this->logger->notice('> ' . $rpl->toLogger());
         $this->socket->write($rpl->toString() . "\r\n");
+    }
+
+    public function write(MSG $msg): bool
+    {
+        $this->logger->notice('> ' . $msg->toLogger());
+        return $this->socket->write($msg->toString() . "\r\n");
     }
 
     public function close(): void

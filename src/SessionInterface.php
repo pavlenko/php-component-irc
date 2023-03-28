@@ -14,7 +14,13 @@ interface SessionInterface
     public const FLAG_PINGING          = 0b010000000;
     public const FLAG_BREAK_CONNECTION = 0b100000000;
 
-    public function __construct(string $servername, string $hostname);
+    public function __construct(ConnectionInterface $connection, string $servername, string $hostname);
+
+    public function sendCMD(CMD $cmd): bool;
+    public function sendERR(ERR $err): bool;
+    public function sendRPL(RPL $rpl): bool;
+    public function close(): void;
+
     public function getServername(): string;
     public function getPassword(): string;
     public function setPassword(string $password): void;

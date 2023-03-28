@@ -18,7 +18,9 @@ final class Connection implements ConnectionInterface
     {
         $this->socket = $socket;
         $this->events = $events;
+
         $this->logger = $logger ?: new NullLogger();
+        $this->logger->notice('New connection from ' . $socket->getRemoteAddress());
 
         $this->socket->on('input', [$this, 'onInput']);
         $this->socket->on('error', fn($error) => $this->events->trigger(self::EVT_ERROR, $error));
@@ -120,7 +122,7 @@ final class Connection implements ConnectionInterface
 
     public function close(): void
     {
-        $this->logger->notice(self::EVT_CLOSE);
+        $this->logger->notice('Close connection from ' . $this->socket->getRemoteAddress());
         $this->socket->close();
     }
 }

@@ -9,6 +9,11 @@ final class SessionMap implements \Iterator
      */
     private array $items = [];
 
+    /**
+     * @param Connection $conn
+     * @param SessionInterface $sess
+     * @deprecated
+     */
     public function attach(Connection $conn, SessionInterface $sess): void
     {
         $this->items[spl_object_hash($conn)] = [$conn, $sess];

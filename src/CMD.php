@@ -47,4 +47,9 @@ final class CMD extends MSG
     public const CMD_WHOIS       = 'WHOIS';
     public const CMD_WHO         = 'WHO';
     public const CMD_WHO_WAS     = 'WHOWAS';
+
+    protected function resolveComment(): ?string
+    {
+        return null;// Do nothing for now
+    }
 }

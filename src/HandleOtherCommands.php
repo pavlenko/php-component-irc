@@ -4,22 +4,20 @@ namespace PE\Component\IRC;
 
 trait HandleOtherCommands
 {
-    public function handleMOTD(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleMOTD(CMD $cmd, SessionInterface $sess): bool
     {
         if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname()]));
-        } else {
-            $motd = $this->config->getMOTD();
-            if (!empty($motd)) {
-                $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_MOTD_START, [$sess->getNickname()], '- Message of the day -'));
-                foreach ($motd as $line) {
-                    $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_MOTD, [$sess->getNickname()], $line));
-                }
-                $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_END_OF_MOTD, [$sess->getNickname()]));
-            } else {
-                $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_MOTD, [$sess->getNickname()]));
-            }
+            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER);
         }
+        $motd = $this->config->getMOTD();
+        if (empty($motd)) {
+            return $sess->sendERR(ERR::ERR_NO_MOTD);
+        }
+        $sess->sendRPL(RPL::RPL_MOTD_START, [], '- Message of the day -');
+        foreach ($motd as $line) {
+            $sess->sendRPL(RPL::RPL_MOTD, [], $line);
+        }
+        return $sess->sendRPL(RPL::RPL_END_OF_MOTD);
     }
 
     public function handlePING(CMD $cmd, Connection $conn, SessionInterface $sess): void

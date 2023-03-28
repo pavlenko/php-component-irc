@@ -43,53 +43,37 @@ trait HandleRegistrationCommands
         return true;
     }
 
-    private function handleRegistration(Connection $conn, SessionInterface $sess): void
+    private function handleRegistration(SessionInterface $sess): void
     {
         if (
-            $sess->hasFlag(SessionInterface::FLAG_CAP_RESOLVED) &&
-            !empty($sess->getNickname()) &&
-            !empty($sess->getUsername())
+            !$sess->hasFlag(SessionInterface::FLAG_CAP_RESOLVED) ||
+            empty($sess->getNickname()) || empty($sess->getUsername())
         ) {
-            if (empty($this->config->getPassword()) || $sess->getPassword() === $this->config->getPassword()) {
-                if (!$sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-                    $sess->setFlag(SessionInterface::FLAG_REGISTERED);
-
-                    $conn->sendRPL(new RPL(
-                        $sess->getServername(),
-                        RPL::RPL_WELCOME,
-                        [$sess->getNickname()],
-                        "Welcome to the Internet Relay Network {$sess->getNickname()}"
-                    ));
-                    $conn->sendRPL(new RPL(//TODO debug level?
-                        $sess->getServername(),
-                        RPL::RPL_YOUR_HOST,
-                        [$sess->getNickname()],
-                        "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}"
-                    ));
-                    $conn->sendRPL(new RPL(
-                        $sess->getServername(),
-                        RPL::RPL_CREATED,
-                        [$sess->getNickname()],
-                        "This server was created {$this->config->getCreatedAt()->format(DATE_ATOM)}"
-                    ));
-                    $conn->sendRPL(new RPL(
-                        $sess->getServername(),
-                        RPL::RPL_MY_INFO,
-                        [
-                            $sess->getNickname(),
-                            $this->config->getName(),
-                            $this->config->getVersionNumber(),
-                            implode(['i', 'o', 's', 'w']),
-                            implode(['b', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'v']),
-                            implode(['b', 'k', 'l', 'o', 'v']),
-                        ]
-                    ));
-                    $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $conn, $sess);
-                }
-            } else {
-                $sess->quit();
-            }
+            return;
         }
+
+        if (!empty($this->config->getPassword()) && $this->config->getPassword() !== $sess->getPassword()) {
+            $sess->close();
+            return;
+        }
+
+        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            return;
+        }
+
+        $sess->setFlag(SessionInterface::FLAG_REGISTERED);
+        $sess->sendRPL(RPL::RPL_WELCOME);//TODO allow pass args for generate comment inside
+        $sess->sendRPL(RPL::RPL_YOUR_HOST, [], "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}");
+        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config->getCreatedAt()->format(DATE_ATOM)}");
+        $sess->sendRPL(RPL::RPL_MY_INFO, [
+            $sess->getNickname(),
+            $this->config->getName(),
+            $this->config->getVersionNumber(),
+            implode(['i', 'o', 's', 'w']),
+            implode(['b', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'v']),
+            implode(['b', 'k', 'l', 'o', 'v']),
+        ]);
+        $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
     }
 
     public function handleCAP(CMD $cmd, Connection $conn, SessionInterface $sess)
@@ -113,7 +97,7 @@ trait HandleRegistrationCommands
                     break;
             }
         }
-        //TODO continue registration
+        $this->handleRegistration($sess);
     }
 
     public function handlePASS(CMD $cmd, Connection $conn, SessionInterface $sess): void

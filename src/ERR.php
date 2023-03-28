@@ -53,4 +53,9 @@ final class ERR extends MSG
     {
         parent::__construct($code, $args, $comment, $prefix);
     }
+
+    protected function resolveComment(): ?string
+    {
+        return null;// TODO: Implement resolveComment() method.
+    }
 }

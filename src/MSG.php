@@ -13,7 +13,7 @@ abstract class MSG
     {
         $this->code    = is_numeric($code) ? sprintf('%03d', $code) : $code;
         $this->args    = $args;
-        $this->comment = $comment;
+        $this->comment = null !== $comment ? $comment : $this->resolveComment();
         $this->prefix  = $prefix;
     }
 
@@ -68,4 +68,6 @@ abstract class MSG
     {
         return (new \ReflectionObject($this))->getShortName() . '(' . $this->toString() . ')';
     }
+
+    abstract protected function resolveComment(): ?string;
 }

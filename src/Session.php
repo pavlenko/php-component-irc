@@ -31,19 +31,19 @@ final class Session implements SessionInterface
         $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
     }
 
-    public function sendCMD(string $code, array $args, string $comment = null, string $prefix = null): bool
+    public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
     {
         $cmd = new CMD($code, $args, $comment, $prefix);
         return $this->connection->write($cmd);
     }
 
-    public function sendERR(int $code, array $args, string $comment = null): bool
+    public function sendERR(int $code, array $args = [], string $comment = null): bool
     {
         $err = new ERR($this->getServername(), $code, [$this->getNickname(), ...$args], $comment);
         return $this->connection->write($err);
     }
 
-    public function sendRPL(int $code, array $args, string $comment = null): bool
+    public function sendRPL(int $code, array $args = [], string $comment = null): bool
     {
         $rpl = new RPL($this->getServername(), $code, [$this->getNickname(), ...$args], $comment);
         return $this->connection->write($rpl);

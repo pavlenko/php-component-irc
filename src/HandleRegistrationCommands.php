@@ -131,7 +131,7 @@ trait HandleRegistrationCommands
         $this->handleRegistration($sess);
     }
 
-    public function handleUSER(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleUSER(CMD $cmd, SessionInterface $sess): void
     {
         if (count($cmd->getArgs()) < 3 || empty($cmd->getComment())) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -144,17 +144,17 @@ trait HandleRegistrationCommands
         $this->handleRegistration($sess);
     }
 
-    public function handleOPER(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleOPER(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 2) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } elseif (count($this->operators) === 0) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_OPERATOR_HOST, [$sess->getNickname()]));
+            $sess->sendERR(ERR::ERR_NO_OPERATOR_HOST);
         } elseif (hash('sha256', $cmd->getArg(1)) === ($this->operators[$cmd->getArg(0)] ?? null)) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_PASSWORD_MISMATCH, [$sess->getNickname()]));
+            $sess->sendERR(ERR::ERR_PASSWORD_MISMATCH);
         } else {
             $sess->setFlag($sess::FLAG_IS_OPERATOR);
-            $conn->sendRPL(new RPL($this->config->getName(), RPL::RPL_YOU_ARE_OPERATOR, [$sess->getNickname()]));
+            $sess->sendRPL(RPL::RPL_YOU_ARE_OPERATOR);
         }
     }
 

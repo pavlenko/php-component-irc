@@ -106,7 +106,16 @@ class Server
             $this->sessions->attach($sess);
 
             $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
-                //TODO on message received -> route to specific handle
+                if (
+                    array_key_exists($msg->getCode(), self::COMMANDS) &&
+                    !empty(self::COMMANDS[$msg->getCode()][1])
+                ) {
+                    call_user_func([$this, self::COMMANDS[$msg->getCode()][1]], $msg, $sess);
+                }
+            });
+
+            $this->events->attach(ConnectionInterface::EVT_CLOSE, function (MSG $msg) use ($sess) {
+                $this->sessions->detach($sess);
             });
         });
 

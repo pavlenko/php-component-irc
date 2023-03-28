@@ -20,12 +20,12 @@ trait HandleOtherCommands
         return $sess->sendRPL(RPL::RPL_END_OF_MOTD);
     }
 
-    public function handlePING(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handlePING(CMD $cmd, SessionInterface $sess): void
     {
-        if (!$cmd->numArgs()) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NO_ORIGIN, [$sess->getNickname()]));
+        if ($cmd->numArgs() === 0) {
+            $sess->sendERR(ERR::ERR_NO_ORIGIN);
         } else {
-            $conn->sendCMD(new CMD(CMD::CMD_PONG, [], $cmd->getArg(0), $this->config->getName()));
+            $sess->sendCMD(CMD::CMD_PONG, [], $cmd->getArg(0), $sess->getServername());
         }
     }
 
@@ -80,21 +80,21 @@ trait HandleOtherCommands
         }
     }
 
-    public function handleUSERHOST(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleUSERHOST(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
             $resp = [];
             foreach ($cmd->getArgs() as $arg) {
-                if ([, $s] = $this->sessions->searchByName($arg)) {
+                if ($user = $this->sessions->searchByName($arg)) {
                     $resp[] = $arg
-                        . ($s->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
-                        . ($s->hasFlag(SessionInterface::FLAG_AWAY) ? '=-@' : '=+@')
-                        . $s->getHostname();
+                        . ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
+                        . ($user->hasFlag(SessionInterface::FLAG_AWAY) ? '=-@' : '=+@')
+                        . $user->getHostname();
                 }
             }
-            $conn->sendRPL(new RPL($sess->getServername(), RPL::RPL_USER_HOST, [$sess->getNickname(), ...$resp]));
+            $sess->sendRPL(RPL::RPL_USER_HOST, $resp);
         }
     }
 

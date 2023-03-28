@@ -100,7 +100,7 @@ class Server
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
             $conn = new Connection($connection, $this->events, $this->logger);
-            $sess = new Session($conn, $this->config->getName(), $connection->getRemoteAddress());
+            $sess = new Session($conn, $this->config->getName(), parse_url($connection->getRemoteAddress(), PHP_URL_HOST));
 
             $this->sessions->attach($sess);
 
@@ -109,10 +109,8 @@ class Server
                     array_key_exists($msg->getCode(), self::COMMANDS) &&
                     !empty(self::COMMANDS[$msg->getCode()][1])
                 ) {
-                    call_user_func([$this, self::COMMANDS[$msg->getCode()][1]], $msg, $sess);
-                    dump($msg->toLogger());
+                    $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
                 }
-                //dump($sess);
             });
 
             $this->events->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));

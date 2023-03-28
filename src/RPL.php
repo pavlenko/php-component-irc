@@ -93,7 +93,7 @@ final class RPL extends MSG
     {
         switch ($this->getCode()) {
             case self::RPL_WELCOME:
-                return "Welcome to the Internet Relay Network {$this->getArg(0)}";
+                return 'Welcome to the Internet Relay Network';
         }
         return null;// TODO: Implement resolveComment() method.
     }

@@ -16,9 +16,9 @@ interface SessionInterface
 
     public function __construct(ConnectionInterface $connection, string $servername, string $hostname);
 
-    public function sendCMD(CMD $cmd): bool;
-    public function sendERR(ERR $err): bool;
-    public function sendRPL(RPL $rpl): bool;
+    public function sendCMD(string $code, array $args, string $comment = null, string $prefix = null): bool;
+    public function sendERR(int $code, array $args, string $comment = null): bool;
+    public function sendRPL(int $code, array $args, string $comment = null): bool;
     public function close(): void;
 
     public function getServername(): string;

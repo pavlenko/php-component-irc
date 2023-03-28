@@ -110,12 +110,12 @@ class Server
                     !empty(self::COMMANDS[$msg->getCode()][1])
                 ) {
                     call_user_func([$this, self::COMMANDS[$msg->getCode()][1]], $msg, $sess);
+                    dump($msg->toLogger());
                 }
+                //dump($sess);
             });
 
-            $this->events->attach(ConnectionInterface::EVT_CLOSE, function (MSG $msg) use ($sess) {
-                $this->sessions->detach($sess);
-            });
+            $this->events->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());

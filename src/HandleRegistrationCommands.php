@@ -28,7 +28,7 @@ trait HandleRegistrationCommands
             $this->logger->debug('Session name must be less than 10 chars');
             return false;
         }
-        if (preg_match('/^[^0-9-].+$/', $name)) {
+        if (preg_match('/^[0-9-].+$/', $name)) {
             $this->logger->debug('Session name must not starts with number or "-"');
             return false;
         }
@@ -46,7 +46,7 @@ trait HandleRegistrationCommands
     private function handleRegistration(SessionInterface $sess): void
     {
         if (
-            !$sess->hasFlag(SessionInterface::FLAG_CAP_RESOLVED) ||
+            //!$sess->hasFlag(SessionInterface::FLAG_CAP_RESOLVED) ||
             empty($sess->getNickname()) || empty($sess->getUsername())
         ) {
             return;
@@ -62,9 +62,8 @@ trait HandleRegistrationCommands
         $sess->setFlag(SessionInterface::FLAG_REGISTERED);
         $sess->sendRPL(RPL::RPL_WELCOME);
         $sess->sendRPL(RPL::RPL_YOUR_HOST, [], "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}");
-        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config->getCreatedAt()->format(DATE_ATOM)}");
+        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config->getCreatedAt()}");
         $sess->sendRPL(RPL::RPL_MY_INFO, [
-            $sess->getNickname(),
             $this->config->getName(),
             $this->config->getVersionNumber(),
             implode(['i', 'o', 's', 'w']),

@@ -22,7 +22,7 @@ final class Connection implements ConnectionInterface
         $this->logger = $logger ?: new NullLogger();
         $this->logger->notice('New connection from ' . $socket->getRemoteAddress());
 
-        $this->socket->on('input', [$this, 'onInput']);
+        $this->socket->on('data', [$this, 'onInput']);
         $this->socket->on('error', fn($error) => $this->events->trigger(self::EVT_ERROR, $error));
         $this->socket->on('close', fn() => $this->events->trigger(self::EVT_CLOSE));
     }
@@ -35,6 +35,18 @@ final class Connection implements ConnectionInterface
      */
     public function onInput(string $input): void
     {
+        $lines = preg_split('/\n/', $input, 0, PREG_SPLIT_NO_EMPTY);
+        foreach ($lines as $line) {
+            try {
+                $msg = $this->decode(trim($line));
+                $this->logger->notice('< ' . $msg->toLogger());
+                $this->events->trigger(self::EVT_INPUT, $msg);
+            } catch (\Throwable $error) {
+                $this->events->trigger(self::EVT_ERROR, $error, $line);
+            }
+        }
+        return;
+
         $this->buffer .= $input;
 
         while (($len = strlen($this->buffer)) > 0) {
@@ -75,7 +87,7 @@ final class Connection implements ConnectionInterface
 
         // Resolve comment & params
         $parts   = preg_split('/:/', $parts[0] ?? '', 2, PREG_SPLIT_NO_EMPTY);
-        $args    = preg_split('/\s+/', $parts[0] ?? '', null, PREG_SPLIT_NO_EMPTY);
+        $args    = preg_split('/\s+/', $parts[0] ?? '', 0, PREG_SPLIT_NO_EMPTY);
         $comment = !empty($parts[1]) ? trim($parts[1]) : null;
 
         if (is_numeric($code)) {

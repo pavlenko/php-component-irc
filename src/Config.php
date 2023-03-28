@@ -10,7 +10,7 @@ class Config
     private string $adminLocation2;// Typically: university and department; can be admin nickname
     private string $adminEmail;
 
-    private \DateTimeInterface $createdAt;
+    private string $createdAt;
 
     private string $versionNumber;
     private string $versionDebug;
@@ -33,7 +33,7 @@ class Config
         string $versionNumber,
         string $versionDebug,
         string $versionComment,
-        \DateTimeInterface $createdAt,
+        string $createdAt,
         string $password = null,
         string $modtFile = null,
         int $maxChannels = 0,
@@ -99,7 +99,7 @@ class Config
         return $this->info;
     }
 
-    public function getCreatedAt(): \DateTimeInterface
+    public function getCreatedAt(): string
     {
         return $this->createdAt;
     }

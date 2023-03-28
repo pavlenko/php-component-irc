@@ -31,7 +31,7 @@ final class SessionMap implements \Iterator
 
     public function containsName(string $name): bool
     {
-        foreach ($this->items as [$conn, $sess]) {
+        foreach ($this->items as $sess) {
             if ($sess->getNickname() === $name) {
                 return true;
             }

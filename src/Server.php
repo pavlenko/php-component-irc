@@ -57,9 +57,9 @@ class Server
             $conn = new Connection($connection, $this->events, $this->logger);
             $sess = new Session($conn, $this->config->getName(), $connection->getRemoteAddress());
 
-            $this->sessions->attach($conn, $sess);
+            $this->sessions->attach($sess);
 
-            $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($conn, $sess) {
+            $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
                 //TODO on message received -> route to specific handle
             });
         });

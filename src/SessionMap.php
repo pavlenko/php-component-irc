@@ -5,30 +5,25 @@ namespace PE\Component\IRC;
 final class SessionMap implements \Iterator
 {
     /**
-     * @var array<string, array<Connection|SessionInterface>>
+     * @var array<string, SessionInterface>
      */
     private array $items = [];
 
-    /**
-     * @param Connection $conn
-     * @param SessionInterface $sess
-     * @deprecated
-     */
-    public function attach(Connection $conn, SessionInterface $sess): void
+    public function attach(SessionInterface $sess): void
     {
-        $this->items[spl_object_hash($conn)] = [$conn, $sess];
+        $this->items[spl_object_hash($sess)] = $sess;
     }
 
-    public function detach(Connection $conn): void
+    public function detach(SessionInterface $sess): void
     {
-        unset($this->items[spl_object_hash($conn)]);
+        unset($this->items[spl_object_hash($sess)]);
     }
 
-    public function searchByName(string $name): ?array
+    public function searchByName(string $name): ?SessionInterface
     {
-        foreach ($this->items as [$conn, $sess]) {
+        foreach ($this->items as $sess) {
             if ($sess->getNickname() === $name) {
-                return [$conn, $sess];
+                return $sess;
             }
         }
         return null;
@@ -44,12 +39,9 @@ final class SessionMap implements \Iterator
         return false;
     }
 
-    /**
-     * @return array<Connection|SessionInterface>
-     */
-    public function current(): array
+    public function current(): ?SessionInterface
     {
-        return current($this->items);
+        return current($this->items) ?: null;
     }
 
     public function next(): void

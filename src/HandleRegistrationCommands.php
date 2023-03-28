@@ -62,7 +62,7 @@ trait HandleRegistrationCommands
         }
 
         $sess->setFlag(SessionInterface::FLAG_REGISTERED);
-        $sess->sendRPL(RPL::RPL_WELCOME);//TODO allow pass args for generate comment inside
+        $sess->sendRPL(RPL::RPL_WELCOME);
         $sess->sendRPL(RPL::RPL_YOUR_HOST, [], "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}");
         $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config->getCreatedAt()->format(DATE_ATOM)}");
         $sess->sendRPL(RPL::RPL_MY_INFO, [
@@ -76,28 +76,26 @@ trait HandleRegistrationCommands
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
     }
 
-    public function handleCAP(CMD $cmd, Connection $conn, SessionInterface $sess)
+    public function handleCAP(CMD $cmd, SessionInterface $sess): bool
     {
         if ($cmd->numArgs() < 1) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
-        } else {
-            switch ($cmd->getArg(0)) {
-                case 'LS':
-                    $sess->clrFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities started
-                    $conn->sendCMD(new CMD(CMD::CMD_CAP, ['*', 'LS'], ''));//<-- no capabilities
-                    break;
-                case 'LIST':
-                    $conn->sendCMD(new CMD(CMD::CMD_CAP, ['*', 'LIST'], ''));//<-- no capabilities
-                    break;
-                case 'REQ':
-                    $conn->sendCMD(new CMD(CMD::CMD_CAP, ['*', 'NAK'], $cmd->getComment()));//<-- no capabilities
-                    break;
-                case 'END':
-                    $sess->setFlag(SessionInterface::FLAG_CAP_RESOLVED);
-                    break;
-            }
+            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
+
+        switch ($cmd->getArg(0)) {
+            case 'LS':
+                $sess->clrFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities started
+                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'LS'], '');//<-- no capabilities
+            case 'LIST':
+                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'LIST'], '');//<-- no capabilities
+            case 'REQ':
+                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'NAK'], $cmd->getComment());//<-- no capabilities
+            case 'END':
+                $sess->setFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities ended
+        }
+
         $this->handleRegistration($sess);
+        return true;
     }
 
     public function handlePASS(CMD $cmd, Connection $conn, SessionInterface $sess): void

@@ -17,6 +17,52 @@ class Server
     use HandleOperatorCommands;
     use HandleOtherCommands;
 
+    private const COMMANDS = [
+        CMD::CMD_CAP         => [self::class, 'handleCAP'],
+        CMD::CMD_ADMIN       => [self::class, 'handleADMIN'],
+        CMD::CMD_AWAY        => [self::class, 'handleAWAY'],
+        CMD::CMD_CONNECT     => [self::class, ''],
+        CMD::CMD_ERROR       => [self::class, ''],
+        CMD::CMD_INFO        => [self::class, 'handleINFO'],
+        CMD::CMD_INVITE      => [self::class, 'handleINVITE'],
+        CMD::CMD_IS_ON       => [self::class, 'handleISON'],
+        CMD::CMD_JOIN        => [self::class, 'handleJOIN'],
+        CMD::CMD_KICK        => [self::class, 'handleKICK'],
+        CMD::CMD_KILL        => [self::class, 'handleKILL'],
+        CMD::CMD_LINKS       => [self::class, ''],
+        CMD::CMD_LIST        => [self::class, 'handleLIST'],
+        CMD::CMD_MODE        => [self::class, 'handleMODE'],
+        CMD::CMD_MOTD        => [self::class, 'handleMOTD'],
+        CMD::CMD_LIST_USERS  => [self::class, ''],
+        CMD::CMD_NAMES       => [self::class, 'handleNAMES'],
+        CMD::CMD_NICK        => [self::class, 'handleNICK'],
+        CMD::CMD_NOTICE      => [self::class, 'handleNOTICE'],
+        CMD::CMD_OPERATOR    => [self::class, 'handleOPER'],
+        CMD::CMD_PART        => [self::class, 'handlePART'],
+        CMD::CMD_PASSWORD    => [self::class, 'handlePASS'],
+        CMD::CMD_PING        => [self::class, 'handlePING'],
+        CMD::CMD_PONG        => [self::class, 'handlePONG'],
+        CMD::CMD_PRIVATE_MSG => [self::class, 'handlePRIVMSG'],
+        CMD::CMD_QUIT        => [self::class, 'handleQUIT'],
+        CMD::CMD_REHASH      => [self::class, 'handleREHASH'],
+        CMD::CMD_RESTART     => [self::class, 'handleRESTART'],
+        CMD::CMD_SERVER      => [self::class, ''],
+        CMD::CMD_SERVER_QUIT => [self::class, ''],
+        CMD::CMD_STATS       => [self::class, ''],
+        CMD::CMD_SUMMON      => [self::class, ''],
+        CMD::CMD_TIME        => [self::class, 'handleTIME'],
+        CMD::CMD_TOPIC       => [self::class, 'handleTOPIC'],
+        CMD::CMD_TRACE       => [self::class, ''],
+        CMD::CMD_USER_HOST   => [self::class, 'handleUSERHOST'],
+        CMD::CMD_USER        => [self::class, 'handleUSER'],
+        CMD::CMD_USERS       => [self::class, ''],
+        CMD::CMD_VERSION     => [self::class, 'handleVERSION'],
+        CMD::CMD_WALLOPS     => [self::class, 'handleWALLOPS'],
+        CMD::CMD_WHOIS       => [self::class, 'handleWHOIS'],
+        CMD::CMD_WHO         => [self::class, 'handleWHO'],
+        CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
+    ];
+
     private Config $config;
     private History $history;
     private SessionMap $sessions;

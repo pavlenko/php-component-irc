@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC;
 
+//TODO ban masks
 class Channel
 {
     // Modify "o","l","b","v","k" flags has separate logic

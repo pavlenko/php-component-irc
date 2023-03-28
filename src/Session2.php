@@ -24,6 +24,8 @@ final class Session2 implements SessionInterface
         $this->hostname   = $hostname;
 
         $this->channels = new ChannelMap();
+
+        $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
     }
 
     public function getServername(): string

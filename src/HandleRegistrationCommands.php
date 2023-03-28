@@ -98,54 +98,51 @@ trait HandleRegistrationCommands
         return true;
     }
 
-    public function handlePASS(CMD $cmd, SessionInterface $sess): bool
+    public function handlePASS(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            $sess->sendERR(ERR::ERR_ALREADY_REGISTERED);
+        } else {
+            $sess->setPassword($cmd->getArg(0));
         }
-        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-            return $sess->sendERR(ERR::ERR_ALREADY_REGISTERED);
-        }
-        $sess->setPassword($cmd->getArg(0));
-        return true;
     }
 
-    public function handleNICK(CMD $cmd, SessionInterface $sess): bool
+    public function handleNICK(CMD $cmd, SessionInterface $sess): void
     {
         if (empty($cmd->getArg(0))) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        }
-        if (!$this->isValidSessionName($cmd->getArg(0))) {
-            return $sess->sendERR(ERR::ERR_ERRONEOUS_NICKNAME, [$cmd->getArg(0)]);
-        }
-        if ($this->sessions->containsName($cmd->getArg(0))) {
-            return $sess->sendERR(ERR::ERR_NICKNAME_IN_USE, [$cmd->getArg(0)]);
-        }
-        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-            $channels = $sess->getChannels();
-            foreach ($channels as $channel) {
-                foreach ($channel->getSessions() as $user) {
-                    $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } elseif (!$this->isValidSessionName($cmd->getArg(0))) {
+            $sess->sendERR(ERR::ERR_ERRONEOUS_NICKNAME, [$cmd->getArg(0)]);
+        } elseif ($this->sessions->containsName($cmd->getArg(0))) {
+            $sess->sendERR(ERR::ERR_NICKNAME_IN_USE, [$cmd->getArg(0)]);
+        } else {
+            if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+                $channels = $sess->getChannels();
+                foreach ($channels as $channel) {
+                    foreach ($channel->getSessions() as $user) {
+                        $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
+                    }
                 }
+                $this->history->addSession($sess);
             }
-            $this->history->addSession($sess);
+            $sess->setNickname($cmd->getArg(0));
         }
-        $sess->setNickname($cmd->getArg(0));
         $this->handleRegistration($sess);
-        return true;
     }
 
     public function handleUSER(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {
         if (count($cmd->getArgs()) < 3 || empty($cmd->getComment())) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]));
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } elseif ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-            $conn->sendERR(new ERR($this->config->getName(), ERR::ERR_ALREADY_REGISTERED, [$sess->getNickname(), $cmd->getCode()]));
+            $sess->sendERR(ERR::ERR_ALREADY_REGISTERED);
         } else {
             $sess->setUsername($cmd->getArg(0));
             $sess->setRealname($cmd->getComment());
         }
-        //TODO continue registration
+        $this->handleRegistration($sess);
     }
 
     public function handleOPER(CMD $cmd, Connection $conn, SessionInterface $sess): void

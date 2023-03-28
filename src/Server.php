@@ -57,7 +57,7 @@ class Server
 
             //TODO maybe store connection in session and remove from map
             $conn = new Connection($connection, new Events(), $this->logger);
-            $sess = new Session2($this->config->getName(), $connection->getRemoteAddress());
+            $sess = new Session($this->config->getName(), $connection->getRemoteAddress());
 
             $this->sessions->attach($conn, $sess);
 

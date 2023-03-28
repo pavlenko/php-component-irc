@@ -2,77 +2,145 @@
 
 namespace PE\Component\IRC;
 
-use React\Socket\ConnectionInterface;
-
-/**
- * @property int $flags
- * @property string $password
- * @property string $nickname
- * @property string $username
- * @property string $realname
- * @property string $hostname
- * @property string $servername
- *
- * @deprecated
- */
-class Session
+final class Session implements SessionInterface
 {
-    public const REGISTERED       = 0b00000001;
-    public const INVISIBLE        = 0b00000010;
-    public const RECEIVE_NOTICE   = 0b00000100;
-    public const RECEIVE_WALLOPS  = 0b00001000;
-    public const IRC_OPERATOR     = 0b00010000;
-    public const AWAY             = 0b00100000;
-    public const PINGING          = 0b01000000;
-    public const BREAK_CONNECTION = 0b10000000;
+    private string $servername;
+    private string $hostname;
+    private string $password = '';
+    private string $nickname = '';
+    private string $username = '';
+    private string $realname = '';
 
-    private array $data;
-    private ConnectionInterface $connection;
-    private Server $server;
+    private int $flags = 0;
 
-    public function __construct(ConnectionInterface $connection, Server $server, array $data = [])
+    private string $awayMessage = '';
+    private string $quitMessage = '';
+
+    private ChannelMap $channels;
+
+    public function __construct(string $servername, string $hostname)
     {
-        $this->data = $data;
-        $this->connection = $connection;
-        $this->server = $server;
+        $this->servername = $servername;
+        $this->hostname   = $hostname;
+
+        $this->channels = new ChannelMap();
+
+        $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
     }
 
-    public function getConnection(): ConnectionInterface
+    public function getServername(): string
     {
-        return $this->connection;
+        return $this->servername;
     }
 
-    public function __get(string $name)
+    public function getPassword(): string
     {
-        return array_key_exists($name, $this->data) ? $this->data[$name] : null;
+        return $this->password;
     }
 
-    public function __set(string $name, $value): void
+    public function setPassword(string $password): void
     {
-        $this->data[$name] = $value;
+        $this->password = $password;
     }
 
-    public function __isset(string $name): bool
+    public function getNickname(): string
     {
-        return array_key_exists($name, $this->data);
+
+        return $this->nickname;
     }
 
-    public function __unset(string $name): void
+    public function setNickname(string $nickname): void
     {
-        unset($this->data[$name]);
+        $this->nickname = $nickname;
     }
 
-    //TODO maybe split to:
-    //TODO sendCMD() [:<prefix>] <command> [<args>] [:<comment>]
-    //TODO sendRPL() :<server name> <code> <nick> [<additional args>] [:<comment>]
-    //TODO sendERR() :<server name> <code> <nick> [<additional args>] [:<comment>]
-    public function send(Command $command): void
+    public function getUsername(): string
     {
-        $this->server->processMessageSend($this->connection, $command);
+        return $this->username;
     }
 
-    public function quit(): void
+    public function setUsername(string $username): void
     {
-        $this->connection->close();
+        $this->username = $username;
+    }
+
+    public function getHostname(): string
+    {
+        return $this->hostname;
+    }
+
+    public function setHostname(string $hostname): void
+    {
+        $this->hostname = $hostname;
+    }
+
+    public function getRealname(): string
+    {
+        return $this->realname;
+    }
+
+    public function setRealname(string $realname): void
+    {
+        $this->realname = $realname;
+    }
+
+    public function getFlags(): int
+    {
+        return $this->flags;
+    }
+
+    public function hasFlag(int $flag): bool
+    {
+        return $this->flags & $flag;
+    }
+
+    public function setFlag(int $flag): void
+    {
+        $this->flags |= $flag;
+    }
+
+    public function clrFlag(int $flag): void
+    {
+        $this->flags &= ~$flag;
+    }
+
+    public function getPrefix(): string
+    {
+        return $this->nickname . "!" . $this->username . "@" . $this->hostname;
+    }
+
+    public function getAwayMessage(): string
+    {
+        return $this->awayMessage;
+    }
+
+    public function setAwayMessage(string $message): void
+    {
+        $this->awayMessage = $message;
+    }
+
+    public function getQuitMessage(): string
+    {
+        return $this->quitMessage;
+    }
+
+    public function setQuitMessage(string $message): void
+    {
+        $this->quitMessage = $message;
+    }
+
+    public function getChannels(): ChannelMap
+    {
+        return $this->channels;
+    }
+
+    public function attachChannel(Channel $channel): void
+    {
+        $this->channels->attach($channel);
+    }
+
+    public function detachChannel(Channel $channel): void
+    {
+        $this->channels->detach($channel);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PE\Component\IRC;
 
-final class ChannelMap
+final class ChannelMap implements \Iterator
 {
     /**
      * @var array<string, Channel>
@@ -29,9 +29,9 @@ final class ChannelMap
         return isset($this->items[$name]);
     }
 
-    public function current(): Channel
+    public function current(): ?Channel
     {
-        return current($this->items);
+        return current($this->items) ?: null;
     }
 
     public function next(): void

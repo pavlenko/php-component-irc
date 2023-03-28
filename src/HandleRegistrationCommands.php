@@ -51,12 +51,10 @@ trait HandleRegistrationCommands
         ) {
             return;
         }
-
         if (!empty($this->config->getPassword()) && $this->config->getPassword() !== $sess->getPassword()) {
             $sess->close();
             return;
         }
-
         if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             return;
         }
@@ -76,26 +74,27 @@ trait HandleRegistrationCommands
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
     }
 
-    public function handleCAP(CMD $cmd, SessionInterface $sess): bool
+    public function handleCAP(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 1) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            switch ($cmd->getArg(0)) {
+                case 'LS':
+                    $sess->clrFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities started
+                    $sess->sendCMD(CMD::CMD_CAP, ['*', 'LS'], '');//<-- no capabilities
+                    break;
+                case 'LIST':
+                    $sess->sendCMD(CMD::CMD_CAP, ['*', 'LIST'], '');//<-- no capabilities
+                    break;
+                case 'REQ':
+                    $sess->sendCMD(CMD::CMD_CAP, ['*', 'NAK'], $cmd->getComment());//<-- no capabilities
+                    break;
+                case 'END':
+                    $sess->setFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities ended
+            }
         }
-
-        switch ($cmd->getArg(0)) {
-            case 'LS':
-                $sess->clrFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities started
-                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'LS'], '');//<-- no capabilities
-            case 'LIST':
-                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'LIST'], '');//<-- no capabilities
-            case 'REQ':
-                return $sess->sendCMD(CMD::CMD_CAP, ['*', 'NAK'], $cmd->getComment());//<-- no capabilities
-            case 'END':
-                $sess->setFlag(SessionInterface::FLAG_CAP_RESOLVED);// <-- check capabilities ended
-        }
-
         $this->handleRegistration($sess);
-        return true;
     }
 
     public function handlePASS(CMD $cmd, SessionInterface $sess): void

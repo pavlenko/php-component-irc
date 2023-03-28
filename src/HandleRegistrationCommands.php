@@ -158,13 +158,18 @@ trait HandleRegistrationCommands
         }
     }
 
-    public function handleQUIT(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleQUIT(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->getArg(0)) {
             $sess->setQuitMessage($cmd->getArg(0));
         }
+        $channels = $sess->getChannels();
+        foreach ($channels as $channel) {
+            foreach ($channel->getSessions() as $user) {
+                $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
+            }
+        }
         $this->history->addSession($sess);
-        //TODO notify users
-        $conn->close();
+        $sess->close();
     }
 }

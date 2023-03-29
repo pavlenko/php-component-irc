@@ -54,7 +54,17 @@ trait HandleOtherCommands
     }
 
     public function handleINFO(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
+            $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]);
+        } else {
+            $lines = preg_split('/\n/', $this->config->getInfo(), 0, PREG_SPLIT_NO_EMPTY);
+            foreach ($lines as $line) {
+                $sess->sendRPL(RPL::RPL_INFO, [], $line);
+            }
+            $sess->sendRPL(RPL::RPL_END_OF_INFO);
+        }
+    }
 
     public function handleTIME(CMD $cmd, SessionInterface $sess): void
     {

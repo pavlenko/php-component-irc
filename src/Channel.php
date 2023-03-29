@@ -2,8 +2,7 @@
 
 namespace PE\Component\IRC;
 
-//TODO ban masks
-class Channel
+final class Channel implements ChannelInterface
 {
     // Modify "o","l","b","v","k" flags has separate logic
     public const FLAG_PRIVATE     = 0b000001;//p - private channel
@@ -19,7 +18,7 @@ class Channel
     private string $topic = '';
     private int $limit = 0;
     private int $flags = 0;
-    private SessionMap $sessions;
+    //TODO private SessionMap $sessions;
     private array $operators = [];
     //TODO $banMasks string[]
     //TODO $invited array<string, Session>
@@ -38,6 +37,26 @@ class Channel
         //TODO send info
 
         $this->sessions = new SessionMap();
+    }
+
+    public function sessions(): SessionMap
+    {
+        return new SessionMap();// TODO: Implement sessions() method.
+    }
+
+    public function speakers(): SessionMap
+    {
+        return new SessionMap();// TODO: Implement speakers() method.
+    }
+
+    public function operators(): SessionMap
+    {
+        return new SessionMap();// TODO: Implement operators() method.
+    }
+
+    public function invited(): SessionMap
+    {
+        return new SessionMap();// TODO: Implement invited() method.
     }
 
     public function getCreator(): SessionInterface
@@ -98,22 +117,5 @@ class Channel
     public function clrFlag(int $flag): void
     {
         $this->flags &= ~$flag;
-    }
-
-    public function getSessions(): SessionMap
-    {
-        return $this->sessions;
-    }
-
-    //TODO needed?
-    public function attachSession(Connection $conn, SessionInterface $sess): void
-    {
-        $this->sessions->attach($conn, $sess);
-    }
-
-    //TODO needed?
-    public function detachSession(Connection $conn): void
-    {
-        $this->sessions->detach($conn);
     }
 }

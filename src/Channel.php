@@ -46,6 +46,16 @@ final class Channel implements ChannelInterface
         //TODO sendInfo()
     }
 
+    public function addBanMask(string $mask): void
+    {
+        $this->banMasks[$mask] = $mask;
+    }
+
+    public function delBanMask(string $mask): void
+    {
+        unset($this->banMasks[$mask]);
+    }
+
     public function sessions(): SessionMap
     {
         return $this->sessions;
@@ -108,7 +118,7 @@ final class Channel implements ChannelInterface
 
     public function getFlagsAsString(): string
     {
-        $flags = '';
+        $flags = '+';
         if ($this->hasFlag(self::FLAG_INVITE_ONLY)) {
             $flags .= 'i';
         }

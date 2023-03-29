@@ -112,9 +112,22 @@ final class Session implements SessionInterface
         $this->realname = $realname;
     }
 
-    public function getFlags(): int
+    public function getFlagsAsString(): string
     {
-        return $this->flags;
+        $flags = '+';
+        if ($this->hasFlag(self::FLAG_INVISIBLE)) {
+            $flags .= 'i';
+        }
+        if ($this->hasFlag(self::FLAG_RECEIVE_NOTICE)) {
+            $flags .= 's';
+        }
+        if ($this->hasFlag(self::FLAG_RECEIVE_WALLOPS)) {
+            $flags .= 'w';
+        }
+        if ($this->hasFlag(self::FLAG_IS_OPERATOR)) {
+            $flags .= 'o';
+        }
+        return $flags;
     }
 
     public function hasFlag(int $flag): bool

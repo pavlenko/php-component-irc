@@ -4,8 +4,6 @@ namespace PE\Component\IRC;
 
 trait HandleChannelCommands
 {
-    //TODO helpers
-
     private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
     {
         $flag = $cmd->getArg(1);
@@ -13,13 +11,13 @@ trait HandleChannelCommands
             if ($cmd->numArgs() < 3) {
                 $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
             } else {
-                $operator = $this->sessions->searchByName($cmd->getArg(2));
-                if (null === $operator) {
+                $user = $this->sessions->searchByName($cmd->getArg(2));
+                if (null === $user) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
                 } elseif ('+' === $flag[0]) {
-                    $chan->operators()->attach($operator);
+                    $chan->operators()->attach($user);
                 } elseif ('-' === $flag[0]) {
-                    $chan->operators()->detach($operator);
+                    $chan->operators()->detach($user);
                 }
             }
         } elseif ('p' === $flag[1]) {
@@ -79,79 +77,67 @@ trait HandleChannelCommands
                     $chan->setPass('');
                 }
             }
+        } elseif ('b' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                if ('+' === $flag[0]) {
+                    $chan->addBanMask($cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $chan->delBanMask($cmd->getArg(2));
+                }
+            }
+        } elseif ('v' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                $user = $this->sessions->searchByName($cmd->getArg(2));
+                if (null === $user) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
+                } elseif ('+' === $flag[0]) {
+                    $chan->speakers()->attach($user);
+                } elseif ('-' === $flag[0]) {
+                    $chan->speakers()->detach($user);
+                }
+            }
+        } elseif ('n' !== $flag[1]) {
+            $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
+        }
+    }
+
+    private function handleSessionFlags(CMD $cmd, SessionInterface $sess)
+    {
+        $flag = $cmd->getArg(1);
+        if ('i' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_INVISIBLE);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_INVISIBLE);
+            }
+        } elseif ('s' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
+            }
+        } elseif ('w' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
+            }
+        } elseif ('-o') {
+            $sess->clrFlag(SessionInterface::FLAG_IS_OPERATOR);
         } else {
             $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
         }
-//TODO others
-        $ref = <<<'CPP'
-std::string    chanName = msg.getParams()[0];
-std::string    flag = msg.getParams()[1];
-else if (flag == "+n")
-{}
-else if (flag == "-n")
-{}
-else if (flag == "+b")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->addBanMask(msg.getParams()[2]);
-}
-else if (flag == "-b")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else
-        channels[chanName]->removeBanMask(msg.getParams()[2]);
-}
-else if (flag == "+v")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else if (!containsNickname(msg.getParams()[2]))
-        return sendError(user, ERR_NOSUCHNICK, msg.getParams()[2]);
-    else
-        channels[chanName]->addSpeaker(*(getUserByName(msg.getParams()[2])));
-}
-else if (flag == "-v")
-{
-    if (msg.getParams().size() < 3)
-        return sendError(user, ERR_NEEDMOREPARAMS, msg.getCommand());
-    else if (!containsNickname(msg.getParams()[2]))
-        return sendError(user, ERR_NOSUCHNICK, msg.getParams()[2]);
-    else
-        channels[chanName]->removeSpeaker(*(getUserByName(msg.getParams()[2])));
-}
-CPP;
     }
 
-    private function handleSessionFlags(CMD $cmd, Connection $conn, SessionInterface $sess)
-    {
-        $ref = <<<'CPP'
-std::string    flag = msg.getParams()[1];
-if (flag == "+i")
-    user.setFlag(INVISIBLE);
-else if (flag == "-i")
-    user.removeFlag(INVISIBLE);
-else if (flag == "+s")
-    user.setFlag(RECEIVENOTICE);
-else if (flag == "-s")
-    user.removeFlag(RECEIVENOTICE);
-else if (flag == "+w")
-    user.setFlag(RECEIVEWALLOPS);
-else if (flag == "-w")
-    user.removeFlag(RECEIVEWALLOPS);
-else if (flag == "+o")
-{}
-else if (flag == "-o")
-    user.removeFlag(IRCOPERATOR);
-else
-    return sendError(user, ERR_UMODEUNKNOWNFLAG);
-return 0;
-CPP;
-    }
-
-    public function handleMODE(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleMODE(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 1) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -166,13 +152,20 @@ CPP;
                 } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
                     $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$name]);
                 } elseif ($cmd->numArgs() === 1) {
-                    $sess->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, '+' . $chan->getFlagsAsString()]);
+                    $sess->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);
                 } else {
                     $this->handleChannelFlags($cmd, $sess, $chan);
                     //TODO send message to all channel sessions
                 }
             } else {
-                //TODO session mode
+                if ($cmd->getArg(0) !== $sess->getNickname()) {
+                    $sess->sendERR(ERR::ERR_USERS_DONT_MATCH, [$name]);
+                } elseif ($cmd->numArgs() === 1) {
+                    $sess->sendRPL(RPL::RPL_USER_MODE_IS, [$sess->getFlagsAsString()]);
+                } else {
+                    $this->handleSessionFlags($cmd, $sess);
+                    //TODO send message to all channel sessions
+                }
             }
         }
     }

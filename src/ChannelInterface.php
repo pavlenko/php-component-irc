@@ -6,6 +6,9 @@ interface ChannelInterface
 {
     public function __construct(SessionInterface $creator, string $name, string $pass = '');
 
+    public function addBanMask(string $mask): void;
+    public function delBanMask(string $mask): void;
+
     public function sessions(): SessionMap;
     public function speakers(): SessionMap;
     public function operators(): SessionMap;

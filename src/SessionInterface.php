@@ -32,7 +32,7 @@ interface SessionInterface
     public function setHostname(string $hostname): void;
     public function getRealname(): string;
     public function setRealname(string $realname): void;
-    public function getFlags(): int;
+    public function getFlagsAsString(): string;
     public function hasFlag(int $flag): bool;
     public function setFlag(int $flag): void;
     public function clrFlag(int $flag): void;

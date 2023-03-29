@@ -56,6 +56,14 @@ final class ERR extends MSG
 
     protected function resolveComment(): ?string
     {
+        switch ($this->getCode()) {
+            case self::ERR_NO_SUCH_NICK:
+                return 'No such nick/channel';
+            case self::ERR_NO_SUCH_SERVER:
+                return 'No such server';
+            case self::ERR_NO_SUCH_CHANNEL:
+                return 'No such channel';
+        }
         return null;// TODO: Implement resolveComment() method.
     }
 }

@@ -4,45 +4,6 @@
 ```php
 <?php
 // DTOs
-class Channel {
-    #define PRIVATE		0b000001
-    #define SECRET		0b000010
-    #define MODERATED	0b000100
-    #define INVITEONLY	0b001000
-    #define TOPICSET	0b010000
-    #define NOMSGOUT	0b100000
-    /* @var sring */
-    public $name;
-    /* @var string */
-    public $pass;
-    /* @var User */
-    public $creator;
-    /* @var User[] */
-    public $users = [];
-    /* @var User[] */
-    public $operators = [];
-    /* @var string */
-    public $topic;
-    /* @var int */
-    public $flags;
-    public function __construct(User $creator, string $name, string $pass) {
-    //TODO add to users
-    //TODO add to operators
-    //TODO send info
-    }
-    public function getName(): string;
-    public function getPass(): string;
-    public function setPass(string $pass): void;
-    public function getTopic(): string;
-    public function setTopic(string $topic): void;
-    public function getLimit(): int;
-    public function setLimit(int $limit): void;
-    public function getFlags(): int;
-    public function setFlag(int $flag): void;
-    public function clrFlag(int $flag): void;
-    public function attachUser(User $user): void;
-    public function detachUser(User $user): void;
-}
 class User {
     #define REGISTERED		0b00000001
     #define INVISIBLE		0b00000010

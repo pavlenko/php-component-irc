@@ -4,7 +4,6 @@ namespace PE\Component\IRC;
 
 trait HandleUserCommands
 {
-    //TODO helpers
     private function isEqualToRegex(string $pattern, string $subject): bool
     {
         $parts = preg_split('/\*+/', $pattern);

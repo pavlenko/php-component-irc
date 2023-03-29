@@ -9,7 +9,7 @@ use React\EventLoop\LoopInterface;
 use React\Socket\ConnectionInterface as SocketConnection;
 use React\Socket\SocketServer;
 
-class Server
+final class Server
 {
     use HandleRegistrationCommands;
     use HandleUserCommands;
@@ -63,15 +63,13 @@ class Server
         CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
     ];
 
-    //TODO $channels array<string, Channel>
-    //TODO $sessions array<string, Session>
-    //TODO $operators array<string, string> nick => pass
     private Config $config;
     private History $history;
     private SessionMap $sessions;
     private ChannelMap $channels;
+
+    /** @var array<string, string> */
     private array $operators = [];
-    private ?string $capabilities = null;
 
     private ?SocketServer $socket = null;
     private LoopInterface $loop;

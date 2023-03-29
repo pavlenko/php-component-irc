@@ -119,7 +119,7 @@ trait HandleRegistrationCommands
             if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
                 $channels = $sess->getChannels();
                 foreach ($channels as $channel) {
-                    foreach ($channel->getSessions() as $user) {
+                    foreach ($channel->sessions() as $user) {
                         $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
                     }
                 }
@@ -164,7 +164,7 @@ trait HandleRegistrationCommands
         }
         $channels = $sess->getChannels();
         foreach ($channels as $channel) {
-            foreach ($channel->getSessions() as $user) {
+            foreach ($channel->sessions() as $user) {
                 $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
             }
         }

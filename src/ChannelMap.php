@@ -5,7 +5,7 @@ namespace PE\Component\IRC;
 final class ChannelMap implements \Iterator
 {
     /**
-     * @var array<string, Channel>
+     * @var array<string, ChannelInterface>
      */
     private array $items = [];
 
@@ -19,7 +19,7 @@ final class ChannelMap implements \Iterator
         unset($this->items[$chan->getName()]);
     }
 
-    public function searchByName(string $name): ?Channel
+    public function searchByName(string $name): ?ChannelInterface
     {
         return $this->items[$name] ?? null;
     }

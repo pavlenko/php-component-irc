@@ -106,9 +106,25 @@ final class Channel implements ChannelInterface
         $this->limit = $limit;
     }
 
-    public function getFlags(): int
+    public function getFlagsAsString(): string
     {
-        return $this->flags;
+        $flags = '';
+        if ($this->hasFlag(self::FLAG_INVITE_ONLY)) {
+            $flags .= 'i';
+        }
+        if ($this->hasFlag(self::FLAG_NO_MSG_OUT)) {
+            $flags .= 'n';
+        }
+        if ($this->hasFlag(self::FLAG_PRIVATE)) {
+            $flags .= 'p';
+        }
+        if ($this->hasFlag(self::FLAG_SECRET)) {
+            $flags .= 's';
+        }
+        if ($this->hasFlag(self::FLAG_TOPIC_SET)) {
+            $flags .= 't';
+        }
+        return $flags;
     }
 
     public function hasFlag(int $flag): bool

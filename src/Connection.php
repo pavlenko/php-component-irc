@@ -12,8 +12,6 @@ final class Connection implements ConnectionInterface
     private EventsInterface $events;
     private LoggerInterface $logger;
 
-    private string $buffer = '';
-
     public function __construct(SocketConnection $socket, EventsInterface $events, LoggerInterface $logger = null)
     {
         $this->socket = $socket;
@@ -44,25 +42,6 @@ final class Connection implements ConnectionInterface
             } catch (\Throwable $error) {
                 $this->events->trigger(self::EVT_ERROR, $error, $line);
             }
-        }
-        return;
-
-        $this->buffer .= $input;
-
-        while (($len = strlen($this->buffer)) > 0) {
-            $pos  = strpos($this->buffer, "\n");
-            $line = substr($this->buffer, 0, $pos ?: $len);
-            $line = trim($line);
-
-            try {
-                $msg = $this->decode($line);
-                $this->logger->notice('< ' . $msg->toLogger());
-                $this->events->trigger(self::EVT_INPUT, $msg);
-            } catch (\Throwable $error) {
-                $this->events->trigger(self::EVT_ERROR, $error, $line);
-            }
-
-            $this->buffer = substr($this->buffer, $pos);
         }
     }
 

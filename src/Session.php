@@ -17,7 +17,8 @@ final class Session implements SessionInterface
 
     private string $awayMessage = '';
     private string $quitMessage = '';
-    private int $pingingTime = 0;
+    private int $lastMessageTime = 0;
+    private int $lastPingingTime = 0;
 
     private ChannelMap $channels;
 
@@ -30,7 +31,6 @@ final class Session implements SessionInterface
         $this->channels = new ChannelMap();
 
         $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
-        $this->updPingingTime();
     }
 
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
@@ -157,19 +157,25 @@ final class Session implements SessionInterface
         $this->quitMessage = $message;
     }
 
-    public function getPingingTime(): int
+    public function getLastMessageTime(): int
     {
-        return $this->pingingTime;
+        return $this->lastMessageTime;
     }
 
-    public function updPingingTime(): void
+    public function updLastMessageTime(): void
     {
-        $this->pingingTime = time();
+        $this->lastMessageTime = time();
     }
 
-    //TODO as below
-    public function getLastPingingTime(){}
-    public function getLastMessageTime(){}
+    public function getLastPingingTime(): int
+    {
+        return $this->lastPingingTime;
+    }
+
+    public function updLastPingingTime(): void
+    {
+        $this->lastPingingTime = time();
+    }
 
     public function getChannels(): ChannelMap
     {

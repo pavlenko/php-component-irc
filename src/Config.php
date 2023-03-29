@@ -4,6 +4,9 @@ namespace PE\Component\IRC;
 
 class Config
 {
+    public const DEFAULT_INACTIVE_TIMEOUT = 60;
+    public const DEFAULT_RESPONSE_TIMEOUT = 10;
+
     private string $name;
 
     private string $adminLocation1;// Typically: country, state and city; can be admin username
@@ -55,8 +58,8 @@ class Config
         $this->motdFile = $modtFile;
 
         $this->maxChannels        = $maxChannels;
-        $this->maxInactiveTimeout = $maxInactiveTimeout;
-        $this->maxResponseTimeout = $maxResponseTimeout;
+        $this->maxInactiveTimeout = $maxInactiveTimeout ?: self::DEFAULT_INACTIVE_TIMEOUT;
+        $this->maxResponseTimeout = $maxResponseTimeout ?: self::DEFAULT_RESPONSE_TIMEOUT;
     }
 
     public function getName(): string

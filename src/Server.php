@@ -97,15 +97,21 @@ class Server
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
-        $this->loop->addPeriodicTimer(60, function () {//TODO max inactive as interval
+        $this->loop->addPeriodicTimer($this->config->getMaxInactiveTimeout(), function () {//TODO max inactive as interval
             foreach ($this->sessions as $user) {
-                if ($user->hasFlag(SessionInterface::FLAG_PINGING) && time() - $user->getPingingTime() > $this->config->getMaxInactiveTimeout()) {
-                    $user->close();
+                if (time() - $user->getLastMessageTime() > $this->config->getMaxInactiveTimeout()) {
+                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config->getName());
+                    $user->updLastMessageTime();
+                    $user->updLastPingingTime();
+                    $user->setFlag(SessionInterface::FLAG_PINGING);
                 }
 
-                $user->setFlag(SessionInterface::FLAG_PINGING);
-                $user->updPingingTime();
-                $user->sendCMD(CMD::CMD_PING, [], null, $this->config->getName());
+                if (
+                    $user->hasFlag(SessionInterface::FLAG_PINGING) &&
+                    time() - $user->getLastPingingTime() > $this->config->getMaxInactiveTimeout()
+                ) {
+                    $user->close();
+                }
             }
         });
 
@@ -118,11 +124,17 @@ class Server
 
             $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
                 if (
+                    !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
+                    !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT])
+                ) {
+                    $sess->sendERR(ERR::ERR_NOT_REGISTERED);
+                } elseif (
                     array_key_exists($msg->getCode(), self::COMMANDS) &&
                     !empty(self::COMMANDS[$msg->getCode()][1])
                 ) {
                     $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
                 }
+                $sess->updLastMessageTime();
             });
 
             $this->events->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));

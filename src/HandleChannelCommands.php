@@ -143,6 +143,7 @@ trait HandleChannelCommands
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
             $name = $cmd->getArg(0);
+            $flag = $cmd->getArg(1);
             if ('#' === $name[0]) {
                 $chan = $this->channels->searchByName($name);
                 if (null === $chan) {
@@ -155,7 +156,13 @@ trait HandleChannelCommands
                     $sess->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);
                 } else {
                     $this->handleChannelFlags($cmd, $sess, $chan);
-                    //TODO send message to all channel sessions
+                    foreach ($chan->sessions() as $user) {
+                        $user->sendCMD(CMD::CMD_MODE, [
+                            $name,
+                            $flag,
+                            ('o' === $flag[1] || 'v' === $flag[1]) ? $cmd->getArg(2) : ''
+                        ], null, $sess->getPrefix());
+                    }
                 }
             } else {
                 if ($cmd->getArg(0) !== $sess->getNickname()) {
@@ -164,12 +171,7 @@ trait HandleChannelCommands
                     $sess->sendRPL(RPL::RPL_USER_MODE_IS, [$sess->getFlagsAsString()]);
                 } else {
                     $this->handleSessionFlags($cmd, $sess);
-                    $sess->sendCMD(
-                        CMD::CMD_MODE,
-                        [$cmd->getArg(0), $cmd->getArg(1)],
-                        null,
-                        $sess->getPrefix()
-                    );
+                    $sess->sendCMD(CMD::CMD_MODE, [$name, $flag], null, $sess->getPrefix());
                 }
             }
         }

@@ -164,7 +164,12 @@ trait HandleChannelCommands
                     $sess->sendRPL(RPL::RPL_USER_MODE_IS, [$sess->getFlagsAsString()]);
                 } else {
                     $this->handleSessionFlags($cmd, $sess);
-                    //TODO send message to all channel sessions
+                    $sess->sendCMD(
+                        CMD::CMD_MODE,
+                        [$cmd->getArg(0), $cmd->getArg(1)],
+                        null,
+                        $sess->getPrefix()
+                    );
                 }
             }
         }

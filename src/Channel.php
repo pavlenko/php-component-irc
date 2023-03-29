@@ -21,6 +21,11 @@ class Channel
     private int $flags = 0;
     private SessionMap $sessions;
     private array $operators = [];
+    //TODO $banMasks string[]
+    //TODO $invited array<string, Session>
+    //TODO $sessions array<string, Session>
+    //TODO $operators array<string, Session>
+    //TODO $speakers array<string, Session>
 
     public function __construct(SessionInterface $creator, string $name, string $pass = '')
     {

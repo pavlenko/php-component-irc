@@ -63,6 +63,9 @@ class Server
         CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
     ];
 
+    //TODO $channels array<string, Channel>
+    //TODO $sessions array<string, Session>
+    //TODO $operators array<string, string> nick => pass
     private Config $config;
     private History $history;
     private SessionMap $sessions;

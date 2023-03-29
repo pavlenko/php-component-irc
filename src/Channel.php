@@ -18,13 +18,14 @@ final class Channel implements ChannelInterface
     private string $topic = '';
     private int $limit = 0;
     private int $flags = 0;
-    //TODO private SessionMap $sessions;
-    private array $operators = [];
-    //TODO $banMasks string[]
-    //TODO $invited array<string, Session>
-    //TODO $sessions array<string, Session>
-    //TODO $operators array<string, Session>
-    //TODO $speakers array<string, Session>
+
+    /** @var string[] */
+    private array $banMasks = [];
+
+    private SessionMap $sessions;
+    private SessionMap $speakers;
+    private SessionMap $operators;
+    private SessionMap $invited;
 
     public function __construct(SessionInterface $creator, string $name, string $pass = '')
     {
@@ -32,31 +33,37 @@ final class Channel implements ChannelInterface
         $this->name    = $name;
         $this->pass    = $pass;
 
-        //TODO add to users
-        //TODO add to operators
-        //TODO send info
+        $this->sessions  = new SessionMap();
+        $this->speakers  = new SessionMap();
+        $this->operators = new SessionMap();
+        $this->invited   = new SessionMap();
 
-        $this->sessions = new SessionMap();
+        $this->sessions->attach($creator);
+        $this->operators->attach($creator);
+
+        $this->setFlag(self::FLAG_NO_MSG_OUT);
+
+        //TODO sendInfo()
     }
 
     public function sessions(): SessionMap
     {
-        return new SessionMap();// TODO: Implement sessions() method.
+        return $this->sessions;
     }
 
     public function speakers(): SessionMap
     {
-        return new SessionMap();// TODO: Implement speakers() method.
+        return $this->speakers;
     }
 
     public function operators(): SessionMap
     {
-        return new SessionMap();// TODO: Implement operators() method.
+        return $this->operators;
     }
 
     public function invited(): SessionMap
     {
-        return new SessionMap();// TODO: Implement invited() method.
+        return $this->invited;
     }
 
     public function getCreator(): SessionInterface

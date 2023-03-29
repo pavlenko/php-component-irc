@@ -177,8 +177,21 @@ trait HandleChannelCommands
         }
     }
 
-    public function handleJOIN(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    public function handleJOIN(CMD $cmd, SessionInterface $sess): void
+    {
+        if ($cmd->numArgs() < 1) {
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            $channels = explode(',', $cmd->getArg(0));
+            $keys     = explode(',', $cmd->getArg(1));
+
+            //TODO loop through channels
+            //TODO get key for each channel
+            //TODO check channel name valid
+            //TODO che user max channels
+            //TODO connect to channel...???
+        }
+    }
 
     public function handleTOPIC(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}

@@ -97,7 +97,7 @@ class Server
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
-        $this->loop->addPeriodicTimer($this->config->getMaxInactiveTimeout(), function () {//TODO max inactive as interval
+        $this->loop->addPeriodicTimer($this->config->getMaxInactiveTimeout(), function () {
             foreach ($this->sessions as $user) {
                 if (time() - $user->getLastMessageTime() > $this->config->getMaxInactiveTimeout()) {
                     $user->sendCMD(CMD::CMD_PING, [], null, $this->config->getName());

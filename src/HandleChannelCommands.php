@@ -235,7 +235,30 @@ trait HandleChannelCommands
     }
 
     public function handleINVITE(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() < 2) {
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            $user = $this->sessions->searchByName($cmd->getArg(0));
+            $chan = $this->channels->searchByName($cmd->getArg(1));
+            if (null === $user) {
+                $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
+            } elseif (null === $chan || null === $chan->sessions()->searchByName($sess->getNickname())) {
+                $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+            } elseif (null !== $chan->sessions()->searchByName($user->getNickname())) {
+                $sess->sendERR(ERR::ERR_USER_ON_CHANNEL, [$chan->getName()]);
+            } elseif ($chan->hasFlag(ChannelInterface::FLAG_INVITE_ONLY) && !$chan->operators()->searchByName($sess->getNickname())) {
+                $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
+            } else {
+                $chan->invited()->attach($user);
+                $user->sendCMD(CMD::CMD_INVITE, [$user->getNickname()], $chan->getName(), $sess->getPrefix());
+                $sess->sendRPL(RPL::RPL_INVITING, [$chan->getName(), $user->getNickname()]);
+                if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {
+                    $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
+                }
+            }
+        }
+    }
 
     public function handleKICK(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}

@@ -260,8 +260,40 @@ trait HandleChannelCommands
         }
     }
 
-    public function handleKICK(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    public function handleKICK(CMD $cmd, SessionInterface $sess): void
+    {
+        if ($cmd->numArgs() < 2) {
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            $chan = $this->channels->searchByName($cmd->getArg(0));
+            if (null === $chan) {
+                $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$cmd->getArg(0)]);
+            } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
+                $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
+            } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
+                $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+            } else {
+                $user = $this->sessions->searchByName($cmd->getArg(1));
+                if (null === $user) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(1)]);
+                } elseif (!$chan->sessions()->searchByName($user->getNickname())) {
+                    $sess->sendERR(ERR::ERR_USER_NOT_IN_CHANNEL, [$cmd->getArg(1), $cmd->getArg(0)]);
+                } else {
+                    foreach ($chan->sessions() as $s) {
+                        $s->sendCMD(
+                            $cmd->getCode(),
+                            [$chan->getName(), $user->getNickname()],
+                            $cmd->numArgs() > 2 ? $cmd->getArg(2) : $sess->getNickname()
+                        );
+                    }
+                    $chan->sessions()->detach($user);
+                    $chan->speakers()->detach($user);
+                    $chan->operators()->detach($user);
+                    $user->channels()->detach($chan);
+                }
+            }
+        }
+    }
 
     public function handlePART(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}

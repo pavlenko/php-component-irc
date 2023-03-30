@@ -185,11 +185,18 @@ trait HandleChannelCommands
             $channels = explode(',', $cmd->getArg(0));
             $keys     = explode(',', $cmd->getArg(1));
 
-            //TODO loop through channels
-            //TODO get key for each channel
-            //TODO check channel name valid
-            //TODO che user max channels
-            //TODO connect to channel...???
+            //TODO maybe batch validate and after second loop for connect
+            foreach ($channels as $index => $channel) {
+                $key = $keys[$index] ?? null;
+
+                if (!$this->isValidChannelName($channel)) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
+                } elseif (count($sess->channels()) >= $this->config->getMaxChannels()) {
+                    $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$channel]);
+                } else {
+                    //TODO connect to channel
+                }
+            }
         }
     }
 

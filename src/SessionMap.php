@@ -2,7 +2,7 @@
 
 namespace PE\Component\IRC;
 
-final class SessionMap implements \Iterator
+final class SessionMap implements \Countable, \Iterator
 {
     /**
      * @var array<string, SessionInterface>
@@ -37,6 +37,11 @@ final class SessionMap implements \Iterator
             }
         }
         return false;
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
     }
 
     public function current(): ?SessionInterface

@@ -56,6 +56,11 @@ final class Session implements SessionInterface
         $this->connection->close();
     }
 
+    public function channels(): ChannelMap
+    {
+        return $this->channels;
+    }
+
     public function getServername(): string
     {
         return $this->servername;
@@ -188,20 +193,5 @@ final class Session implements SessionInterface
     public function updLastPingingTime(): void
     {
         $this->lastPingingTime = time();
-    }
-
-    public function getChannels(): ChannelMap
-    {
-        return $this->channels;
-    }
-
-    public function attachChannel(Channel $channel): void
-    {
-        $this->channels->attach($channel);
-    }
-
-    public function detachChannel(Channel $channel): void
-    {
-        $this->channels->detach($channel);
     }
 }

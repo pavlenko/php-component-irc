@@ -36,10 +36,10 @@ trait HandleUserCommands
                     $channelName = '*';
                     $userStatus  = '';
 
-                    foreach ($user->getChannels() as $channel) {
+                    foreach ($user->channels() as $channel) {
                         if (
                             (!$channel->hasFlag(Channel::FLAG_SECRET) && !$channel->hasFlag(Channel::FLAG_PRIVATE)) ||
-                            $channel->getSessions()->containsName($sess->getNickname())
+                            $channel->sessions()->containsName($sess->getNickname())
                         ) {
                             $channelName = $channel->getName();
                             //TODO

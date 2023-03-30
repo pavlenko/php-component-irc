@@ -21,6 +21,8 @@ interface SessionInterface
     public function sendRPL(int $code, array $args = [], string $comment = null): bool;
     public function close(): void;
 
+    public function channels(): ChannelMap;
+
     public function getServername(): string;
     public function getPassword(): string;
     public function setPassword(string $password): void;
@@ -45,7 +47,4 @@ interface SessionInterface
     public function updLastMessageTime(): void;
     public function getLastPingingTime(): int;
     public function updLastPingingTime(): void;
-    public function getChannels(): ChannelMap;
-    public function attachChannel(Channel $channel): void;
-    public function detachChannel(Channel $channel): void;
 }

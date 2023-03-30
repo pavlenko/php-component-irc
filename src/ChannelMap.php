@@ -2,7 +2,7 @@
 
 namespace PE\Component\IRC;
 
-final class ChannelMap implements \Iterator
+final class ChannelMap implements \Countable, \Iterator
 {
     /**
      * @var array<string, ChannelInterface>
@@ -27,6 +27,11 @@ final class ChannelMap implements \Iterator
     public function containsName(string $name): bool
     {
         return isset($this->items[$name]);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
     }
 
     public function current(): ?Channel

@@ -185,7 +185,6 @@ trait HandleChannelCommands
             $channels = explode(',', $cmd->getArg(0));
             $keys     = explode(',', $cmd->getArg(1));
 
-            //TODO maybe batch validate and after second loop for connect
             foreach ($channels as $index => $channel) {
                 $key = $keys[$index] ?? null;
 
@@ -194,14 +193,46 @@ trait HandleChannelCommands
                 } elseif (count($sess->channels()) >= $this->config->getMaxChannels()) {
                     $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$channel]);
                 } else {
-                    //TODO connect to channel
+                    $chan = $this->channels->searchByName($channel);
+                    if (null === $chan) {
+                        $this->channels->attach($chan = new Channel($sess, $channel, $key));
+                    }
+                    $sess->channels()->attach($chan);
+                    $chan->sessions()->attach($sess);
                 }
             }
         }
     }
 
-    public function handleTOPIC(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
+    public function handleTOPIC(CMD $cmd, SessionInterface $sess): void
+    {
+        if ($cmd->numArgs() < 1) {
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            $chan = $this->channels->searchByName($cmd->getArg(0));
+            if (null === $chan || !$chan->sessions()->searchByName($sess->getNickname())) {
+                $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$cmd->getCode()]);
+            } elseif ($cmd->numArgs() < 2) {
+                if (!empty($chan->getTopic())) {
+                    $sess->sendRPL(RPL::RPL_TOPIC, [$cmd->getArg(0)], $chan->getTopic());
+                } else {
+                    $sess->sendRPL(RPL::RPL_NO_TOPIC, [$cmd->getArg(0)]);
+                }
+            } else {
+                if (
+                    $chan->hasFlag(ChannelInterface::FLAG_TOPIC_SET) &&
+                    !$chan->operators()->searchByName($sess->getNickname())
+                ) {
+                    $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$cmd->getArg(0)]);
+                } else {
+                    $chan->setTopic($cmd->getArg(1));
+                    foreach ($chan->sessions() as $user) {
+                        $user->sendCMD(CMD::CMD_TOPIC, [$cmd->getArg(0)], $cmd->getArg(1));
+                    }
+                }
+            }
+        }
+    }
 
     public function handleINVITE(CMD $cmd, Connection $conn, SessionInterface $sess): void
     {}

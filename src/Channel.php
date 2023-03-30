@@ -4,14 +4,6 @@ namespace PE\Component\IRC;
 
 final class Channel implements ChannelInterface
 {
-    // Modify "o","l","b","v","k" flags has separate logic
-    public const FLAG_PRIVATE     = 0b000001;//p - private channel
-    public const FLAG_SECRET      = 0b000010;//s - secret channel
-    public const FLAG_MODERATED   = 0b000100;//m - moderated channel
-    public const FLAG_INVITE_ONLY = 0b001000;//i - invite only channel
-    public const FLAG_TOPIC_SET   = 0b010000;//t - topic settable by channel operator only
-    public const FLAG_NO_MSG_OUT  = 0b100000;//n - no messages to channel from clients on the outside
-
     private SessionInterface $creator;
     private string $name;
     private string $pass;
@@ -27,11 +19,11 @@ final class Channel implements ChannelInterface
     private SessionMap $operators;
     private SessionMap $invited;
 
-    public function __construct(SessionInterface $creator, string $name, string $pass = '')
+    public function __construct(SessionInterface $creator, string $name, string $pass = null)
     {
         $this->creator = $creator;
         $this->name    = $name;
-        $this->pass    = $pass;
+        $this->pass    = (string) $pass;
 
         $this->sessions  = new SessionMap();
         $this->speakers  = new SessionMap();

@@ -22,38 +22,38 @@ trait HandleChannelCommands
             }
         } elseif ('p' === $flag[1]) {
             if ('+' === $flag[0]) {
-                $chan->setFlag(Channel::FLAG_PRIVATE);
+                $chan->setFlag(ChannelInterface::FLAG_PRIVATE);
             }
             if ('-' === $flag[0]) {
-                $chan->clrFlag(Channel::FLAG_PRIVATE);
+                $chan->clrFlag(ChannelInterface::FLAG_PRIVATE);
             }
         } elseif ('s' === $flag[1]) {
             if ('+' === $flag[0]) {
-                $chan->setFlag(Channel::FLAG_SECRET);
+                $chan->setFlag(ChannelInterface::FLAG_SECRET);
             }
             if ('-' === $flag[0]) {
-                $chan->clrFlag(Channel::FLAG_SECRET);
+                $chan->clrFlag(ChannelInterface::FLAG_SECRET);
             }
         } elseif ('i' === $flag[1]) {
             if ('+' === $flag[0]) {
-                $chan->setFlag(Channel::FLAG_INVITE_ONLY);
+                $chan->setFlag(ChannelInterface::FLAG_INVITE_ONLY);
             }
             if ('-' === $flag[0]) {
-                $chan->clrFlag(Channel::FLAG_INVITE_ONLY);
+                $chan->clrFlag(ChannelInterface::FLAG_INVITE_ONLY);
             }
         } elseif ('t' === $flag[1]) {
             if ('+' === $flag[0]) {
-                $chan->setFlag(Channel::FLAG_TOPIC_SET);
+                $chan->setFlag(ChannelInterface::FLAG_TOPIC_SET);
             }
             if ('-' === $flag[0]) {
-                $chan->clrFlag(Channel::FLAG_TOPIC_SET);
+                $chan->clrFlag(ChannelInterface::FLAG_TOPIC_SET);
             }
         } elseif ('m' === $flag[1]) {
             if ('+' === $flag[0]) {
-                $chan->setFlag(Channel::FLAG_MODERATED);
+                $chan->setFlag(ChannelInterface::FLAG_MODERATED);
             }
             if ('-' === $flag[0]) {
-                $chan->clrFlag(Channel::FLAG_MODERATED);
+                $chan->clrFlag(ChannelInterface::FLAG_MODERATED);
             }
         } elseif ('l' === $flag[1]) {
             if ($cmd->numArgs() < 3) {
@@ -234,7 +234,7 @@ trait HandleChannelCommands
         }
     }
 
-    public function handleINVITE(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleINVITE(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);

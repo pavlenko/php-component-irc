@@ -27,7 +27,7 @@ trait HandleUserCommands
             $sess->sendRPL(RPL::RPL_UN_AWAY);
         } else {
             $sess->setFlag(SessionInterface::FLAG_AWAY);
-            $sess->setAwayMessage($cmd->getArg(0));
+            $sess->setAwayMessage(implode(' ', $cmd->getArgs()));
             $sess->sendRPL(RPL::RPL_NOW_AWAY);
         }
     }

@@ -63,6 +63,8 @@ final class ERR extends MSG
                 return 'No such server';
             case self::ERR_NO_SUCH_CHANNEL:
                 return 'No such channel';
+            case self::ERR_NICKNAME_IN_USE:
+                return 'Nickname is already in use';
         }
         return null;// TODO: Implement resolveComment() method.
     }

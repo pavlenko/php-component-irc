@@ -18,7 +18,7 @@ final class Server
     use HandleOtherCommands;
 
     private const COMMANDS = [
-        CMD::CMD_CAP         => [self::class, 'handleCAP'],
+        //CMD::CMD_CAP         => [self::class, 'handleCAP'],
         CMD::CMD_ADMIN       => [self::class, 'handleADMIN'],
         CMD::CMD_AWAY        => [self::class, 'handleAWAY'],
         CMD::CMD_CONNECT     => [self::class, ''],
@@ -126,7 +126,7 @@ final class Server
             $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
                 if (
                     !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
-                    !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT])
+                    !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
                 ) {
                     $sess->sendERR(ERR::ERR_NOT_REGISTERED);
                 } elseif (
@@ -136,6 +136,7 @@ final class Server
                     $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
                 }
                 $sess->updLastMessageTime();
+                dump($this);
             });
 
             $this->events->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));

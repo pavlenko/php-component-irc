@@ -158,8 +158,8 @@ trait HandleRegistrationCommands
 
     public function handleQUIT(CMD $cmd, SessionInterface $sess): void
     {
-        if ($cmd->getArg(0)) {
-            $sess->setQuitMessage($cmd->getArg(0));
+        if ($cmd->numArgs() > 0) {
+            $sess->setQuitMessage(implode(' ', $cmd->getArgs()));
         }
         foreach ($sess->channels() as $channel) {
             foreach ($channel->sessions() as $user) {
@@ -167,6 +167,6 @@ trait HandleRegistrationCommands
             }
         }
         $this->history->addSession($sess);
-        $sess->close();
+        $sess->close();//TODO check why disconnect all
     }
 }

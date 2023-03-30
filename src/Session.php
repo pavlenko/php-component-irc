@@ -33,6 +33,13 @@ final class Session implements SessionInterface
         $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
     }
 
+    /*public function __debugInfo()
+    {
+        $props = get_object_vars($this);
+        unset($props['connection']);
+        return $props;
+    }*/
+
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
     {
         $cmd = new CMD($code, $args, $comment, $prefix);

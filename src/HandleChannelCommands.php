@@ -295,12 +295,34 @@ trait HandleChannelCommands
         }
     }
 
-    public function handlePART(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handlePART(CMD $cmd, SessionInterface $sess): void
+    {
+        if ($cmd->numArgs() < 2) {
+            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+        } else {
+            $channels = explode(',', $cmd->getArg(0));
+            foreach ($channels as $channel) {
+                $chan = $this->channels->searchByName($channel);
+                if (null === $chan) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
+                } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
+                    $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+                } else {
+                    foreach ($chan->sessions() as $user) {
+                        $user->sendCMD($cmd->getCode(), [$chan->getName()]);
+                    }
+                    $chan->sessions()->detach($sess);
+                    $chan->speakers()->detach($sess);
+                    $chan->operators()->detach($sess);
+                    $sess->channels()->detach($chan);
+                }
+            }
+        }
+    }
+
+    public function handleNAMES(CMD $cmd, SessionInterface $sess): void
     {}
 
-    public function handleNAMES(CMD $cmd, Connection $conn, SessionInterface $sess): void
-    {}
-
-    public function handleLIST(CMD $cmd, Connection $conn, SessionInterface $sess): void
+    public function handleLIST(CMD $cmd, SessionInterface $sess): void
     {}
 }

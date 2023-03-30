@@ -21,7 +21,16 @@ trait HandleUserCommands
     {}
 
     public function handleAWAY(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() === 0) {
+            $sess->clrFlag(SessionInterface::FLAG_AWAY);
+            $sess->sendRPL(RPL::RPL_UN_AWAY);
+        } else {
+            $sess->setFlag(SessionInterface::FLAG_AWAY);
+            $sess->setAwayMessage($cmd->getArg(0));
+            $sess->sendRPL(RPL::RPL_NOW_AWAY);
+        }
+    }
 
     public function handleWHO(CMD $cmd, SessionInterface $sess): void
     {

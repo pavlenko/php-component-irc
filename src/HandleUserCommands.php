@@ -14,13 +14,13 @@ trait HandleUserCommands
         return preg_match($compiled, $subject);
     }
 
-    public function handlePRIVMSG(CMD $cmd, Connection $conn): void
+    public function handlePRIVMSG(CMD $cmd, SessionInterface $sess): void
     {}
 
-    public function handleNOTICE(CMD $cmd, Connection $conn): void
+    public function handleNOTICE(CMD $cmd, SessionInterface $sess): void
     {}
 
-    public function handleAWAY(CMD $cmd, Connection $conn): void
+    public function handleAWAY(CMD $cmd, SessionInterface $sess): void
     {}
 
     public function handleWHO(CMD $cmd, SessionInterface $sess): void
@@ -38,15 +38,15 @@ trait HandleUserCommands
 
                     foreach ($user->channels() as $channel) {
                         if (
-                            (!$channel->hasFlag(Channel::FLAG_SECRET) && !$channel->hasFlag(Channel::FLAG_PRIVATE)) ||
+                            (!$channel->hasFlag(ChannelInterface::FLAG_SECRET) && !$channel->hasFlag(ChannelInterface::FLAG_PRIVATE)) ||
                             $channel->sessions()->containsName($sess->getNickname())
                         ) {
                             $channelName = $channel->getName();
-                            //TODO
-                            /*if (userChannels[j]->isOperator(*(connectedUsers[i])))
-                                $userStatus = "@";
-                            else if (userChannels[j]->isSpeaker(*(connectedUsers[i])))
-                                $userStatus = "+";*/
+                            if ($channel->operators()->searchByName($user->getNickname())) {
+                                $userStatus = '@';
+                            } elseif ($channel->speakers()->searchByName($user->getNickname())) {
+                                $userStatus = '+';
+                            }
                             break;
                         }
                     }
@@ -70,9 +70,9 @@ trait HandleUserCommands
         }
     }
 
-    public function handleWHOIS(CMD $cmd, Connection $conn): void
+    public function handleWHOIS(CMD $cmd, SessionInterface $sess): void
     {}
 
-    public function handleWHOWAS(CMD $cmd, Connection $conn): void
+    public function handleWHOWAS(CMD $cmd, SessionInterface $sess): void
     {}
 }

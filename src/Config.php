@@ -2,8 +2,9 @@
 
 namespace PE\Component\IRC;
 
-class Config
+final class Config
 {
+    public const DEFAULT_DATETIME_FORMAT  = 'D M d Y \a\t H:i:s e';//Thu Nov 10 2022 at 12:34:26 UTC
     public const DEFAULT_INACTIVE_TIMEOUT = 60;
     public const DEFAULT_RESPONSE_TIMEOUT = 10;
 

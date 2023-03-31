@@ -70,7 +70,21 @@ trait HandleRegistrationCommands
             implode(['b', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'v']),
             implode(['b', 'k', 'l', 'o', 'v']),
         ]);
+        //TODO isupport (005, replaced bounce reply)
+        //TODO luserclient (251)
+        //TODO luserop (252)
+        //TODO luserunknown (253)
+        //TODO luserchannels (254)
+        //TODO luserme (255)
+        //TODO localusers (265)
+        //TODO globalusers (266)
+        //TODO statsconn (250)
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
+        //TODO whoisuser (311)
+        //TODO whoisserver (312)
+        //TODO whoissecure (671)
+        //TODO whoisidle (317)
+        //TODO endofwhois (318)
     }
 
     public function handleCAP(CMD $cmd, SessionInterface $sess): void

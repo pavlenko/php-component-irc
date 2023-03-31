@@ -49,7 +49,7 @@ trait HandleOtherCommands
                     $resp[] = $arg;
                 }
             }
-            $sess->sendRPL(RPL::RPL_IS_ON, $resp);
+            $sess->sendRPL(RPL::RPL_IS_ON, [], implode(' ', $resp));
         }
     }
 
@@ -71,7 +71,7 @@ trait HandleOtherCommands
         if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
             $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]);
         } else {
-            $sess->sendRPL(RPL::RPL_TIME, [$sess->getServername()], date(DATE_ATOM));
+            $sess->sendRPL(RPL::RPL_TIME, [$sess->getServername()], date(Config::DEFAULT_DATETIME_FORMAT));
         }
     }
 
@@ -97,11 +97,14 @@ trait HandleOtherCommands
                 if ($user = $this->sessions->searchByName($arg)) {
                     $resp[] = $arg
                         . ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
-                        . ($user->hasFlag(SessionInterface::FLAG_AWAY) ? '=-@' : '=+@')
+                        . '='
+                        . ($user->hasFlag(SessionInterface::FLAG_AWAY) ? '-' : '+')
+                        . $user->getUsername()
+                        . '@'
                         . $user->getHostname();
                 }
             }
-            $sess->sendRPL(RPL::RPL_USER_HOST, $resp);
+            $sess->sendRPL(RPL::RPL_USER_HOST, [], implode(' ', $resp));
         }
     }
 

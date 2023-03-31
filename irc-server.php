@@ -77,7 +77,7 @@ $config = new Config(
     'v1.0',
     'dev',
     'testing',
-    date(DATE_ATOM),
+    date(Config::DEFAULT_DATETIME_FORMAT),
     null,
     __DIR__ . '/IRCat.motd'
 );

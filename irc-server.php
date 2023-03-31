@@ -5,7 +5,6 @@ namespace PE\Component\IRC;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\VarDumper\Caster\Caster;
 use Symfony\Component\VarDumper\Caster\ConstStub;
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;
@@ -47,13 +46,16 @@ VarDumper::setHandler(function ($var) {
             return $arr;
         },
         Channel::class => function (Channel $obj, $arr) {
-            unset($arr["\x00" . Session::class . "\x00flags"]);
-            $flags = [];
-            foreach ((new \ReflectionObject($obj))->getConstants() as $name => $mask) {
-                $flags[Caster::PREFIX_VIRTUAL . $name] = $obj->hasFlag($mask);
+            if (isset($arr["\x00" . Channel::class . "\x00flags"])) {
+                unset($arr["\x00" . Channel::class . "\x00flags"]);
+
+                $flags = array_filter((new \ReflectionObject($obj))->getConstants(), [$obj, 'hasFlag']);
+                $flags = array_map(fn($f) => substr($f, 5), array_flip($flags));
+
+                $arr = ["\x00" . Channel::class . "\x00flags" => new ConstStub(implode('|', $flags))] + $arr;
             }
 
-            return $flags + $arr;
+            return $arr;
         },
         Server::class => function ($obj, $arr) {
             unset($arr["\x00" . Server::class . "\x00loop"]);

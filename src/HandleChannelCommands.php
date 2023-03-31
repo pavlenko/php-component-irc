@@ -4,7 +4,7 @@ namespace PE\Component\IRC;
 
 trait HandleChannelCommands
 {
-    private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
+    /*private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
     {
         $flag = $cmd->getArg(1);
         if ('o' === $flag[1]) {
@@ -104,9 +104,9 @@ trait HandleChannelCommands
         } elseif ('n' !== $flag[1]) {
             $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
         }
-    }
+    }*/
 
-    private function handleSessionFlags(CMD $cmd, SessionInterface $sess)
+    /*private function handleSessionFlags(CMD $cmd, SessionInterface $sess)
     {
         $flag = $cmd->getArg(1);
         if ('i' === $flag[1]) {
@@ -135,7 +135,7 @@ trait HandleChannelCommands
         } else {
             $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
         }
-    }
+    }*/
 
     public function handleMODE(CMD $cmd, SessionInterface $sess): void
     {
@@ -182,15 +182,15 @@ trait HandleChannelCommands
         if ($cmd->numArgs() < 1) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            $channels = explode(',', $cmd->getArg(0));
-            $keys     = explode(',', $cmd->getArg(1));
+            $channels = array_filter(explode(',', (string) $cmd->getArg(0)));
+            $keys     = array_filter(explode(',', (string) $cmd->getArg(1)));
 
             foreach ($channels as $index => $channel) {
                 $key = $keys[$index] ?? null;
 
                 if (!$this->isValidChannelName($channel)) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
-                } elseif (count($sess->channels()) >= $this->config->getMaxChannels()) {
+                } elseif ($this->config->getMaxChannels() > 0 && $this->config->getMaxChannels() <= count($sess->channels())) {
                     $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$channel]);
                 } else {
                     $chan = $this->channels->searchByName($channel);

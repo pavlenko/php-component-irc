@@ -4,7 +4,7 @@ namespace PE\Component\IRC;
 
 trait HandleRegistrationCommands
 {
-    private function isValidChannelName(string $name): bool
+    /*private function isValidChannelName(string $name): bool
     {
         if (strlen($name) > 50) {
             $this->logger->debug('Session name must be less than 51 chars');
@@ -20,9 +20,9 @@ trait HandleRegistrationCommands
         }
 
         return false;
-    }
+    }*/
 
-    private function isValidSessionName(string $name): bool
+    /*private function isValidSessionName(string $name): bool
     {
         if (strlen($name) > 9) {
             $this->logger->debug('Session name must be less than 10 chars');
@@ -41,7 +41,7 @@ trait HandleRegistrationCommands
             return false;
         }
         return true;
-    }
+    }*/
 
     private function handleRegistration(SessionInterface $sess): void
     {

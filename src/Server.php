@@ -155,4 +155,176 @@ final class Server
         $this->loop->stop();
         $this->logger->info('Stopping server OK');
     }
+
+    private function isValidChannelName(string $name): bool
+    {
+        if (strlen($name) > 50) {
+            $this->logger->debug('Session name must be less than 51 chars');
+            return false;
+        }
+        if (!preg_match('/^[#@+!].+$/', $name)) {
+            $this->logger->debug('Channel name must starts with "#", "@", "+" or "!"');
+            return false;
+        }
+        if (!preg_match('/^[#@+!][\w\-\[\]\\\`^{}]+$/', $name)) {
+            $this->logger->debug('Channel name contain invalid chars');
+            return false;
+        }
+
+        return true;
+    }
+
+    private function isValidSessionName(string $name): bool
+    {
+        if (strlen($name) > 9) {
+            $this->logger->debug('Session name must be less than 10 chars');
+            return false;
+        }
+        if (preg_match('/^[0-9-].+$/', $name)) {
+            $this->logger->debug('Session name must not starts with number or "-"');
+            return false;
+        }
+        if (!preg_match('/^[\w\-\[\]\\\`^{}]+$/', $name)) {
+            $this->logger->debug('Session name contain invalid chars');
+            return false;
+        }
+        if ($this->config->getName() === $name) {
+            $this->logger->debug('Session name must not equal server name');
+            return false;
+        }
+        return true;
+    }
+
+    private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
+    {
+        $flag = $cmd->getArg(1);
+        if ('o' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                $user = $this->sessions->searchByName($cmd->getArg(2));
+                if (null === $user) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
+                } elseif ('+' === $flag[0]) {
+                    $chan->operators()->attach($user);
+                } elseif ('-' === $flag[0]) {
+                    $chan->operators()->detach($user);
+                }
+            }
+        } elseif ('p' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $chan->setFlag(ChannelInterface::FLAG_PRIVATE);
+            }
+            if ('-' === $flag[0]) {
+                $chan->clrFlag(ChannelInterface::FLAG_PRIVATE);
+            }
+        } elseif ('s' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $chan->setFlag(ChannelInterface::FLAG_SECRET);
+            }
+            if ('-' === $flag[0]) {
+                $chan->clrFlag(ChannelInterface::FLAG_SECRET);
+            }
+        } elseif ('i' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $chan->setFlag(ChannelInterface::FLAG_INVITE_ONLY);
+            }
+            if ('-' === $flag[0]) {
+                $chan->clrFlag(ChannelInterface::FLAG_INVITE_ONLY);
+            }
+        } elseif ('t' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $chan->setFlag(ChannelInterface::FLAG_TOPIC_SET);
+            }
+            if ('-' === $flag[0]) {
+                $chan->clrFlag(ChannelInterface::FLAG_TOPIC_SET);
+            }
+        } elseif ('m' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $chan->setFlag(ChannelInterface::FLAG_MODERATED);
+            }
+            if ('-' === $flag[0]) {
+                $chan->clrFlag(ChannelInterface::FLAG_MODERATED);
+            }
+        } elseif ('l' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                if ('+' === $flag[0]) {
+                    $chan->setLimit((int) $cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $chan->setLimit(0);
+                }
+            }
+        } elseif ('k' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                if ('+' === $flag[0]) {
+                    $chan->setPass($cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $chan->setPass('');
+                }
+            }
+        } elseif ('b' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                if ('+' === $flag[0]) {
+                    $chan->addBanMask($cmd->getArg(2));
+                }
+                if ('-' === $flag[0]) {
+                    $chan->delBanMask($cmd->getArg(2));
+                }
+            }
+        } elseif ('v' === $flag[1]) {
+            if ($cmd->numArgs() < 3) {
+                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            } else {
+                $user = $this->sessions->searchByName($cmd->getArg(2));
+                if (null === $user) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
+                } elseif ('+' === $flag[0]) {
+                    $chan->speakers()->attach($user);
+                } elseif ('-' === $flag[0]) {
+                    $chan->speakers()->detach($user);
+                }
+            }
+        } elseif ('n' !== $flag[1]) {
+            $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
+        }
+    }
+
+    private function handleSessionFlags(CMD $cmd, SessionInterface $sess)
+    {
+        $flag = $cmd->getArg(1);
+        if ('i' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_INVISIBLE);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_INVISIBLE);
+            }
+        } elseif ('s' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
+            }
+        } elseif ('w' === $flag[1]) {
+            if ('+' === $flag[0]) {
+                $sess->setFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
+            }
+            if ('-' === $flag[0]) {
+                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
+            }
+        } elseif ('-o') {
+            $sess->clrFlag(SessionInterface::FLAG_IS_OPERATOR);
+        } else {
+            $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
+        }
+    }
 }

@@ -34,14 +34,17 @@ VarDumper::setHandler(function ($var) {
         // Simplify output for debug
         Session::class => function (Session $obj, $arr) {
             unset($arr["\x00" . Session::class . "\x00connection"]);
-            unset($arr["\x00" . Session::class . "\x00flags"]);
 
-            $flags = [];
-            foreach ((new \ReflectionObject($obj))->getConstants() as $name => $mask) {
-                $flags[Caster::PREFIX_VIRTUAL . $name] = $obj->hasFlag($mask);
+            if (isset($arr["\x00" . Session::class . "\x00flags"])) {
+                unset($arr["\x00" . Session::class . "\x00flags"]);
+
+                $flags = array_filter((new \ReflectionObject($obj))->getConstants(), [$obj, 'hasFlag']);
+                $flags = array_map(fn($f) => substr($f, 5), array_flip($flags));
+
+                $arr = ["\x00" . Session::class . "\x00flags" => new ConstStub(implode('|', $flags))] + $arr;
             }
 
-            return $flags + $arr;
+            return $arr;
         },
         Channel::class => function (Channel $obj, $arr) {
             unset($arr["\x00" . Session::class . "\x00flags"]);
@@ -54,6 +57,7 @@ VarDumper::setHandler(function ($var) {
         },
         Server::class => function ($obj, $arr) {
             unset($arr["\x00" . Server::class . "\x00loop"]);
+            unset($arr["\x00" . Server::class . "\x00config"]);
             unset($arr["\x00" . Server::class . "\x00socket"]);
             unset($arr["\x00" . Server::class . "\x00logger"]);
             unset($arr["\x00" . Server::class . "\x00events"]);
@@ -79,5 +83,5 @@ $config = new Config(
 );
 
 $logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
-$server = new Server($config, null, $logger);
+$server = new Server($config, $logger);
 $server->listen('0.0.0.0:6667');

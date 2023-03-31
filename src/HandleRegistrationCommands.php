@@ -167,6 +167,6 @@ trait HandleRegistrationCommands
             }
         }
         $this->history->addSession($sess);
-        $sess->close();//TODO check why disconnect all
+        $sess->close();
     }
 }

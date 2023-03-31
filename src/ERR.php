@@ -63,9 +63,89 @@ final class ERR extends MSG
                 return 'No such server';
             case self::ERR_NO_SUCH_CHANNEL:
                 return 'No such channel';
+            case self::ERR_CANNOT_SEND_TO_CHANNEL:
+                return 'Cannot send to channel';
+            case self::ERR_TOO_MANY_CHANNELS:
+                return 'You have joined too many channels';
+            case self::ERR_WAS_NO_SUCH_NICK:
+                return 'There was no such nickname';
+            case self::ERR_TOO_MANY_TARGETS:
+                return 'Duplicate recipients. No message delivered';
+            case self::ERR_NO_ORIGIN:
+                return 'No origin specified';
+            case self::ERR_NO_RECIPIENT:
+                return 'No recipient given (<command>)';
+            case self::ERR_NO_TEXT_TO_SEND:
+                return 'No text to send';
+            case self::ERR_NO_TOP_LEVEL:
+                return 'No toplevel domain specified';
+            case self::ERR_WILDCARD_TOP_LEVEL:
+                return 'Wildcard in toplevel domain';
+            case self::ERR_UNKNOWN_COMMAND:
+                return 'Unknown command';
+            case self::ERR_NO_MOTD:
+                return 'MOTD File is missing';
+            case self::ERR_NO_ADMIN_INFO:
+                return 'No administrative info available';
+            case self::ERR_FILE_ERROR:
+                return 'File error doing <file op> on <file>';
+            case self::ERR_NO_NICKNAME_GIVEN:
+                return 'No nickname given';
+            case self::ERR_ERRONEOUS_NICKNAME:
+                return 'Erroneous nickname';
             case self::ERR_NICKNAME_IN_USE:
                 return 'Nickname is already in use';
+            case self::ERR_NICKNAME_COLLISION:
+                return 'Nickname collision KILL';
+            case self::ERR_USER_NOT_IN_CHANNEL:
+                return 'They aren’t on that channel';
+            case self::ERR_NOT_ON_CHANNEL:
+                return 'You’re not on that channel';
+            case self::ERR_USER_ON_CHANNEL:
+                return 'is already on channel';
+            case self::ERR_NO_LOGIN:
+                return 'User not logged in';
+            case self::ERR_SUMMON_DISABLED:
+                return 'SUMMON has been disabled';
+            case self::ERR_USERS_DISABLED:
+                return 'USERS has been disabled';
+            case self::ERR_NOT_REGISTERED:
+                return 'You have not registered';
+            case self::ERR_NEED_MORE_PARAMS:
+                return 'Not enough parameters';
+            case self::ERR_ALREADY_REGISTERED:
+                return 'You may not re-register';
+            case self::ERR_NO_PERM_FOR_HOST:
+                return 'Your host isn’t among the privileged';
+            case self::ERR_PASSWORD_MISMATCH:
+                return 'Password incorrect';
+            case self::ERR_YOU_ARE_BANNED_CREEP:
+                return 'You are banned from this server';
+            case self::ERR_KEY_SET:
+                return 'Channel key already set';
+            case self::ERR_CHANNEL_IS_FULL:
+                return 'Cannot join channel (+l)';
+            case self::ERR_UNKNOWN_MODE:
+                return 'is unknown mode char to me';
+            case self::ERR_INVITE_ONLY_CHANNEL:
+                return 'Cannot join channel (+i)';
+            case self::ERR_BANNED_FROM_CHANNEL:
+                return 'Cannot join channel (+b)';
+            case self::ERR_BAD_CHANNEL_KEY:
+                return 'Cannot join channel (+k)';
+            case self::ERR_NO_PRIVILEGES:
+                return 'Permission Denied - You’re not an IRC operator';
+            case self::ERR_OPERATOR_PRIVILEGES_NEEDED:
+                return 'You’re not channel operator';
+            case self::ERR_CANNOT_KILL_SERVER:
+                return 'You cant kill a server!';
+            case self::ERR_NO_OPERATOR_HOST:
+                return 'No O-lines for your host';
+            case self::ERR_U_MODE_UNKNOWN_FLAG:
+                return 'Unknown MODE flag';
+            case self::ERR_USERS_DONT_MATCH:
+                return 'Cant change mode for other users';
         }
-        return null;// TODO: Implement resolveComment() method.
+        return null;
     }
 }

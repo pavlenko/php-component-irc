@@ -73,17 +73,15 @@ final class Server
 
     private ?SocketServer $socket = null;
     private LoopInterface $loop;
-    private EventsInterface $events;
     private LoggerInterface $logger;
 
-    public function __construct(Config $config, EventsInterface $events = null, LoggerInterface $logger = null)
+    public function __construct(Config $config, LoggerInterface $logger = null)
     {
         $this->config   = $config;//TODO config loader instead of config
         $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();
 
-        $this->events = $events ?: new Events();
         $this->logger = $logger ?: new NullLogger();
     }
 
@@ -118,12 +116,12 @@ final class Server
 
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
-            $conn = new Connection($connection, $this->events, $this->logger);
+            $conn = new Connection($connection, $this->logger);
             $sess = new Session($conn, $this->config->getName(), parse_url($connection->getRemoteAddress(), PHP_URL_HOST));
 
             $this->sessions->attach($sess);
 
-            $this->events->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
+            $conn->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
                 if (
                     !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
                     !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
@@ -139,7 +137,7 @@ final class Server
                 dump($this);
             });
 
-            $this->events->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));
+            $conn->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());

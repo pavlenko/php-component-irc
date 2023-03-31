@@ -6,23 +6,37 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\Socket\ConnectionInterface as SocketConnection;
 
-final class Connection implements ConnectionInterface
+final class Connection implements ConnectionInterface, EventsInterface
 {
     private SocketConnection $socket;
     private EventsInterface $events;
     private LoggerInterface $logger;
 
-    public function __construct(SocketConnection $socket, EventsInterface $events, LoggerInterface $logger = null)
+    public function __construct(SocketConnection $socket, LoggerInterface $logger = null, EventsInterface $events = null)
     {
         $this->socket = $socket;
-        $this->events = $events;
-
+        $this->events = $events ?: new Events();
         $this->logger = $logger ?: new NullLogger();
         $this->logger->notice('New connection from ' . $socket->getRemoteAddress());
 
         $this->socket->on('data', [$this, 'onInput']);
         $this->socket->on('error', fn($error) => $this->events->trigger(self::EVT_ERROR, $error));
         $this->socket->on('close', fn() => $this->events->trigger(self::EVT_CLOSE));
+    }
+
+    public function attach(string $event, callable $listener, int $priority = 0): void
+    {
+        $this->events->attach($event, $listener, $priority);
+    }
+
+    public function detach(string $event, callable $listener): void
+    {
+        $this->events->detach($event, $listener);
+    }
+
+    public function trigger(string $event, ...$arguments): int
+    {
+        return $this->events->trigger($event, ...$arguments);
     }
 
     /**
@@ -76,33 +90,6 @@ final class Connection implements ConnectionInterface
             return new ERR($prefix, $code, $args, $comment);
         }
         return new CMD($code, $args, $comment, $prefix);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function sendCMD(CMD $cmd): void
-    {
-        $this->logger->notice('> ' . $cmd->toLogger());
-        $this->socket->write($cmd->toString() . "\r\n");
-    }
-
-    /**
-     * @deprecated
-     */
-    public function sendERR(ERR $err): void
-    {
-        $this->logger->notice('> ' . $err->toLogger());
-        $this->socket->write($err->toString() . "\r\n");
-    }
-
-    /**
-     * @deprecated
-     */
-    public function sendRPL(RPL $rpl): void
-    {
-        $this->logger->notice('> ' . $rpl->toLogger());
-        $this->socket->write($rpl->toString() . "\r\n");
     }
 
     public function write(MSG $msg): bool

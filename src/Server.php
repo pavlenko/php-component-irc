@@ -195,6 +195,7 @@ final class Server
         return true;
     }
 
+    //TODO return false on error
     private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
     {
         $flag = $cmd->getArg(1);
@@ -268,16 +269,23 @@ final class Server
                     $chan->setPass('');
                 }
             }
-        } elseif ('b' === $flag[1]) {
+        } elseif ('b' === $flag[1]) {//TODO if not arg2 - send current ban list
+            //+ 2 or 3 args
+            //- 3 args
             if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
                 if ('+' === $flag[0]) {
-                    $chan->addBanMask($cmd->getArg(2));
+                    $masks = $this->channels->searchByName($cmd->getArg(0))->getBanMasks();
+                    foreach ($masks as $mask) {
+                        $sess->sendRPL(RPL::RPL_BAN_LIST, [$cmd->getArg(0), $mask]);
+                    }
+                    $sess->sendRPL(RPL::RPL_END_OF_BAN_LIST, [$cmd->getArg(0)]);
+                } else {
+                    $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
                 }
-                if ('-' === $flag[0]) {
-                    $chan->delBanMask($cmd->getArg(2));
-                }
+            } elseif ('+' === $flag[0]) {
+                $chan->addBanMask($cmd->getArg(2));
+            } elseif ('-' === $flag[0]) {
+                $chan->delBanMask($cmd->getArg(2));
             }
         } elseif ('v' === $flag[1]) {
             if ($cmd->numArgs() < 3) {

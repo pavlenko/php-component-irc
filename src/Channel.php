@@ -34,8 +34,11 @@ final class Channel implements ChannelInterface
         $this->operators->attach($creator);
 
         $this->setFlag(self::FLAG_NO_MSG_OUT);
+    }
 
-        //TODO sendInfo()
+    public function getBanMasks(): array
+    {
+        return $this->banMasks;
     }
 
     public function addBanMask(string $mask): void

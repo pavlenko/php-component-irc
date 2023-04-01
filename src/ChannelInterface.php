@@ -14,6 +14,7 @@ interface ChannelInterface
 
     public function __construct(SessionInterface $creator, string $name, string $pass = null);
 
+    public function getBanMasks(): array;
     public function addBanMask(string $mask): void;
     public function delBanMask(string $mask): void;
 

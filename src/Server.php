@@ -269,9 +269,7 @@ final class Server
                     $chan->setPass('');
                 }
             }
-        } elseif ('b' === $flag[1]) {//TODO if not arg2 - send current ban list
-            //+ 2 or 3 args
-            //- 3 args
+        } elseif ('b' === $flag[1]) {
             if ($cmd->numArgs() < 3) {
                 if ('+' === $flag[0]) {
                     $masks = $this->channels->searchByName($cmd->getArg(0))->getBanMasks();

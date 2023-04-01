@@ -30,6 +30,7 @@ interface ChannelInterface
     public function setTopic(string $topic): void;
     public function getLimit(): int;
     public function setLimit(int $limit): void;
+    public function getNamesAsString(): string;
     public function getFlagsAsString(): string;
     public function hasFlag(int $flag): bool;
     public function setFlag(int $flag): void;

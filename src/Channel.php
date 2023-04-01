@@ -108,6 +108,20 @@ final class Channel implements ChannelInterface
         $this->limit = $limit;
     }
 
+    public function getNamesAsString(): string
+    {
+        $names = [];
+        foreach ($this->sessions as $s) {
+            if ($this->operators->containsName($s->getNickname())) {
+                $flag = '@';
+            } elseif ($this->operators->containsName($s->getNickname())) {
+                $flag = '+';
+            }
+            $names[] = ($flag ?? '') . $s->getNickname();
+        }
+        return implode(' ', $names);
+    }
+
     public function getFlagsAsString(): string
     {
         $flags = '+';

@@ -4,139 +4,6 @@ namespace PE\Component\IRC;
 
 trait HandleChannelCommands
 {
-    /*private function handleChannelFlags(CMD $cmd, SessionInterface $sess, ChannelInterface $chan)
-    {
-        $flag = $cmd->getArg(1);
-        if ('o' === $flag[1]) {
-            if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
-                $user = $this->sessions->searchByName($cmd->getArg(2));
-                if (null === $user) {
-                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
-                } elseif ('+' === $flag[0]) {
-                    $chan->operators()->attach($user);
-                } elseif ('-' === $flag[0]) {
-                    $chan->operators()->detach($user);
-                }
-            }
-        } elseif ('p' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $chan->setFlag(ChannelInterface::FLAG_PRIVATE);
-            }
-            if ('-' === $flag[0]) {
-                $chan->clrFlag(ChannelInterface::FLAG_PRIVATE);
-            }
-        } elseif ('s' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $chan->setFlag(ChannelInterface::FLAG_SECRET);
-            }
-            if ('-' === $flag[0]) {
-                $chan->clrFlag(ChannelInterface::FLAG_SECRET);
-            }
-        } elseif ('i' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $chan->setFlag(ChannelInterface::FLAG_INVITE_ONLY);
-            }
-            if ('-' === $flag[0]) {
-                $chan->clrFlag(ChannelInterface::FLAG_INVITE_ONLY);
-            }
-        } elseif ('t' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $chan->setFlag(ChannelInterface::FLAG_TOPIC_SET);
-            }
-            if ('-' === $flag[0]) {
-                $chan->clrFlag(ChannelInterface::FLAG_TOPIC_SET);
-            }
-        } elseif ('m' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $chan->setFlag(ChannelInterface::FLAG_MODERATED);
-            }
-            if ('-' === $flag[0]) {
-                $chan->clrFlag(ChannelInterface::FLAG_MODERATED);
-            }
-        } elseif ('l' === $flag[1]) {
-            if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
-                if ('+' === $flag[0]) {
-                    $chan->setLimit((int) $cmd->getArg(2));
-                }
-                if ('-' === $flag[0]) {
-                    $chan->setLimit(0);
-                }
-            }
-        } elseif ('k' === $flag[1]) {
-            if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
-                if ('+' === $flag[0]) {
-                    $chan->setPass($cmd->getArg(2));
-                }
-                if ('-' === $flag[0]) {
-                    $chan->setPass('');
-                }
-            }
-        } elseif ('b' === $flag[1]) {
-            if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
-                if ('+' === $flag[0]) {
-                    $chan->addBanMask($cmd->getArg(2));
-                }
-                if ('-' === $flag[0]) {
-                    $chan->delBanMask($cmd->getArg(2));
-                }
-            }
-        } elseif ('v' === $flag[1]) {
-            if ($cmd->numArgs() < 3) {
-                $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-            } else {
-                $user = $this->sessions->searchByName($cmd->getArg(2));
-                if (null === $user) {
-                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
-                } elseif ('+' === $flag[0]) {
-                    $chan->speakers()->attach($user);
-                } elseif ('-' === $flag[0]) {
-                    $chan->speakers()->detach($user);
-                }
-            }
-        } elseif ('n' !== $flag[1]) {
-            $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
-        }
-    }*/
-
-    /*private function handleSessionFlags(CMD $cmd, SessionInterface $sess)
-    {
-        $flag = $cmd->getArg(1);
-        if ('i' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $sess->setFlag(SessionInterface::FLAG_INVISIBLE);
-            }
-            if ('-' === $flag[0]) {
-                $sess->clrFlag(SessionInterface::FLAG_INVISIBLE);
-            }
-        } elseif ('s' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $sess->setFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
-            }
-            if ('-' === $flag[0]) {
-                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_NOTICE);
-            }
-        } elseif ('w' === $flag[1]) {
-            if ('+' === $flag[0]) {
-                $sess->setFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
-            }
-            if ('-' === $flag[0]) {
-                $sess->clrFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
-            }
-        } elseif ('-o') {
-            $sess->clrFlag(SessionInterface::FLAG_IS_OPERATOR);
-        } else {
-            $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
-        }
-    }*/
-
     public function handleMODE(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 1) {
@@ -185,20 +52,26 @@ trait HandleChannelCommands
             $channels = array_filter(explode(',', (string) $cmd->getArg(0)));
             $keys     = array_filter(explode(',', (string) $cmd->getArg(1)));
 
-            foreach ($channels as $index => $channel) {
+            foreach ($channels as $index => $name) {
                 $key = $keys[$index] ?? null;
 
-                if (!$this->isValidChannelName($channel)) {
-                    $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
+                if (!$this->isValidChannelName($name)) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
                 } elseif ($this->config->getMaxChannels() > 0 && $this->config->getMaxChannels() <= count($sess->channels())) {
-                    $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$channel]);
+                    $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
                 } else {
-                    $chan = $this->channels->searchByName($channel);
+                    $chan = $this->channels->searchByName($name);
                     if (null === $chan) {
-                        $this->channels->attach($chan = new Channel($sess, $channel, $key));
+                        $this->channels->attach($chan = new Channel($sess, $name, $key));
+                    } else {
+                        $chan->sessions()->attach($sess);
                     }
                     $sess->channels()->attach($chan);
-                    $chan->sessions()->attach($sess);
+                    foreach ($chan->sessions() as $s) {
+                        $s->sendCMD($cmd->getCode(), [], $chan->getName(), $sess->getPrefix());
+                    }
+                    $this->handleTOPIC(new CMD(CMD::CMD_TOPIC, [$chan->getName()]), $sess);
+                    $this->handleNAMES(new CMD(CMD::CMD_NAMES, [$chan->getName()]), $sess);
                 }
             }
         }
@@ -321,7 +194,39 @@ trait HandleChannelCommands
     }
 
     public function handleNAMES(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() === 0) {
+            foreach ($this->channels as $chan) {
+                if (
+                    !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
+                    !$chan->hasFlag(ChannelInterface::FLAG_SECRET)
+                ) {
+                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString());// '= <name>' ???
+                }
+            }
+            $names = [];
+            foreach ($this->sessions as $user) {
+                if (!count($user->channels())) {
+                    $names[] = $user->getNickname();
+                }
+            }
+            $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['* *'], implode(' ', $names));
+            $sess->sendRPL(RPL::RPL_END_OF_NAMES, ['*']);
+        } else {
+            $channels = array_filter(explode(',', $cmd->getArg(0)));
+            foreach ($channels as $name) {
+                $chan = $this->channels->searchByName($name);
+                if (
+                    null !== $chan &&
+                    !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
+                    !$chan->hasFlag(ChannelInterface::FLAG_SECRET)
+                ) {
+                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString());// '= <name>' ???
+                    $sess->sendRPL(RPL::RPL_END_OF_NAMES, [$chan->getName()]);
+                }
+            }
+        }
+    }
 
     public function handleLIST(CMD $cmd, SessionInterface $sess): void
     {}

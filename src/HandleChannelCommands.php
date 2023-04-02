@@ -229,5 +229,30 @@ trait HandleChannelCommands
     }
 
     public function handleLIST(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() > 1 && $cmd->getArg(1) !== $sess->getServername()) {
+            $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(1)]);
+        } else {
+            $names = $cmd->numArgs() > 0 ? array_filter(explode(',', $cmd->getArg(0))) : [];
+
+            $sess->sendRPL(RPL::RPL_LIST_START, ['Channel'], 'Users Name');
+            foreach ($this->channels as $chan) {
+                if (!empty($names) && !in_array($chan->getName(), $names)) {
+                    continue;
+                }
+                if ($chan->hasFlag(ChannelInterface::FLAG_SECRET) && !$chan->sessions()->searchByName($sess->getNickname())) {
+                    continue;
+                }
+                if ($chan->hasFlag(ChannelInterface::FLAG_PRIVATE) && !$chan->sessions()->searchByName($sess->getNickname())) {
+                    $name = '*';
+                } else {
+                    $name  = $chan->getName();
+                    $info  = '[' . $chan->getFlagsAsString() . '] ' . $chan->getTopic();
+                }
+                //TODO filter users by visible flag???
+                $sess->sendRPL(RPL::RPL_LIST, [$name, count($chan->sessions())], $info ?? null);
+            }
+            $sess->sendRPL(RPL::RPL_LIST_END);
+        }
+    }
 }

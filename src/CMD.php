@@ -16,7 +16,7 @@ final class CMD extends MSG
     public const CMD_KICK        = 'KICK';
     public const CMD_KILL        = 'KILL';
     public const CMD_LINKS       = 'LINKS';
-    public const CMD_LIST        = 'LIST';
+    public const CMD_LIST        = 'LIST';//LIST [<channel>{,<channel>} [<server>]]
     public const CMD_MODE        = 'MODE';
     public const CMD_MOTD        = 'MOTD';//MODT [<server>]
     public const CMD_LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]

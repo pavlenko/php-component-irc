@@ -54,7 +54,7 @@ final class RPL extends MSG
     public const RPL_WHO_IS_CHANNELS  = 319;//:<prefix> <rpl code> <nick> :{[@|+]<channel><space>}
     public const RPL_WHO_WAS_USER     = 314;//:<prefix> <rpl code> <nick> <user> <host> * :<real name>
     public const RPL_END_OF_WHO_WAS   = 369;//:<prefix> <rpl code> <nick> :End of /WHOWAS
-    public const RPL_LIST_START       = 321;//:<prefix> <rpl code> <channel> :<users Name>
+    public const RPL_LIST_START       = 321;//:<prefix> <rpl code> "Channel" :Users Name
     public const RPL_LIST             = 322;//:<prefix> <rpl code> <channel> <# visible> :<topic>
     public const RPL_LIST_END         = 323;//:<prefix> <rpl code> :End of /LIST
     public const RPL_CHANNEL_MODE_IS  = 324;//:<prefix> <rpl code> <channel> <mode> <mode params>

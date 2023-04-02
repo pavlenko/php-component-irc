@@ -11,22 +11,32 @@ final class ChannelMap implements \Countable, \Iterator
 
     public function attach(Channel $chan): void
     {
-        $this->items[$chan->getName()] = $chan;
+        $this->items[spl_object_hash($chan)] = $chan;
     }
 
     public function detach(Channel $chan): void
     {
-        unset($this->items[$chan->getName()]);
+        unset($this->items[spl_object_hash($chan)]);
     }
 
     public function searchByName(string $name): ?ChannelInterface
     {
-        return $this->items[$name] ?? null;
+        foreach ($this->items as $item) {
+            if ($item->getName() === $name) {
+                return $item;
+            }
+        }
+        return null;
     }
 
     public function containsName(string $name): bool
     {
-        return isset($this->items[$name]);
+        foreach ($this->items as $item) {
+            if ($item->getName() === $name) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function count(): int

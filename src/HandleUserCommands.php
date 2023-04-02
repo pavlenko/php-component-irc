@@ -15,10 +15,75 @@ trait HandleUserCommands
     }
 
     public function handlePRIVMSG(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() === 0) {
+            $sess->sendERR(ERR::ERR_NO_RECIPIENT, [$cmd->getCode()]);
+        } elseif ($cmd->numArgs() === 1) {
+            $sess->sendERR(ERR::ERR_NO_TEXT_TO_SEND);
+        } else {
+            $receivers = array_filter(explode(',', $cmd->getArg(0)));
+            if (
+                $cmd->getCode() === CMD::CMD_NOTICE &&
+                (count($receivers) > 1 || in_array($cmd->getArg(0)[0], ['#', '&']))
+            ) {
+                $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $cmd->getArg(0));
+                return;
+            }
+            $unique = [];
+            foreach ($receivers as $receiver) {
+                if (in_array($receiver, $unique)) {
+                    $sess->sendERR(ERR::ERR_TOO_MANY_TARGETS, $receiver);
+                    return;
+                }
+                if (in_array($receiver[0], ['#', '&'])) {
+                    $chan = $this->channels->searchByName($receiver);
+                    if (null === $chan) {
+                        $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
+                        return;
+                    }
+                    if (!$chan->sessions()->searchByName($sess->getNickname())) {
+                        $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
+                        return;
+                    }
+                    if (
+                        $chan->hasFlag(ChannelInterface::FLAG_MODERATED) &&
+                        !$chan->operators()->searchByName($sess->getNickname()) &&
+                        !$chan->speakers()->searchByName($sess->getNickname())
+                    ) {
+                        $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
+                        continue;
+                    }
+                } elseif (!$this->sessions->searchByName($receiver)) {
+                    $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
+                    return;
+                }
+                $unique[] = $receiver;
+            }
+            foreach ($unique as $receiver) {
+                if (in_array($receiver[0], ['#', '&'])) {
+                    $chan = $this->channels->searchByName($receiver);
+                    foreach ($chan->sessions() as $user) {
+                        if ($user === $sess) {
+                            continue;
+                        }
+                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getArg(1));
+                    }
+                } else {
+                    $user = $this->sessions->searchByName($receiver);
+                    if ($cmd->getCode() === CMD::CMD_PRIVATE_MSG && $user->hasFlag(SessionInterface::FLAG_AWAY)) {
+                        $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
+                    } elseif ($cmd->getCode() !== CMD::CMD_NOTICE || $user->hasFlag(SessionInterface::FLAG_RECEIVE_NOTICE)) {
+                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getArg(1), $sess->getPrefix());
+                    }
+                }
+            }
+        }
+    }
 
     public function handleNOTICE(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        $this->handlePRIVMSG($cmd, $sess);
+    }
 
     public function handleAWAY(CMD $cmd, SessionInterface $sess): void
     {

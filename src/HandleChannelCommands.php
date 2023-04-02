@@ -16,6 +16,7 @@ trait HandleChannelCommands
                 if (null === $chan) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
                 } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
+                    //TODO allow read flags
                     $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$name]);
                 } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
                     $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$name]);

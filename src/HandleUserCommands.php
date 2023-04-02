@@ -18,7 +18,7 @@ trait HandleUserCommands
     {
         if ($cmd->numArgs() === 0) {
             $sess->sendERR(ERR::ERR_NO_RECIPIENT, [$cmd->getCode()]);
-        } elseif ($cmd->numArgs() === 1) {
+        } elseif (empty($cmd->getComment())) {
             $sess->sendERR(ERR::ERR_NO_TEXT_TO_SEND);
         } else {
             $receivers = array_filter(explode(',', $cmd->getArg(0)));
@@ -66,14 +66,14 @@ trait HandleUserCommands
                         if ($user === $sess) {
                             continue;
                         }
-                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getArg(1));
+                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getComment(), $sess->getPrefix());
                     }
                 } else {
                     $user = $this->sessions->searchByName($receiver);
                     if ($cmd->getCode() === CMD::CMD_PRIVATE_MSG && $user->hasFlag(SessionInterface::FLAG_AWAY)) {
                         $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
                     } elseif ($cmd->getCode() !== CMD::CMD_NOTICE || $user->hasFlag(SessionInterface::FLAG_RECEIVE_NOTICE)) {
-                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getArg(1), $sess->getPrefix());
+                        $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getComment(), $sess->getPrefix());
                     }
                 }
             }

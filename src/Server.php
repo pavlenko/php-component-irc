@@ -134,7 +134,7 @@ final class Server
                     $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
                 }
                 $sess->updLastMessageTime();
-                dump($this);
+                //dump($this);
             });
 
             $conn->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));

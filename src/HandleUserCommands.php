@@ -145,7 +145,62 @@ trait HandleUserCommands
     }
 
     public function handleWHOIS(CMD $cmd, SessionInterface $sess): void
-    {}
+    {
+        if ($cmd->numArgs() === 0) {
+            $sess->sendERR(ERR::ERR_NO_NICKNAME_GIVEN);
+        } else {
+            $suckNick = false;
+            foreach ($this->sessions as $user) {
+                if (
+                    !$this->isEqualToRegex($cmd->getArg(0), $user->getNickname()) ||
+                    $user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)
+                ) {
+                    continue;
+                }
+
+                $sess->sendRPL(RPL::RPL_WHO_IS_USER, [
+                    $user->getNickname(),
+                    $user->getUsername(),
+                    $user->getHostname(),
+                    '*',
+                ], $user->getRealname());
+
+                $channels = [];
+                foreach ($user->channels() as $chan) {
+                    if ($chan->hasFlag(ChannelInterface::FLAG_SECRET) || $chan->hasFlag(ChannelInterface::FLAG_PRIVATE)) {
+                        continue;
+                    }
+                    if ($chan->operators()->searchByName($user->getNickname())) {
+                        $channels[] = '@' . $chan->getName();
+                    } elseif ($chan->speakers()->searchByName($user->getNickname())) {
+                        $channels[] = '+' . $chan->getName();
+                    } else {
+                        $channels[] = $chan->getName();
+                    }
+                }
+
+                $sess->sendRPL(RPL::RPL_WHO_IS_CHANNELS, [$user->getNickname()], implode(' ', $channels));
+                $sess->sendRPL(RPL::RPL_WHO_IS_SERVER, [$user->getNickname(), $user->getServername()], $this->config(Config2::CFG_INFO));
+
+                if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {
+                    $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
+                }
+                if ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+                    $sess->sendRPL(RPL::RPL_WHO_IS_OPERATOR, [$user->getNickname()]);
+                }
+                $sess->sendRPL(RPL::RPL_WHO_IS_IDLE, [
+                    $user->getNickname(),
+                    time() - $user->getRegistrationTime(),
+                    $user->getRegistrationTime(),
+                ]);
+                $suckNick = true;
+            }
+            if (!$suckNick) {
+                $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
+            }
+            $sess->sendRPL(RPL::RPL_END_OF_WHO_IS, [$cmd->getArg(0)]);
+        }
+    }
 
     public function handleWHOWAS(CMD $cmd, SessionInterface $sess): void
     {}

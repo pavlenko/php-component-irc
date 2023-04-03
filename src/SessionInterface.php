@@ -47,4 +47,5 @@ interface SessionInterface
     public function updLastMessageTime(): void;
     public function getLastPingingTime(): int;
     public function updLastPingingTime(): void;
+    public function getRegistrationTime(): int;
 }

@@ -19,6 +19,7 @@ final class Session implements SessionInterface
     private string $quitMessage = '';
     private int $lastMessageTime = 0;
     private int $lastPingingTime = 0;
+    private int $registrationTime;
 
     private ChannelMap $channels;
 
@@ -31,6 +32,7 @@ final class Session implements SessionInterface
         $this->channels = new ChannelMap();
 
         $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
+        $this->registrationTime = time();
     }
 
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
@@ -193,5 +195,10 @@ final class Session implements SessionInterface
     public function updLastPingingTime(): void
     {
         $this->lastPingingTime = time();
+    }
+
+    public function getRegistrationTime(): int
+    {
+        return $this->registrationTime;
     }
 }

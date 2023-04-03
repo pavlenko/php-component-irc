@@ -50,7 +50,7 @@ final class RPL extends MSG
     public const RPL_WHO_IS_SERVER    = 312;//:<prefix> <rpl code> <nick> <server> :<server info>
     public const RPL_WHO_IS_OPERATOR  = 313;//:<prefix> <rpl code> <nick> :is an IRC operator
     public const RPL_WHO_IS_IDLE      = 317;//:<prefix> <rpl code> <nick> <integer> :seconds idle
-    public const RPL_END_OF_WHOIS     = 318;//:<prefix> <rpl code> <nick> :End of /WHOIS list
+    public const RPL_END_OF_WHO_IS    = 318;//:<prefix> <rpl code> <nick> :End of /WHOIS list
     public const RPL_WHO_IS_CHANNELS  = 319;//:<prefix> <rpl code> <nick> :{[@|+]<channel><space>}
     public const RPL_WHO_WAS_USER     = 314;//:<prefix> <rpl code> <nick> <user> <host> * :<real name>
     public const RPL_END_OF_WHO_WAS   = 369;//:<prefix> <rpl code> <nick> :End of /WHOWAS
@@ -113,7 +113,7 @@ final class RPL extends MSG
                 return 'is an IRC operator';
             case self::RPL_WHO_IS_IDLE      :
                 return 'seconds idle';
-            case self::RPL_END_OF_WHOIS     :
+            case self::RPL_END_OF_WHO_IS     :
                 return 'End of /WHOIS';
             case self::RPL_END_OF_WHO_WAS   :
                 return 'End of /WHOWAS';

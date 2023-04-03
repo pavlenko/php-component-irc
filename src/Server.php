@@ -80,7 +80,9 @@ final class Server
 
     public function __construct(string $config, LoggerInterface $logger = null)
     {
-        $this->config   = new Config2($config);
+        $this->config = new Config2($config);
+        $this->config->load();
+
         $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();

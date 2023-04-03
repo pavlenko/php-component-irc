@@ -41,7 +41,7 @@ class Config2 implements ConfigInterface
                 );
         }
 
-        $missing = array_diff_key(self::CFG_REQUIRED, $data);
+        $missing = array_diff_key(array_flip(self::CFG_REQUIRED), $data);
         if (!empty($missing)) {
             throw new \RuntimeException('Missing required config keys: ' . implode(',', $missing));
         }
@@ -57,7 +57,7 @@ class Config2 implements ConfigInterface
             self::CFG_VERSION_COMMENT      => $data[self::CFG_VERSION_COMMENT] ?? null,
             self::CFG_PASSWORD             => $data[self::CFG_PASSWORD] ?? null,
             self::CFG_MOTD_FILE            => $data[self::CFG_MOTD_FILE] ?? null,
-            self::CFG_INFO                 => $data[self::CFG_INFO],
+            self::CFG_INFO                 => $data[self::CFG_INFO] ?? '',
             self::CFG_MAX_CHANNELS         => $data[self::CFG_MAX_CHANNELS] ?? 0,
             self::CFG_MAX_INACTIVE_TIMEOUT => $data[self::CFG_MAX_INACTIVE_TIMEOUT] ?? self::DEFAULT_INACTIVE_TIMEOUT,
             self::CFG_MAX_RESPONSE_TIMEOUT => $data[self::CFG_MAX_RESPONSE_TIMEOUT] ?? self::DEFAULT_RESPONSE_TIMEOUT,
@@ -75,7 +75,7 @@ class Config2 implements ConfigInterface
             return $this->data;
         }
         if (!array_key_exists($key, $this->data)) {
-            throw new \InvalidArgumentException('Unknown config key');
+            throw new \InvalidArgumentException('Unknown config key ' . $key);
         }
         return $this->data[$key];
     }

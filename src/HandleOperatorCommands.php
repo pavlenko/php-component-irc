@@ -8,7 +8,7 @@ trait HandleOperatorCommands
     {
         if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
             $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
-        } elseif ($cmd->numArgs() < 2) {
+        } elseif ($cmd->numArgs() === 0 || empty($cmd->getComment())) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } elseif ($this->config(Config2::CFG_SERVERNAME) === $cmd->getArg(0)) {
             $sess->sendERR(ERR::ERR_CANNOT_KILL_SERVER);
@@ -17,8 +17,10 @@ trait HandleOperatorCommands
             if (null === $user) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
             } else {
-                $sess->sendCMD($cmd->getArg(1));//TODO check
-                $sess->close();
+                //TODO check what response needed
+                //$user->sendCMD('', [], $cmd->getComment());
+                $user->sendCMD($cmd->getCode(), [$user->getNickname()], $cmd->getComment(), $user->getPrefix());
+                $user->close();
             }
         }
     }

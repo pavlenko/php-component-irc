@@ -4,45 +4,6 @@ namespace PE\Component\IRC;
 
 trait HandleRegistrationCommands
 {
-    /*private function isValidChannelName(string $name): bool
-    {
-        if (strlen($name) > 50) {
-            $this->logger->debug('Session name must be less than 51 chars');
-            return false;
-        }
-        if (!preg_match('/^[#@+!].+$/', $name)) {
-            $this->logger->debug('Channel name must starts with "#", "@", "+" or "!"');
-            return false;
-        }
-        if (!preg_match('/^[\w\-\[\]\\\`^{}]+$/', $name)) {
-            $this->logger->debug('Channel name contain invalid chars');
-            return false;
-        }
-
-        return false;
-    }*/
-
-    /*private function isValidSessionName(string $name): bool
-    {
-        if (strlen($name) > 9) {
-            $this->logger->debug('Session name must be less than 10 chars');
-            return false;
-        }
-        if (preg_match('/^[0-9-].+$/', $name)) {
-            $this->logger->debug('Session name must not starts with number or "-"');
-            return false;
-        }
-        if (!preg_match('/^[\w\-\[\]\\\`^{}]+$/', $name)) {
-            $this->logger->debug('Session name contain invalid chars');
-            return false;
-        }
-        if ($this->config->getName() === $name) {
-            $this->logger->debug('Session name must not equal server name');
-            return false;
-        }
-        return true;
-    }*/
-
     private function handleRegistration(SessionInterface $sess): void
     {
         if (
@@ -51,7 +12,7 @@ trait HandleRegistrationCommands
         ) {
             return;
         }
-        if (!empty($this->config->getPassword()) && $this->config->getPassword() !== $sess->getPassword()) {
+        if (!empty($this->config(Config2::CFG_PASSWORD)) && $this->config(Config2::CFG_PASSWORD) !== $sess->getPassword()) {
             $sess->close();
             return;
         }
@@ -61,11 +22,15 @@ trait HandleRegistrationCommands
 
         $sess->setFlag(SessionInterface::FLAG_REGISTERED);
         $sess->sendRPL(RPL::RPL_WELCOME);
-        $sess->sendRPL(RPL::RPL_YOUR_HOST, [], "Your host is {$this->config->getName()}, running version {$this->config->getVersionNumber()}");
-        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config->getCreatedAt()}");
+        $sess->sendRPL(RPL::RPL_YOUR_HOST, [], sprintf(
+            "Your host is %s, running version %s",
+            $this->config(Config2::CFG_SERVERNAME),
+            $this->config(Config2::CFG_VERSION_NUMBER)
+        ));
+        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config(Config2::CFG_CREATED_AT)}");
         $sess->sendRPL(RPL::RPL_MY_INFO, [
-            $this->config->getName(),
-            $this->config->getVersionNumber(),
+            $this->config(Config2::CFG_SERVERNAME),
+            $this->config(Config2::CFG_VERSION_NUMBER),
             implode(['i', 'o', 's', 'w']),
             implode(['b', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'v']),
             implode(['b', 'k', 'l', 'o', 'v']),
@@ -160,9 +125,9 @@ trait HandleRegistrationCommands
     {
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        } elseif (count($this->operators) === 0) {
+        } elseif (count($this->config(Config2::CFG_OPERATORS)) === 0) {
             $sess->sendERR(ERR::ERR_NO_OPERATOR_HOST);
-        } elseif (hash('sha256', $cmd->getArg(1)) === ($this->operators[$cmd->getArg(0)] ?? null)) {
+        } elseif (hash('sha256', (string) $cmd->getArg(1)) === ($this->config(Config2::CFG_OPERATORS)[$cmd->getArg(0)] ?? null)) {
             $sess->sendERR(ERR::ERR_PASSWORD_MISMATCH);
         } else {
             $sess->setFlag($sess::FLAG_IS_OPERATOR);

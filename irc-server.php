@@ -71,19 +71,6 @@ VarDumper::setHandler(function ($var) {
     $dumper->dump($cloner->cloneVar($var));
 });
 
-$config = new Config(
-    'local.dev',
-    'test',
-    'test',
-    'test@local.dev',
-    'v1.0',
-    'dev',
-    'testing',
-    date(Config::DEFAULT_DATETIME_FORMAT),
-    null,
-    __DIR__ . '/IRCat.motd'
-);
-
 $logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
-$server = new Server($config, $logger);
+$server = new Server(__DIR__ . '/irc-config.php', $logger);
 $server->listen('0.0.0.0:6667');

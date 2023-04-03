@@ -58,7 +58,7 @@ trait HandleChannelCommands
 
                 if (!$this->isValidChannelName($name)) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
-                } elseif ($this->config->getMaxChannels() > 0 && $this->config->getMaxChannels() <= count($sess->channels())) {
+                } elseif ($this->config(Config2::CFG_MAX_CHANNELS) > 0 && $this->config(Config2::CFG_MAX_CHANNELS) <= count($sess->channels())) {
                     $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
                 } else {
                     $chan = $this->channels->searchByName($name);

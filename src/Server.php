@@ -64,9 +64,9 @@ final class Server
     ];
 
     /**
-     * @var Config|ConfigInterface
+     * @var Config2
      */
-    private Config $config;
+    private Config2 $config;
     private History $history;
     private SessionMap $sessions;
     private ChannelMap $channels;
@@ -78,9 +78,9 @@ final class Server
     private LoopInterface $loop;
     private LoggerInterface $logger;
 
-    public function __construct(Config $config, LoggerInterface $logger = null)
+    public function __construct(string $config, LoggerInterface $logger = null)
     {
-        $this->config   = $config;//TODO config loader instead of config
+        $this->config   = new Config2($config);
         $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();
@@ -104,10 +104,11 @@ final class Server
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
-        $this->loop->addPeriodicTimer($this->config->getMaxInactiveTimeout(), function () {
+        $this->loop->addPeriodicTimer($this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT), function () {
             foreach ($this->sessions as $user) {
-                if (time() - $user->getLastMessageTime() > $this->config->getMaxInactiveTimeout()) {
-                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config->getName());
+                                                           $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT);
+                if (time() - $user->getLastMessageTime() > $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT)) {
+                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config2::CFG_SERVERNAME));
                     $user->updLastMessageTime();
                     $user->updLastPingingTime();
                     $user->setFlag(SessionInterface::FLAG_PINGING);
@@ -115,7 +116,7 @@ final class Server
 
                 if (
                     $user->hasFlag(SessionInterface::FLAG_PINGING) &&
-                    time() - $user->getLastPingingTime() > $this->config->getMaxInactiveTimeout()
+                    time() - $user->getLastPingingTime() > $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT)
                 ) {
                     $user->close();
                 }
@@ -125,7 +126,11 @@ final class Server
         $this->socket = new SocketServer($address, [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
             $conn = new Connection($connection, $this->logger);
-            $sess = new Session($conn, $this->config->getName(), parse_url($connection->getRemoteAddress(), PHP_URL_HOST));
+            $sess = new Session(
+                $conn,
+                $this->config(Config2::CFG_SERVERNAME),
+                parse_url($connection->getRemoteAddress(), PHP_URL_HOST)
+            );
 
             $this->sessions->attach($sess);
 
@@ -196,7 +201,7 @@ final class Server
             $this->logger->debug('Session name contain invalid chars');
             return false;
         }
-        if ($this->config->getName() === $name) {
+        if ($this->config(Config2::CFG_SERVERNAME) === $name) {
             $this->logger->debug('Session name must not equal server name');
             return false;
         }

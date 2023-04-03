@@ -36,6 +36,7 @@ interface ConfigInterface
     ];
 
     public function __construct(string $path);
+    public function path(): string;
     public function load(): void;
     public function get(string $key = null);
 }

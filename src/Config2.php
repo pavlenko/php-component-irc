@@ -14,6 +14,11 @@ class Config2 implements ConfigInterface
         $this->path = $path;
     }
 
+    public function path(): string
+    {
+        return $this->path;
+    }
+
     public function load(): void
     {
         if (!is_readable($this->path)) {

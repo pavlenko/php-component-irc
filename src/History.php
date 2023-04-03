@@ -14,6 +14,10 @@ final class History
         $this->items[] = new HistoryItem($sess);
     }
 
+    /**
+     * @param string $name
+     * @return HistoryItem[]
+     */
     public function getByName(string $name): array
     {
         $history = [];

@@ -66,56 +66,89 @@ final class Config
         $this->maxResponseTimeout = $maxResponseTimeout ?: self::DEFAULT_RESPONSE_TIMEOUT;
     }
 
+    /**
+     * @deprecated
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
+    /**
+     * @deprecated
+     */
     public function getAdminLocation1(): string
     {
         return $this->adminLocation1;
     }
 
+    /**
+     * @deprecated
+     */
     public function getAdminLocation2(): string
     {
         return $this->adminLocation2;
     }
 
+    /**
+     * @deprecated
+     */
     public function getAdminEmail(): string
     {
         return $this->adminEmail;
     }
 
+    /**
+     * @deprecated
+     */
     public function getVersionNumber(): string
     {
         return $this->versionNumber;
     }
 
+    /**
+     * @deprecated
+     */
     public function getVersionDebug(): string
     {
         return $this->versionDebug;
     }
 
+    /**
+     * @deprecated
+     */
     public function getVersionComment(): string
     {
         return $this->versionComment;
     }
 
+    /**
+     * @deprecated
+     */
     public function getInfo(): string
     {
         return $this->info;
     }
 
+    /**
+     * @deprecated
+     */
     public function getCreatedAt(): string
     {
         return $this->createdAt;
     }
 
+    /**
+     * @deprecated
+     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
+    /**
+     * @deprecated
+     */
     public function getMOTD(): ?array
     {
         if (null !== $this->motdFile && is_readable($this->motdFile)) {
@@ -124,16 +157,25 @@ final class Config
         return null;
     }
 
+    /**
+     * @deprecated
+     */
     public function getMaxChannels(): int
     {
         return $this->maxChannels;
     }
 
+    /**
+     * @deprecated
+     */
     public function getMaxInactiveTimeout(): int
     {
         return $this->maxInactiveTimeout;
     }
 
+    /**
+     * @deprecated
+     */
     public function getMaxResponseTimeout(): int
     {
         return $this->maxResponseTimeout;

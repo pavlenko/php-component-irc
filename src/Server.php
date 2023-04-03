@@ -88,6 +88,11 @@ final class Server
         $this->logger = $logger ?: new NullLogger();
     }
 
+    public function config(string $key = null)
+    {
+        return $this->config->get($key);
+    }
+
     /**
      * @param string $address Port can be in range 6660–6669,7000
      * @param LoopInterface|null $loop

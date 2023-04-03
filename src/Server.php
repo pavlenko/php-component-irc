@@ -63,6 +63,9 @@ final class Server
         CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
     ];
 
+    /**
+     * @var Config|ConfigInterface
+     */
     private Config $config;
     private History $history;
     private SessionMap $sessions;

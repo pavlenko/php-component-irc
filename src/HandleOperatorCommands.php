@@ -10,7 +10,7 @@ trait HandleOperatorCommands
             $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
         } elseif ($cmd->numArgs() === 0 || empty($cmd->getComment())) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        } elseif ($this->config(Config2::CFG_SERVERNAME) === $cmd->getArg(0)) {
+        } elseif ($this->config(Config::CFG_SERVER_NAME) === $cmd->getArg(0)) {
             $sess->sendERR(ERR::ERR_CANNOT_KILL_SERVER);
         } else {
             $user = $this->sessions->searchByName($cmd->getArg(0));
@@ -37,8 +37,16 @@ trait HandleOperatorCommands
 
     public function handleRESTART(CMD $cmd, SessionInterface $sess): void
     {
-        //TODO close all user sessions
-        //TODO reload config
-        //TODO recreate server socket and start listen to it
+        if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+            $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+        } else {
+            foreach ($this->sessions as $user) {
+                $user->close();
+            }
+            $this->stop();
+            $this->config->load();
+            $this->listen();
+            $this->loop->run();
+        }
     }
 }

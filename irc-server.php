@@ -73,4 +73,4 @@ VarDumper::setHandler(function ($var) {
 
 $logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
 $server = new Server(__DIR__ . '/irc-config.php', $logger);
-$server->listen('0.0.0.0:6667');
+$server->listen();

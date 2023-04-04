@@ -4,7 +4,7 @@ namespace PE\Component\IRC;
 
 use Symfony\Component\Yaml\Yaml;
 
-class Config2 implements ConfigInterface
+class Config implements ConfigInterface
 {
     private string $path;
     private array $data = [];
@@ -47,7 +47,8 @@ class Config2 implements ConfigInterface
         }
 
         $this->data = [
-            self::CFG_SERVERNAME           => $data[self::CFG_SERVERNAME],
+            self::CFG_SERVER_LISTEN        => $data[self::CFG_SERVER_LISTEN] ?? '0.0.0.0:6667',
+            self::CFG_SERVER_NAME          => $data[self::CFG_SERVER_NAME],
             self::CFG_ADMIN_LOCATION1      => $data[self::CFG_ADMIN_LOCATION1],
             self::CFG_ADMIN_LOCATION2      => $data[self::CFG_ADMIN_LOCATION2],
             self::CFG_ADMIN_EMAIL          => $data[self::CFG_ADMIN_EMAIL],

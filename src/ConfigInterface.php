@@ -8,8 +8,9 @@ interface ConfigInterface
     public const DEFAULT_INACTIVE_TIMEOUT = 60;
     public const DEFAULT_RESPONSE_TIMEOUT = 10;
 
-    public const CFG_SERVERNAME      = 'name';
-    public const CFG_ADMIN_LOCATION1 = 'admin_location1';
+    public const CFG_SERVER_LISTEN        = 'listen';// Port can be in range 6660–6669,7000
+    public const CFG_SERVER_NAME          = 'name';
+    public const CFG_ADMIN_LOCATION1      = 'admin_location1';
     public const CFG_ADMIN_LOCATION2      = 'admin_location2';
     public const CFG_ADMIN_EMAIL          = 'admin_email';
     public const CFG_CREATED_AT           = 'created_at';
@@ -25,7 +26,7 @@ interface ConfigInterface
     public const CFG_OPERATORS            = 'operators';
 
     public const CFG_REQUIRED = [
-        self::CFG_SERVERNAME,
+        self::CFG_SERVER_NAME,
         self::CFG_ADMIN_LOCATION1,
         self::CFG_ADMIN_LOCATION2,
         self::CFG_ADMIN_EMAIL,

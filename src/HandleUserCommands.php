@@ -180,7 +180,7 @@ trait HandleUserCommands
                 }
 
                 $sess->sendRPL(RPL::RPL_WHO_IS_CHANNELS, [$user->getNickname()], implode(' ', $channels));
-                $sess->sendRPL(RPL::RPL_WHO_IS_SERVER, [$user->getNickname(), $user->getServername()], $this->config(Config2::CFG_INFO));
+                $sess->sendRPL(RPL::RPL_WHO_IS_SERVER, [$user->getNickname(), $user->getServername()], $this->config(Config::CFG_INFO));
 
                 if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {
                     $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
@@ -224,7 +224,7 @@ trait HandleUserCommands
                         $sess->sendRPL(RPL::RPL_WHO_IS_SERVER, [
                             $history[$i]->getNickname(),
                             $history[$i]->getServername()
-                        ], $this->config(Config2::CFG_INFO));
+                        ], $this->config(Config::CFG_INFO));
                     }
                 }
             }

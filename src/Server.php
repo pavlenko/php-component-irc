@@ -6,6 +6,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
+use React\EventLoop\TimerInterface;
 use React\Socket\ConnectionInterface as SocketConnection;
 use React\Socket\SocketServer;
 
@@ -64,9 +65,9 @@ final class Server
     ];
 
     /**
-     * @var Config2
+     * @var Config
      */
-    private Config2 $config;
+    private Config $config;
     private History $history;
     private SessionMap $sessions;
     private ChannelMap $channels;
@@ -74,13 +75,14 @@ final class Server
     /** @var array<string, string> */
     private array $operators = [];
 
-    private ?SocketServer $socket = null;
     private LoopInterface $loop;
     private LoggerInterface $logger;
+    private ?SocketServer $socket = null;
+    private ?TimerInterface $timer = null;
 
-    public function __construct(string $config, LoggerInterface $logger = null)
+    public function __construct(string $config, LoggerInterface $logger = null, LoopInterface $loop = null)
     {
-        $this->config = new Config2($config);
+        $this->config = new Config($config);
         $this->config->load();
 
         $this->history  = new History();
@@ -88,6 +90,7 @@ final class Server
         $this->sessions = new SessionMap();
 
         $this->logger = $logger ?: new NullLogger();
+        $this->loop   = $loop ?: Loop::get();
     }
 
     public function config(string $key = null)
@@ -95,22 +98,16 @@ final class Server
         return $this->config->get($key);
     }
 
-    /**
-     * @param string $address Port can be in range 6660–6669,7000
-     * @param LoopInterface|null $loop
-     * @return void
-     */
-    public function listen(string $address, LoopInterface $loop = null): void
+    public function listen(): void
     {
-        $this->loop = $loop ?: Loop::get();
         $this->loop->addSignal(SIGINT, [$this, 'stop']);
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
-        $this->loop->addPeriodicTimer($this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT), function () {
+        $this->timer = $this->loop->addPeriodicTimer($this->config(Config::CFG_MAX_INACTIVE_TIMEOUT), function () {
             foreach ($this->sessions as $user) {
-                                                           $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT);
-                if (time() - $user->getLastMessageTime() > $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT)) {
-                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config2::CFG_SERVERNAME));
+                                                           $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT);
+                if (time() - $user->getLastMessageTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT)) {
+                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config::CFG_SERVER_NAME));
                     $user->updLastMessageTime();
                     $user->updLastPingingTime();
                     $user->setFlag(SessionInterface::FLAG_PINGING);
@@ -118,19 +115,19 @@ final class Server
 
                 if (
                     $user->hasFlag(SessionInterface::FLAG_PINGING) &&
-                    time() - $user->getLastPingingTime() > $this->config(Config2::CFG_MAX_INACTIVE_TIMEOUT)
+                    time() - $user->getLastPingingTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT)
                 ) {
                     $user->close();
                 }
             }
         });
 
-        $this->socket = new SocketServer($address, [], $this->loop);
+        $this->socket = new SocketServer($this->config(Config::CFG_SERVER_LISTEN), [], $this->loop);
         $this->socket->on('connection', function (SocketConnection $connection) {
             $conn = new Connection($connection, $this->logger);
             $sess = new Session(
                 $conn,
-                $this->config(Config2::CFG_SERVERNAME),
+                $this->config(Config::CFG_SERVER_NAME),
                 parse_url($connection->getRemoteAddress(), PHP_URL_HOST)
             );
 
@@ -158,15 +155,18 @@ final class Server
         $this->logger->info('Listening on ' . $this->socket->getAddress());
     }
 
-    public function stop(int $signal = null)
+    public function stop()
     {
         $this->logger->info('Stopping server ...');
         if (null !== $this->socket) {
             $this->socket->close();
         }
-        if (null !== $signal) {
-            $this->loop->removeSignal($signal, [$this, 'stop']);
+        if (null !== $this->timer) {
+            $this->loop->cancelTimer($this->timer);
         }
+
+        $this->loop->removeSignal(SIGINT, [$this, 'stop']);
+        $this->loop->removeSignal(SIGTERM, [$this, 'stop']);
         $this->loop->stop();
         $this->logger->info('Stopping server OK');
     }
@@ -203,7 +203,7 @@ final class Server
             $this->logger->debug('Session name contain invalid chars');
             return false;
         }
-        if ($this->config(Config2::CFG_SERVERNAME) === $name) {
+        if ($this->config(Config::CFG_SERVER_NAME) === $name) {
             $this->logger->debug('Session name must not equal server name');
             return false;
         }

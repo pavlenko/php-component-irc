@@ -12,7 +12,7 @@ trait HandleRegistrationCommands
         ) {
             return;
         }
-        if (!empty($this->config(Config2::CFG_PASSWORD)) && $this->config(Config2::CFG_PASSWORD) !== $sess->getPassword()) {
+        if (!empty($this->config(Config::CFG_PASSWORD)) && $this->config(Config::CFG_PASSWORD) !== $sess->getPassword()) {
             $sess->close();
             return;
         }
@@ -24,13 +24,13 @@ trait HandleRegistrationCommands
         $sess->sendRPL(RPL::RPL_WELCOME);
         $sess->sendRPL(RPL::RPL_YOUR_HOST, [], sprintf(
             "Your host is %s, running version %s",
-            $this->config(Config2::CFG_SERVERNAME),
-            $this->config(Config2::CFG_VERSION_NUMBER)
+            $this->config(Config::CFG_SERVER_NAME),
+            $this->config(Config::CFG_VERSION_NUMBER)
         ));
-        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config(Config2::CFG_CREATED_AT)}");
+        $sess->sendRPL(RPL::RPL_CREATED, [], "This server was created {$this->config(Config::CFG_CREATED_AT)}");
         $sess->sendRPL(RPL::RPL_MY_INFO, [
-            $this->config(Config2::CFG_SERVERNAME),
-            $this->config(Config2::CFG_VERSION_NUMBER),
+            $this->config(Config::CFG_SERVER_NAME),
+            $this->config(Config::CFG_VERSION_NUMBER),
             implode(['i', 'o', 's', 'w']),
             implode(['b', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 's', 't', 'v']),
             implode(['b', 'k', 'l', 'o', 'v']),
@@ -120,9 +120,9 @@ trait HandleRegistrationCommands
     {
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        } elseif (count($this->config(Config2::CFG_OPERATORS)) === 0) {
+        } elseif (count($this->config(Config::CFG_OPERATORS)) === 0) {
             $sess->sendERR(ERR::ERR_NO_OPERATOR_HOST);
-        } elseif (hash('sha256', (string) $cmd->getArg(1)) === ($this->config(Config2::CFG_OPERATORS)[$cmd->getArg(0)] ?? null)) {
+        } elseif (hash('sha256', (string) $cmd->getArg(1)) === ($this->config(Config::CFG_OPERATORS)[$cmd->getArg(0)] ?? null)) {
             $sess->sendERR(ERR::ERR_PASSWORD_MISMATCH);
         } else {
             $sess->setFlag($sess::FLAG_IS_OPERATOR);

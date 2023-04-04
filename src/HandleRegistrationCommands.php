@@ -41,15 +41,10 @@ trait HandleRegistrationCommands
         //TODO luserunknown (253)
         //TODO luserchannels (254)
         //TODO luserme (255)
-        //TODO localusers (265)
-        //TODO globalusers (266)
-        //TODO statsconn (250)
+        //TODO localusers (265)-advanced
+        //TODO globalusers (266)-advanced
+        //TODO statsconn (250)-advanced
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
-        //TODO whoisuser (311)
-        //TODO whoisserver (312)
-        //TODO whoissecure (671)
-        //TODO whoisidle (317)
-        //TODO endofwhois (318)
     }
 
     public function handleCAP(CMD $cmd, SessionInterface $sess): void

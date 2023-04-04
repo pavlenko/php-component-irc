@@ -63,6 +63,7 @@ trait HandleChannelCommands
                 } else {
                     $chan = $this->channels->searchByName($name);
                     if (null === $chan) {
+                        //TODO bind user to channel without $creator
                         $this->channels->attach($chan = new Channel($sess, $name, $key));
                     } else {
                         $chan->sessions()->attach($sess);

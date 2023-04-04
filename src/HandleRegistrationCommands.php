@@ -135,10 +135,15 @@ trait HandleRegistrationCommands
         if ($cmd->numArgs() > 0) {
             $sess->setQuitMessage(implode(' ', $cmd->getArgs()));
         }
-        foreach ($sess->channels() as $channel) {
-            foreach ($channel->sessions() as $user) {
+        foreach ($sess->channels() as $chan) {
+            $chan->sessions()->detach($sess);
+            $chan->speakers()->detach($sess);
+            $chan->operators()->detach($sess);
+
+            $sess->channels()->detach($chan);
+            /*foreach ($channel->sessions() as $user) {
                 $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
-            }
+            }*/
         }
         $this->history->addSession($sess);
         $sess->close();

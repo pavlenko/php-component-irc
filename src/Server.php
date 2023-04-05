@@ -70,8 +70,6 @@ final class Server
 
     private Storage $storage;
     private History $history;
-    private SessionMap $sessions;
-    private ChannelMap $channels;
 
     private ?SocketServer $socket = null;
     private ?TimerInterface $timer = null;
@@ -84,10 +82,8 @@ final class Server
         $this->logger = $logger ?: new NullLogger();
         $this->loop   = $loop ?: Loop::get();
 
-        $this->storage  = new Storage($this->config, new Events(), $this->logger);
-        $this->history  = new History();
-        $this->channels = new ChannelMap();
-        $this->sessions = new SessionMap();
+        $this->storage = new Storage($this->config, new Events(), $this->logger);
+        $this->history = new History();
     }
 
     public function config(string $key = null)
@@ -101,8 +97,7 @@ final class Server
         $this->loop->addSignal(SIGTERM, [$this, 'stop']);
 
         $this->timer = $this->loop->addPeriodicTimer($this->config(Config::CFG_MAX_INACTIVE_TIMEOUT), function () {
-            foreach ($this->sessions as $user) {
-                                                           $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT);
+            foreach ($this->storage->sessions() as $user) {
                 if (time() - $user->getLastMessageTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT)) {
                     $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config::CFG_SERVER_NAME));
                     $user->updLastMessageTime();
@@ -128,7 +123,7 @@ final class Server
                 parse_url($connection->getRemoteAddress(), PHP_URL_HOST)
             );
 
-            $this->sessions->attach($sess);
+            $this->storage->sessions()->attach($sess);
 
             $conn->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
                 if (
@@ -143,10 +138,10 @@ final class Server
                     $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
                 }
                 $sess->updLastMessageTime();
-                dump($this);
+                dump($this->storage);
             });
 
-            $conn->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->sessions->detach($sess));
+            $conn->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->storage->sessions()->detach($sess));
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());
@@ -215,7 +210,7 @@ final class Server
             if ($cmd->numArgs() < 3) {
                 $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
             } else {
-                $user = $this->sessions->searchByName($cmd->getArg(2));
+                $user = $this->storage->sessions()->searchByName($cmd->getArg(2));
                 if (null === $user) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
                 } elseif ('+' === $flag[0]) {
@@ -284,7 +279,7 @@ final class Server
         } elseif ('b' === $flag[1]) {
             if ($cmd->numArgs() < 3) {
                 if ('+' === $flag[0]) {
-                    $masks = $this->channels->searchByName($cmd->getArg(0))->getBanMasks();
+                    $masks = $this->storage->channels()->searchByName($cmd->getArg(0))->getBanMasks();
                     foreach ($masks as $mask) {
                         $sess->sendRPL(RPL::RPL_BAN_LIST, [$cmd->getArg(0), $mask]);
                     }
@@ -301,7 +296,7 @@ final class Server
             if ($cmd->numArgs() < 3) {
                 $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
             } else {
-                $user = $this->sessions->searchByName($cmd->getArg(2));
+                $user = $this->storage->sessions()->searchByName($cmd->getArg(2));
                 if (null === $user) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
                 } elseif ('+' === $flag[0]) {

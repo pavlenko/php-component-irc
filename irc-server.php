@@ -57,12 +57,9 @@ VarDumper::setHandler(function ($var) {
 
             return $arr;
         },
-        Server::class => function ($obj, $arr) {
-            unset($arr["\x00" . Server::class . "\x00loop"]);
-            unset($arr["\x00" . Server::class . "\x00config"]);
-            unset($arr["\x00" . Server::class . "\x00socket"]);
-            unset($arr["\x00" . Server::class . "\x00logger"]);
-            unset($arr["\x00" . Server::class . "\x00events"]);
+        Storage::class => function ($obj, $arr) {
+            unset($arr["\x00" . Storage::class . "\x00logger"]);
+            unset($arr["\x00" . Storage::class . "\x00events"]);
             return $arr;
         },
     ]);

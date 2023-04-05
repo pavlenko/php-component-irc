@@ -87,7 +87,7 @@ trait HandleRegistrationCommands
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } elseif (!$this->isValidSessionName($cmd->getArg(0))) {
             $sess->sendERR(ERR::ERR_ERRONEOUS_NICKNAME, [$cmd->getArg(0)]);
-        } elseif ($this->sessions->containsName($cmd->getArg(0))) {
+        } elseif ($this->storage->sessions()->containsName($cmd->getArg(0))) {
             $sess->sendERR(ERR::ERR_NICKNAME_IN_USE, [$cmd->getArg(0)]);
         } else {
             if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
@@ -141,6 +141,9 @@ trait HandleRegistrationCommands
             $chan->operators()->detach($sess);
 
             $sess->channels()->detach($chan);
+            if (count($chan->sessions()) === 0) {
+                $this->storage->channels()->detach($chan);
+            }
             /*foreach ($channel->sessions() as $user) {
                 $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
             }*/

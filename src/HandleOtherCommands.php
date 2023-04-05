@@ -48,7 +48,7 @@ trait HandleOtherCommands
         } else {
             $resp = [];
             foreach ($cmd->getArgs() as $arg) {
-                if ($this->sessions->containsName($arg)) {
+                if ($this->storage->sessions()->containsName($arg)) {
                     $resp[] = $arg;
                 }
             }
@@ -94,7 +94,7 @@ trait HandleOtherCommands
         } else {
             $resp = [];
             foreach ($cmd->getArgs() as $arg) {
-                if ($user = $this->sessions->searchByName($arg)) {
+                if ($user = $this->storage->sessions()->searchByName($arg)) {
                     $resp[] = $arg
                         . ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
                         . '='
@@ -127,7 +127,7 @@ trait HandleOtherCommands
         } elseif ($cmd->numArgs() === 0) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            foreach ($this->sessions as $user) {
+            foreach ($this->storage->sessions() as $user) {
                 if ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
                     $user->sendCMD($cmd->getCode(), [], $cmd->getArg(0));
                 }

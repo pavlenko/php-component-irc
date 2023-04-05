@@ -36,7 +36,7 @@ trait HandleUserCommands
                     return;
                 }
                 if (in_array($receiver[0], ['#', '&'])) {
-                    $chan = $this->channels->searchByName($receiver);
+                    $chan = $this->storage->channels()->searchByName($receiver);
                     if (null === $chan) {
                         $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
                         return;
@@ -53,7 +53,7 @@ trait HandleUserCommands
                         $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
                         continue;
                     }
-                } elseif (!$this->sessions->searchByName($receiver)) {
+                } elseif (!$this->storage->sessions()->searchByName($receiver)) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
                     return;
                 }
@@ -61,7 +61,7 @@ trait HandleUserCommands
             }
             foreach ($unique as $receiver) {
                 if (in_array($receiver[0], ['#', '&'])) {
-                    $chan = $this->channels->searchByName($receiver);
+                    $chan = $this->storage->channels()->searchByName($receiver);
                     foreach ($chan->sessions() as $user) {
                         if ($user === $sess) {
                             continue;
@@ -69,7 +69,7 @@ trait HandleUserCommands
                         $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getComment(), $sess->getPrefix());
                     }
                 } else {
-                    $user = $this->sessions->searchByName($receiver);
+                    $user = $this->storage->sessions()->searchByName($receiver);
                     if ($cmd->getCode() === CMD::CMD_PRIVATE_MSG && $user->hasFlag(SessionInterface::FLAG_AWAY)) {
                         $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
                     } elseif ($cmd->getCode() !== CMD::CMD_NOTICE || $user->hasFlag(SessionInterface::FLAG_RECEIVE_NOTICE)) {
@@ -102,7 +102,7 @@ trait HandleUserCommands
         if ($cmd->numArgs() === 0) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            foreach ($this->sessions as $user) {
+            foreach ($this->storage->sessions() as $user) {
                 if (
                     $this->isEqualToRegex($cmd->getArg(0), $user->getNickname()) &&
                     !$user->hasFlag(SessionInterface::FLAG_INVISIBLE)
@@ -150,7 +150,7 @@ trait HandleUserCommands
             $sess->sendERR(ERR::ERR_NO_NICKNAME_GIVEN);
         } else {
             $suckNick = false;
-            foreach ($this->sessions as $user) {
+            foreach ($this->storage->sessions() as $user) {
                 if (
                     !$this->isEqualToRegex($cmd->getArg(0), $user->getNickname()) ||
                     $user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)
@@ -207,7 +207,7 @@ trait HandleUserCommands
         if ($cmd->numArgs() === 0) {
             $sess->sendERR(ERR::ERR_NO_NICKNAME_GIVEN);
         } else {
-            $user = $this->sessions->searchByName($cmd->getArg(0));
+            $user = $this->storage->sessions()->searchByName($cmd->getArg(0));
             if (null === $user) {
                 $history = $this->history->getByName($cmd->getArg(0));
                 if (empty($history)) {

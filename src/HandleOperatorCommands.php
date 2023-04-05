@@ -13,7 +13,7 @@ trait HandleOperatorCommands
         } elseif ($this->config(Config::CFG_SERVER_NAME) === $cmd->getArg(0)) {
             $sess->sendERR(ERR::ERR_CANNOT_KILL_SERVER);
         } else {
-            $user = $this->sessions->searchByName($cmd->getArg(0));
+            $user = $this->storage->sessions()->searchByName($cmd->getArg(0));
             if (null === $user) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
             } else {
@@ -40,7 +40,7 @@ trait HandleOperatorCommands
         if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
             $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
         } else {
-            foreach ($this->sessions as $user) {
+            foreach ($this->storage->sessions() as $user) {
                 $user->close();
             }
             $this->stop();

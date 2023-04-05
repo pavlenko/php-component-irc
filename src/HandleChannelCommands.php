@@ -12,7 +12,7 @@ trait HandleChannelCommands
             $name = $cmd->getArg(0);
             $flag = $cmd->getArg(1);
             if ('#' === $name[0]) {
-                $chan = $this->channels->searchByName($name);
+                $chan = $this->storage->channels()->searchByName($name);
                 if (null === $chan) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
                 } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
@@ -61,11 +61,11 @@ trait HandleChannelCommands
                 } elseif ($this->config(Config::CFG_MAX_CHANNELS) > 0 && $this->config(Config::CFG_MAX_CHANNELS) <= count($sess->channels())) {
                     $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
                 } else {
-                    $chan = $this->channels->searchByName($name);
+                    $chan = $this->storage->channels()->searchByName($name);
                     if (null === $chan) {
                         $chan = new Channel($name, $key);
                         $chan->operators()->attach($sess);
-                        $this->channels->attach($chan);
+                        $this->storage->channels()->attach($chan);
                     } else {
                         $chan->invited()->detach($sess);
                     }
@@ -86,7 +86,7 @@ trait HandleChannelCommands
         if ($cmd->numArgs() < 1) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            $chan = $this->channels->searchByName($cmd->getArg(0));
+            $chan = $this->storage->channels()->searchByName($cmd->getArg(0));
             if (null === $chan || !$chan->sessions()->searchByName($sess->getNickname())) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$cmd->getCode()]);
             } elseif ($cmd->numArgs() < 2) {
@@ -116,8 +116,8 @@ trait HandleChannelCommands
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            $user = $this->sessions->searchByName($cmd->getArg(0));
-            $chan = $this->channels->searchByName($cmd->getArg(1));
+            $user = $this->storage->sessions()->searchByName($cmd->getArg(0));
+            $chan = $this->storage->channels()->searchByName($cmd->getArg(1));
             if (null === $user) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
             } elseif (null === $chan || null === $chan->sessions()->searchByName($sess->getNickname())) {
@@ -142,7 +142,7 @@ trait HandleChannelCommands
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            $chan = $this->channels->searchByName($cmd->getArg(0));
+            $chan = $this->storage->channels()->searchByName($cmd->getArg(0));
             if (null === $chan) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$cmd->getArg(0)]);
             } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
@@ -150,7 +150,7 @@ trait HandleChannelCommands
             } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
             } else {
-                $user = $this->sessions->searchByName($cmd->getArg(1));
+                $user = $this->storage->sessions()->searchByName($cmd->getArg(1));
                 if (null === $user) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(1)]);
                 } elseif (!$chan->sessions()->searchByName($user->getNickname())) {
@@ -179,7 +179,7 @@ trait HandleChannelCommands
         } else {
             $channels = explode(',', $cmd->getArg(0));
             foreach ($channels as $channel) {
-                $chan = $this->channels->searchByName($channel);
+                $chan = $this->storage->channels()->searchByName($channel);
                 if (null === $chan) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
                 } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
@@ -192,6 +192,9 @@ trait HandleChannelCommands
                     $chan->speakers()->detach($sess);
                     $chan->operators()->detach($sess);
                     $sess->channels()->detach($chan);
+                    if (count($chan->sessions()) === 0) {
+                        $this->storage->channels()->detach($chan);
+                    }
                 }
             }
         }
@@ -200,7 +203,7 @@ trait HandleChannelCommands
     public function handleNAMES(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {
-            foreach ($this->channels as $chan) {
+            foreach ($this->storage->channels() as $chan) {
                 if (
                     !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
                     !$chan->hasFlag(ChannelInterface::FLAG_SECRET)
@@ -209,7 +212,7 @@ trait HandleChannelCommands
                 }
             }
             $names = [];
-            foreach ($this->sessions as $user) {
+            foreach ($this->storage->sessions() as $user) {
                 if (!count($user->channels())) {
                     $names[] = $user->getNickname();
                 }
@@ -219,7 +222,7 @@ trait HandleChannelCommands
         } else {
             $channels = array_filter(explode(',', $cmd->getArg(0)));
             foreach ($channels as $name) {
-                $chan = $this->channels->searchByName($name);
+                $chan = $this->storage->channels()->searchByName($name);
                 if (
                     null !== $chan &&
                     !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
@@ -240,7 +243,7 @@ trait HandleChannelCommands
             $names = $cmd->numArgs() > 0 ? array_filter(explode(',', $cmd->getArg(0))) : [];
 
             $sess->sendRPL(RPL::RPL_LIST_START, ['Channel'], 'Users Name');
-            foreach ($this->channels as $chan) {
+            foreach ($this->storage->channels() as $chan) {
                 if (!empty($names) && !in_array($chan->getName(), $names)) {
                     continue;
                 }

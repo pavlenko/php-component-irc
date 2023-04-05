@@ -20,6 +20,7 @@ final class Server
     use HandleOtherCommands;
 
     private ConfigInterface $config;
+    private EventsInterface $events;
     private LoggerInterface $logger;
     private LoopInterface $loop;
 
@@ -31,15 +32,18 @@ final class Server
 
     private array $handlers;
 
-    public function __construct(string $config, LoggerInterface $logger = null, LoopInterface $loop = null)
+    public function __construct(string $config, EventsInterface $events = null, LoggerInterface $logger = null, LoopInterface $loop = null)
     {
         $this->config = new Config($config);
         $this->config->load();
 
+        $this->events = $events ?: new Events();
+        $this->events->attach(Connection::EVT_INPUT, fn() => $this->onInput(...func_get_args()));
+
         $this->logger = $logger ?: new NullLogger();
         $this->loop   = $loop ?: Loop::get();
 
-        $this->storage = new Storage($this->config, new Events(), $this->logger);
+        $this->storage = new Storage($this->config, $this->events, $this->logger);
         $this->history = new History();
 
         $this->handlers = [
@@ -90,6 +94,20 @@ final class Server
         ];
     }
 
+    private function onInput(MSG $msg, SessionInterface $sess)
+    {
+        if (
+            !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
+            !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
+        ) {
+            $sess->sendERR(ERR::ERR_NOT_REGISTERED);
+        } elseif (is_callable($this->handlers[$msg->getCode()] ?? null)) {
+            call_user_func($this->handlers[$msg->getCode()], $msg, $sess, $this->storage);
+        }
+        $sess->updLastMessageTime();
+        dump($this->storage);
+    }
+
     public function config(string $key = null)
     {
         return $this->config->get($key);
@@ -129,7 +147,9 @@ final class Server
 
             $this->storage->sessions()->attach($sess);
 
-            $conn->attach(ConnectionInterface::EVT_INPUT, function (MSG $msg) use ($sess) {
+            $conn->attach(Connection::EVT_INPUT, fn(MSG $msg) => $this->events->trigger(Connection::EVT_INPUT, $msg, $sess));
+
+            /*$conn->attach(Connection::EVT_INPUT, function (MSG $msg) use ($sess) {
                 if (
                     !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
                     !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
@@ -140,7 +160,7 @@ final class Server
                 }
                 $sess->updLastMessageTime();
                 dump($this->storage);
-            });
+            });*/
 
             $conn->attach(ConnectionInterface::EVT_CLOSE, fn() => $this->storage->sessions()->detach($sess));
         });

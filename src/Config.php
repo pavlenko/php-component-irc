@@ -4,7 +4,7 @@ namespace PE\Component\IRC;
 
 use Symfony\Component\Yaml\Yaml;
 
-class Config implements ConfigInterface
+final class Config implements ConfigInterface
 {
     private string $path;
     private array $data = [];
@@ -68,16 +68,13 @@ class Config implements ConfigInterface
 
     /**
      * @param string|null $key
-     * @return string|int|array
+     * @return string|int|array|null
      */
     public function get(string $key = null)
     {
         if (null === $key) {
             return $this->data;
         }
-        if (!array_key_exists($key, $this->data)) {
-            throw new \InvalidArgumentException('Unknown config key ' . $key);
-        }
-        return $this->data[$key];
+        return $this->data[$key] ?? null;
     }
 }

@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC;
 
+use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -69,6 +71,8 @@ VarDumper::setHandler(function ($var) {
     $dumper->dump($cloner->cloneVar($var));
 });
 
-$logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
+//$logger = new ConsoleLogger(new ConsoleOutput(OutputInterface::VERBOSITY_DEBUG));
+
+$logger = new Logger(Logger::VERBOSITY_DEBUG);
 $server = new Server(__DIR__ . '/irc-config.php', null, $logger);
 $server->listen();

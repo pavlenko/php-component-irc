@@ -3,6 +3,7 @@
 namespace PE\Component\IRC;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
 use React\Socket\ConnectionInterface as SocketConnection;
 
@@ -20,7 +21,7 @@ final class Connection implements ConnectionInterface, EventsInterface
         $this->logger->notice('New connection from ' . $socket->getRemoteAddress());
 
         $this->socket->on('data', [$this, 'onInput']);
-        $this->socket->on('error', fn($error) => $this->events->trigger(self::EVT_ERROR, $error));
+        $this->socket->on('error', fn() => $this->events->trigger(self::EVT_ERROR, func_get_arg(0)));
         $this->socket->on('close', fn() => $this->events->trigger(self::EVT_CLOSE));
     }
 
@@ -51,7 +52,7 @@ final class Connection implements ConnectionInterface, EventsInterface
         foreach ($lines as $line) {
             try {
                 $msg = $this->decode(trim($line));
-                $this->logger->notice('< ' . $msg->toLogger());
+                $this->log(LogLevel::INFO, '< ' . $msg->toLogger());
                 $this->events->trigger(self::EVT_INPUT, $msg);
             } catch (\Throwable $error) {
                 $this->events->trigger(self::EVT_ERROR, $error, $line);
@@ -94,13 +95,24 @@ final class Connection implements ConnectionInterface, EventsInterface
 
     public function write(MSG $msg): bool
     {
-        $this->logger->notice('> ' . $msg->toLogger());
+        if ($msg instanceof CMD) {
+            $this->log(LogLevel::INFO, '> ' . $msg->toLogger());
+        } elseif ($msg instanceof RPL) {
+            $this->log(LogLevel::WARNING, '> ' . $msg->toLogger());
+        } elseif ($msg instanceof ERR) {
+            $this->log(LogLevel::ERROR, '> ' . $msg->toLogger());
+        }
         return $this->socket->write($msg->toString() . "\r\n");
     }
 
     public function close(): void
     {
-        $this->logger->notice('Close connection from ' . $this->socket->getRemoteAddress());
+        $this->log(LogLevel::NOTICE, 'Close connection from ' . $this->socket->getRemoteAddress());
         $this->socket->close();
+    }
+
+    private function log(string $level, string $message): void
+    {
+        $this->logger->log($level, 'C(' . spl_object_id($this) . ') ' . $message);
     }
 }

@@ -172,7 +172,7 @@ trait HandleChannelCommands
         }
     }
 
-    public function handlePART(CMD $cmd, SessionInterface $sess): void
+    /*public function handlePART(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -198,7 +198,7 @@ trait HandleChannelCommands
                 }
             }
         }
-    }
+    }*/
 
     public function handleNAMES(CMD $cmd, SessionInterface $sess): void
     {

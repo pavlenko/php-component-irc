@@ -4,7 +4,7 @@ namespace PE\Component\IRC;
 
 trait HandleRegistrationCommands
 {
-    private function handleRegistration(SessionInterface $sess): void
+    /*private function handleRegistration(SessionInterface $sess): void
     {
         if (
             //!$sess->hasFlag(SessionInterface::FLAG_CAP_RESOLVED) ||
@@ -45,7 +45,7 @@ trait HandleRegistrationCommands
         //TODO globalusers (266)-advanced
         //TODO statsconn (250)-advanced
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
-    }
+    }*/
 
     /*public function handleCAP(CMD $cmd, SessionInterface $sess): void
     {
@@ -70,7 +70,7 @@ trait HandleRegistrationCommands
         $this->handleRegistration($sess);
     }*/
 
-    public function handlePASS(CMD $cmd, SessionInterface $sess): void
+    /*public function handlePASS(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -79,9 +79,9 @@ trait HandleRegistrationCommands
         } else {
             $sess->setPassword($cmd->getArg(0));
         }
-    }
+    }*/
 
-    public function handleNICK(CMD $cmd, SessionInterface $sess): void
+    /*public function handleNICK(CMD $cmd, SessionInterface $sess): void
     {
         if (empty($cmd->getArg(0))) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -101,9 +101,9 @@ trait HandleRegistrationCommands
             $sess->setNickname($cmd->getArg(0));
         }
         $this->handleRegistration($sess);
-    }
+    }*/
 
-    public function handleUSER(CMD $cmd, SessionInterface $sess): void
+    /*public function handleUSER(CMD $cmd, SessionInterface $sess): void
     {
         if (count($cmd->getArgs()) < 3 || empty($cmd->getComment())) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -114,9 +114,9 @@ trait HandleRegistrationCommands
             $sess->setRealname($cmd->getComment());
         }
         $this->handleRegistration($sess);
-    }
+    }*/
 
-    public function handleOPER(CMD $cmd, SessionInterface $sess): void
+    /*public function handleOPER(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 2) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -128,7 +128,7 @@ trait HandleRegistrationCommands
             $sess->setFlag($sess::FLAG_IS_OPERATOR);
             $sess->sendRPL(RPL::RPL_YOU_ARE_OPERATOR);
         }
-    }
+    }*/
 
     public function handleQUIT(CMD $cmd, SessionInterface $sess): void
     {

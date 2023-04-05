@@ -3,6 +3,8 @@
 namespace PE\Component\IRC;
 
 use PE\Component\IRC\Handler\HandlerNICK;
+use PE\Component\IRC\Handler\HandlerOPER;
+use PE\Component\IRC\Handler\HandlerPART;
 use PE\Component\IRC\Handler\HandlerPASS;
 use PE\Component\IRC\Handler\HandlerUSER;
 use Psr\Log\LoggerInterface;
@@ -68,8 +70,8 @@ final class Server
             CMD::CMD_NAMES       => [$this, 'handleNAMES'],
             CMD::CMD_NICK        => new HandlerNICK(),
             CMD::CMD_NOTICE      => [$this, 'handleNOTICE'],
-            CMD::CMD_OPERATOR    => [$this, 'handleOPER'],
-            CMD::CMD_PART        => [$this, 'handlePART'],
+            CMD::CMD_OPERATOR    => new HandlerOPER(),
+            CMD::CMD_PART        => new HandlerPART(),
             CMD::CMD_PASSWORD    => new HandlerPASS(),
             CMD::CMD_PING        => [$this, 'handlePING'],
             CMD::CMD_PONG        => [$this, 'handlePONG'],

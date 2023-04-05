@@ -88,4 +88,14 @@ final class Storage implements StorageInterface
         }
         return true;
     }
+
+    public function isEqualToRegex(string $pattern, string $subject): bool
+    {
+        $parts = preg_split('/\*+/', $pattern);
+        $parts = array_map(fn($p) => preg_quote($p), $parts);
+
+        $compiled = '/^' . implode('[\w\-\[\]\\\`^{}]+', $parts) . '$/';
+
+        return preg_match($compiled, $subject);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC;
 
+use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerNICK;
 use PE\Component\IRC\Handler\HandlerOPER;
 use PE\Component\IRC\Handler\HandlerPART;
@@ -59,7 +60,7 @@ final class Server
             CMD::CMD_INFO        => [$this, 'handleINFO'],
             CMD::CMD_INVITE      => [$this, 'handleINVITE'],
             CMD::CMD_IS_ON       => [$this, 'handleISON'],
-            CMD::CMD_JOIN        => [$this, 'handleJOIN'],
+            CMD::CMD_JOIN        => new HandlerJOIN(),
             CMD::CMD_KICK        => [$this, 'handleKICK'],
             CMD::CMD_KILL        => [$this, 'handleKILL'],
             CMD::CMD_LINKS       => [$this, ''],//TODO

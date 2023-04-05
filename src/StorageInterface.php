@@ -22,5 +22,7 @@ interface StorageInterface
 
     public function isValidSessionName(string $name): bool;
 
+    public function isEqualToRegex(string $pattern, string $subject): bool;
+
     public function trigger(string $name, ...$args): int;
 }

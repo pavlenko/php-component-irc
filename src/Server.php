@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC;
 
+use PE\Component\IRC\Handler\HandlerNICK;
+use PE\Component\IRC\Handler\HandlerPASS;
 use PE\Component\IRC\Handler\HandlerUSER;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -64,11 +66,11 @@ final class Server
             CMD::CMD_MOTD        => [$this, 'handleMOTD'],
             CMD::CMD_LIST_USERS  => [$this, ''],//TODO
             CMD::CMD_NAMES       => [$this, 'handleNAMES'],
-            CMD::CMD_NICK        => [$this, 'handleNICK'],
+            CMD::CMD_NICK        => new HandlerNICK(),
             CMD::CMD_NOTICE      => [$this, 'handleNOTICE'],
             CMD::CMD_OPERATOR    => [$this, 'handleOPER'],
             CMD::CMD_PART        => [$this, 'handlePART'],
-            CMD::CMD_PASSWORD    => [$this, 'handlePASS'],
+            CMD::CMD_PASSWORD    => new HandlerPASS(),
             CMD::CMD_PING        => [$this, 'handlePING'],
             CMD::CMD_PONG        => [$this, 'handlePONG'],
             CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
@@ -83,8 +85,7 @@ final class Server
             CMD::CMD_TOPIC       => [$this, 'handleTOPIC'],
             CMD::CMD_TRACE       => [$this, ''],//TODO
             CMD::CMD_USER_HOST   => [$this, 'handleUSERHOST'],
-            //CMD::CMD_USER        => [self::class, 'handleUSER'],
-            CMD::CMD_USER        => new HandlerUSER,
+            CMD::CMD_USER        => new HandlerUSER(),
             CMD::CMD_USERS       => [$this, ''],//TODO
             CMD::CMD_VERSION     => [$this, 'handleVERSION'],
             CMD::CMD_WALLOPS     => [$this, 'handleWALLOPS'],

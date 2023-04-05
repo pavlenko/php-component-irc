@@ -12,7 +12,7 @@ interface ChannelInterface
     public const FLAG_TOPIC_SET   = 0b010000;//t - topic settable by channel operator only
     public const FLAG_NO_MSG_OUT  = 0b100000;//n - no messages to channel from clients on the outside
 
-    public function __construct(SessionInterface $creator, string $name, string $pass = null);
+    public function __construct(string $name, string $pass = null);
 
     public function getBanMasks(): array;
     public function addBanMask(string $mask): void;
@@ -23,7 +23,6 @@ interface ChannelInterface
     public function operators(): SessionMap;
     public function invited(): SessionMap;
 
-    public function getCreator(): SessionInterface;
     public function getName(): string;
     public function getPass(): string;
     public function setPass(string $pass): void;

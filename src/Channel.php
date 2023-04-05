@@ -4,7 +4,6 @@ namespace PE\Component\IRC;
 
 final class Channel implements ChannelInterface
 {
-    private SessionInterface $creator;
     private string $name;
     private string $pass;
     private string $topic = '';
@@ -19,19 +18,15 @@ final class Channel implements ChannelInterface
     private SessionMap $operators;
     private SessionMap $invited;
 
-    public function __construct(SessionInterface $creator, string $name, string $pass = null)
+    public function __construct(string $name, string $pass = null)
     {
-        $this->creator = $creator;
-        $this->name    = $name;
-        $this->pass    = (string) $pass;
+        $this->name = $name;
+        $this->pass = (string) $pass;
 
         $this->sessions  = new SessionMap();
         $this->speakers  = new SessionMap();
         $this->operators = new SessionMap();
         $this->invited   = new SessionMap();
-
-        $this->sessions->attach($creator);
-        $this->operators->attach($creator);
 
         $this->setFlag(self::FLAG_NO_MSG_OUT);
     }
@@ -69,11 +64,6 @@ final class Channel implements ChannelInterface
     public function invited(): SessionMap
     {
         return $this->invited;
-    }
-
-    public function getCreator(): SessionInterface
-    {
-        return $this->creator;
     }
 
     public function getName(): string

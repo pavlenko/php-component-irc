@@ -63,11 +63,13 @@ trait HandleChannelCommands
                 } else {
                     $chan = $this->channels->searchByName($name);
                     if (null === $chan) {
-                        //TODO bind user to channel without $creator
-                        $this->channels->attach($chan = new Channel($sess, $name, $key));
+                        $chan = new Channel($name, $key);
+                        $chan->operators()->attach($sess);
+                        $this->channels->attach($chan);
                     } else {
-                        $chan->sessions()->attach($sess);
+                        $chan->invited()->detach($sess);
                     }
+                    $chan->sessions()->attach($sess);
                     $sess->channels()->attach($chan);
                     foreach ($chan->sessions() as $s) {
                         $s->sendCMD($cmd->getCode(), [], $chan->getName(), $sess->getPrefix());

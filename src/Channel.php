@@ -13,9 +13,9 @@ final class Channel implements ChannelInterface
     /** @var string[] */
     private array $banMasks = [];
 
-    private SessionMap $sessions;
-    private SessionMap $speakers;
-    private SessionMap $operators;
+    private array $sessions = [];
+    private array $speakers = [];
+    private array $operators = [];
     private SessionMap $invited;
 
     public function __construct(string $name, string $pass = null)
@@ -23,9 +23,6 @@ final class Channel implements ChannelInterface
         $this->name = $name;
         $this->pass = (string) $pass;
 
-        $this->sessions  = new SessionMap();
-        $this->speakers  = new SessionMap();
-        $this->operators = new SessionMap();
         $this->invited   = new SessionMap();
 
         $this->setFlag(self::FLAG_NO_MSG_OUT);
@@ -46,19 +43,80 @@ final class Channel implements ChannelInterface
         unset($this->banMasks[$mask]);
     }
 
-    public function sessions(): SessionMap
+    public function numSessions(): int
     {
-        return $this->sessions;
+        return count($this->sessions);
     }
 
-    public function speakers(): SessionMap
+    public function getSessions(StorageInterface $storage): array
     {
-        return $this->speakers;
+        return array_filter(iterator_to_array($storage->sessions()), fn($i) => $this->hasSession($i));
     }
 
-    public function operators(): SessionMap
+    public function hasSession(SessionInterface $session): bool
     {
-        return $this->operators;
+        return array_key_exists(spl_object_hash($session), $this->sessions);
+    }
+
+    public function addSession(SessionInterface $session): void
+    {
+        $this->sessions[spl_object_hash($session)] = spl_object_id($session);
+    }
+
+    public function delSession(SessionInterface $session): void
+    {
+        //TODO detach from all
+        unset($this->sessions[spl_object_hash($session)]);
+    }
+
+    public function numSpeakers(): int
+    {
+        return count($this->speakers);
+    }
+
+    public function getSpeakers(StorageInterface $storage): array
+    {
+        return array_filter(iterator_to_array($storage->sessions()), fn($i) => $this->hasSpeaker($i));
+    }
+
+    public function hasSpeaker(SessionInterface $session): bool
+    {
+        return array_key_exists(spl_object_hash($session), $this->speakers);
+    }
+
+    public function addSpeaker(SessionInterface $session): void
+    {
+        $this->speakers[spl_object_hash($session)] = spl_object_id($session);
+    }
+
+    public function delSpeaker(SessionInterface $session): void
+    {
+        unset($this->speakers[spl_object_hash($session)]);
+    }
+
+    public function numOperators(): int
+    {
+        return count($this->operators);
+    }
+
+    public function getOperators(StorageInterface $storage): array
+    {
+        return array_filter(iterator_to_array($storage->sessions()), fn($i) => $this->hasOperator($i));
+    }
+
+    public function hasOperator(SessionInterface $session): bool
+    {
+        return array_key_exists(spl_object_hash($session), $this->operators);
+    }
+
+    public function addOperator(SessionInterface $session): void
+    {
+        $this->operators[spl_object_hash($session)] = spl_object_id($session);
+    }
+
+    public function delOperator(SessionInterface $session): void
+    {
+        unset($this->operators[spl_object_hash($session)]);
     }
 
     public function invited(): SessionMap
@@ -101,16 +159,16 @@ final class Channel implements ChannelInterface
         $this->limit = $limit;
     }
 
-    public function getNamesAsString(): string
+    public function getNamesAsString(StorageInterface $storage): string
     {
         $names = [];
-        foreach ($this->sessions as $s) {
-            if ($this->operators->containsName($s->getNickname())) {
+        foreach ($this->getSessions($storage) as $user) {
+            if ($this->hasOperator($user)) {
                 $flag = '@';
-            } elseif ($this->operators->containsName($s->getNickname())) {
+            } elseif ($this->hasSpeaker($user)) {
                 $flag = '+';
             }
-            $names[] = ($flag ?? '') . $s->getNickname();
+            $names[] = ($flag ?? '') . $user->getNickname();
         }
         return implode(' ', $names);
     }

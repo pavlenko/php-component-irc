@@ -37,11 +37,11 @@ final class HandlerMODE implements HandlerInterface
                 return $sess->sendRPL(RPL::RPL_END_OF_BAN_LIST, [$cmd->getArg(0)]);
             }
 
-            if (!$chan->operators()->searchByName($sess->getNickname())) {
+            if (!$chan->hasOperator($sess)) {
                 return $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$name]);
             }
 
-            if (!$chan->sessions()->searchByName($sess->getNickname())) {
+            if (!$chan->hasSession($sess)) {
                 return $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$name]);
             }
 
@@ -50,7 +50,7 @@ final class HandlerMODE implements HandlerInterface
             }
 
             if ($this->handleChannelFlags($cmd, $sess, $stor) === -1) {
-                foreach ($chan->sessions() as $user) {
+                foreach ($chan->getSessions($stor) as $user) {
                     $resp = $flag . ' ' . ('o' === $flag[1] || 'v' === $flag[1] ? $cmd->getArg(2) : '');
                     $user->sendCMD(CMD::CMD_MODE, [$name], $resp, $sess->getPrefix());
                 }
@@ -82,10 +82,10 @@ final class HandlerMODE implements HandlerInterface
                 return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
             }
             if ('+' === $flag[0]) {
-                $chan->operators()->attach($user);
+                $chan->addOperator($user);
             }
             if ('-' === $flag[0]) {
-                $chan->operators()->detach($user);
+                $chan->delOperator($user);
             }
         } elseif ('p' === $flag[1]) {
             if ('+' === $flag[0]) {
@@ -149,10 +149,10 @@ final class HandlerMODE implements HandlerInterface
                 return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
             }
             if ('+' === $flag[0]) {
-                $chan->speakers()->attach($user);
+                $chan->addSpeaker($user);
             }
             if ('-' === $flag[0]) {
-                $chan->speakers()->detach($user);
+                $chan->delSpeaker($user);
             }
         } elseif ('n' !== $flag[1]) {
             return $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);

@@ -10,7 +10,7 @@ trait HandleChannelCommands
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
             $chan = $this->storage->channels()->searchByName($cmd->getArg(0));
-            if (null === $chan || !$chan->sessions()->searchByName($sess->getNickname())) {
+            if (null === $chan || !$chan->hasSession($sess)) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$cmd->getCode()]);
             } elseif ($cmd->numArgs() < 2) {
                 if (!empty($chan->getTopic())) {
@@ -19,14 +19,11 @@ trait HandleChannelCommands
                     $sess->sendRPL(RPL::RPL_NO_TOPIC, [$cmd->getArg(0)]);
                 }
             } else {
-                if (
-                    $chan->hasFlag(ChannelInterface::FLAG_TOPIC_SET) &&
-                    !$chan->operators()->searchByName($sess->getNickname())
-                ) {
+                if ($chan->hasFlag(ChannelInterface::FLAG_TOPIC_SET) && !$chan->hasOperator($sess)) {
                     $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$cmd->getArg(0)]);
                 } else {
                     $chan->setTopic($cmd->getArg(1));
-                    foreach ($chan->sessions() as $user) {
+                    foreach ($chan->getSessions($this->storage) as $user) {
                         $user->sendCMD(CMD::CMD_TOPIC, [$cmd->getArg(0)], $cmd->getArg(1));
                     }
                 }
@@ -43,11 +40,11 @@ trait HandleChannelCommands
             $chan = $this->storage->channels()->searchByName($cmd->getArg(1));
             if (null === $user) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
-            } elseif (null === $chan || null === $chan->sessions()->searchByName($sess->getNickname())) {
+            } elseif (null === $chan || !$chan->hasSession($sess)) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
-            } elseif (null !== $chan->sessions()->searchByName($user->getNickname())) {
+            } elseif ($chan->hasSession($sess)) {
                 $sess->sendERR(ERR::ERR_USER_ON_CHANNEL, [$chan->getName()]);
-            } elseif ($chan->hasFlag(ChannelInterface::FLAG_INVITE_ONLY) && !$chan->operators()->searchByName($sess->getNickname())) {
+            } elseif ($chan->hasFlag(ChannelInterface::FLAG_INVITE_ONLY) && !$chan->hasOperator($sess)) {
                 $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
             } else {
                 $chan->invited()->attach($user);
@@ -68,75 +65,48 @@ trait HandleChannelCommands
             $chan = $this->storage->channels()->searchByName($cmd->getArg(0));
             if (null === $chan) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$cmd->getArg(0)]);
-            } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
-                $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
-            } elseif (!$chan->operators()->searchByName($sess->getNickname())) {
+            } elseif (!$chan->hasSession($sess)) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+            } elseif (!$chan->hasOperator($sess)) {
+                $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
             } else {
                 $user = $this->storage->sessions()->searchByName($cmd->getArg(1));
                 if (null === $user) {
                     $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(1)]);
-                } elseif (!$chan->sessions()->searchByName($user->getNickname())) {
+                } elseif (!$chan->hasSession($user)) {
                     $sess->sendERR(ERR::ERR_USER_NOT_IN_CHANNEL, [$cmd->getArg(1), $cmd->getArg(0)]);
                 } else {
-                    foreach ($chan->sessions() as $s) {
+                    foreach ($chan->getSessions($this->storage) as $s) {
                         $s->sendCMD(
                             $cmd->getCode(),
                             [$chan->getName(), $user->getNickname()],
                             $cmd->numArgs() > 2 ? $cmd->getArg(2) : $sess->getNickname()
                         );
                     }
-                    $chan->sessions()->detach($user);
-                    $chan->speakers()->detach($user);
-                    $chan->operators()->detach($user);
-                    $user->channels()->detach($chan);
+                    $chan->delSession($user);
+                    $chan->delSpeaker($user);
+                    $chan->delOperator($user);
+                    $user->delChannel($chan);
                 }
             }
         }
     }
 
-    /*public function handlePART(CMD $cmd, SessionInterface $sess): void
-    {
-        if ($cmd->numArgs() < 2) {
-            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        } else {
-            $channels = explode(',', $cmd->getArg(0));
-            foreach ($channels as $channel) {
-                $chan = $this->storage->channels()->searchByName($channel);
-                if (null === $chan) {
-                    $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
-                } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
-                    $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
-                } else {
-                    foreach ($chan->sessions() as $user) {
-                        $user->sendCMD($cmd->getCode(), [$chan->getName()]);
-                    }
-                    $chan->sessions()->detach($sess);
-                    $chan->speakers()->detach($sess);
-                    $chan->operators()->detach($sess);
-                    $sess->channels()->detach($chan);
-                    if (count($chan->sessions()) === 0) {
-                        $this->storage->channels()->detach($chan);
-                    }
-                }
-            }
-        }
-    }*/
-
     public function handleNAMES(CMD $cmd, SessionInterface $sess): void
     {
+        //TODO optimize
         if ($cmd->numArgs() === 0) {
             foreach ($this->storage->channels() as $chan) {
                 if (
                     !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
                     !$chan->hasFlag(ChannelInterface::FLAG_SECRET)
                 ) {
-                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString());// '= <name>' ???
+                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString($this->storage));
                 }
             }
             $names = [];
             foreach ($this->storage->sessions() as $user) {
-                if (!count($user->channels())) {
+                if (!$user->numChannels()) {
                     $names[] = $user->getNickname();
                 }
             }
@@ -151,7 +121,7 @@ trait HandleChannelCommands
                     !$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) &&
                     !$chan->hasFlag(ChannelInterface::FLAG_SECRET)
                 ) {
-                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString());// '= <name>' ???
+                    $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString($this->storage));
                     $sess->sendRPL(RPL::RPL_END_OF_NAMES, [$chan->getName()]);
                 }
             }
@@ -170,17 +140,17 @@ trait HandleChannelCommands
                 if (!empty($names) && !in_array($chan->getName(), $names)) {
                     continue;
                 }
-                if ($chan->hasFlag(ChannelInterface::FLAG_SECRET) && !$chan->sessions()->searchByName($sess->getNickname())) {
+                if ($chan->hasFlag(ChannelInterface::FLAG_SECRET) && !$chan->hasSession($sess)) {
                     continue;
                 }
-                if ($chan->hasFlag(ChannelInterface::FLAG_PRIVATE) && !$chan->sessions()->searchByName($sess->getNickname())) {
+                if ($chan->hasFlag(ChannelInterface::FLAG_PRIVATE) && !$chan->hasSession($sess)) {
                     $name = '*';
                 } else {
                     $name  = $chan->getName();
                     $info  = '[' . $chan->getFlagsAsString() . '] ' . $chan->getTopic();
                 }
                 //TODO filter users by visible flag???
-                $sess->sendRPL(RPL::RPL_LIST, [$name, count($chan->sessions())], $info ?? null);
+                $sess->sendRPL(RPL::RPL_LIST, [$name, $chan->numSessions()], $info ?? null);
             }
             $sess->sendRPL(RPL::RPL_LIST_END);
         }

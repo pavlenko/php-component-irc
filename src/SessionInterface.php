@@ -24,7 +24,16 @@ interface SessionInterface
     public function sendRPL(int $code, array $args = [], string $comment = null): bool;
     public function close(): void;
 
-    public function channels(): ChannelMap;
+    public function numChannels(): int;
+
+    /**
+     * @param StorageInterface $storage
+     * @return ChannelInterface[]
+     */
+    public function getChannels(StorageInterface $storage): array;
+    public function hasChannel(ChannelInterface $channel): bool;
+    public function addChannel(ChannelInterface $channel): void;
+    public function delChannel(ChannelInterface $channel): void;
 
     public function getServername(): string;
     public function getPassword(): string;

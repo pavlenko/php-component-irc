@@ -18,9 +18,39 @@ interface ChannelInterface
     public function addBanMask(string $mask): void;
     public function delBanMask(string $mask): void;
 
-    public function sessions(): SessionMap;
-    public function speakers(): SessionMap;
-    public function operators(): SessionMap;
+    public function numSessions(): int;
+
+    /**
+     * @param StorageInterface $storage
+     * @return SessionInterface[]
+     */
+    public function getSessions(StorageInterface $storage): array;
+    public function hasSession(SessionInterface $session): bool;
+    public function addSession(SessionInterface $session): void;
+    public function delSession(SessionInterface $session): void;
+
+    public function numSpeakers(): int;
+
+    /**
+     * @param StorageInterface $storage
+     * @return SessionInterface[]
+     */
+    public function getSpeakers(StorageInterface $storage): array;
+    public function hasSpeaker(SessionInterface $session): bool;
+    public function addSpeaker(SessionInterface $session): void;
+    public function delSpeaker(SessionInterface $session): void;
+
+    public function numOperators(): int;
+
+    /**
+     * @param StorageInterface $storage
+     * @return SessionInterface[]
+     */
+    public function getOperators(StorageInterface $storage): array;
+    public function hasOperator(SessionInterface $session): bool;
+    public function addOperator(SessionInterface $session): void;
+    public function delOperator(SessionInterface $session): void;
+
     public function invited(): SessionMap;
 
     public function getName(): string;
@@ -30,7 +60,7 @@ interface ChannelInterface
     public function setTopic(string $topic): void;
     public function getLimit(): int;
     public function setLimit(int $limit): void;
-    public function getNamesAsString(): string;
+    public function getNamesAsString(StorageInterface $storage): string;
     public function getFlagsAsString(): string;
     public function hasFlag(int $flag): bool;
     public function setFlag(int $flag): void;

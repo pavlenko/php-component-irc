@@ -24,7 +24,7 @@ final class HandlerNICK implements HandlerInterface
         }
 
         if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-            foreach ($sess->channels() as $channel) {
+            foreach ($sess->getChannels($stor) as $channel) {
                 foreach ($channel->sessions() as $user) {
                     $user->sendCMD($cmd->getCode(), [$cmd->getArg(0)], null, $sess->getPrefix());
                 }

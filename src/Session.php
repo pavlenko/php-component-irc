@@ -21,7 +21,7 @@ final class Session implements SessionInterface
     private int $lastPingingTime = 0;
     private int $registrationTime;
 
-    private ChannelMap $channels;
+    private array $channels = [];
 
     public function __construct(ConnectionInterface $connection, string $servername, string $hostname)
     {
@@ -29,11 +29,7 @@ final class Session implements SessionInterface
         $this->servername = $servername;
         $this->hostname   = $hostname;
 
-        $this->channels = new ChannelMap();
-
         $this->registrationTime = time();
-
-        //$this->setFlag(self::FLAG_REGISTER_PASS);
     }
 
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
@@ -60,9 +56,31 @@ final class Session implements SessionInterface
         $this->connection->close();
     }
 
-    public function channels(): ChannelMap
+    public function numChannels(): int
     {
-        return $this->channels;
+        return count($this->channels);
+    }
+
+    public function getChannels(StorageInterface $storage): array
+    {
+        return array_filter(iterator_to_array($storage->channels()), fn($i) => $this->hasChannel($i));
+    }
+
+    public function hasChannel(ChannelInterface $channel): bool
+    {
+        return array_key_exists(spl_object_hash($channel), $this->channels);
+    }
+
+    public function addChannel(ChannelInterface $channel): void
+    {
+        if (!$this->hasChannel($channel)) {
+            $this->channels[spl_object_hash($channel)] = spl_object_id($channel);
+        }
+    }
+
+    public function delChannel(ChannelInterface $channel): void
+    {
+        unset($this->channels[spl_object_hash($channel)]);
     }
 
     public function getServername(): string

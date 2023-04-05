@@ -21,19 +21,20 @@ final class HandlerPART implements HandlerInterface
 
             if (null === $chan) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
-            } elseif (!$chan->sessions()->searchByName($sess->getNickname())) {
+            } elseif (!$chan->hasSession($sess)) {
                 $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
             } else {
-                foreach ($chan->sessions() as $user) {
+                foreach ($chan->getSessions($stor) as $user) {
                     $user->sendCMD($cmd->getCode(), [$chan->getName()], $cmd->getComment(), $sess->getPrefix());
                 }
 
-                $chan->sessions()->detach($sess);
-                $chan->speakers()->detach($sess);
-                $chan->operators()->detach($sess);
-                $sess->channels()->detach($chan);
+                $chan->delSession($sess);
+                $chan->delSpeaker($sess);
+                $chan->delOperator($sess);
 
-                if (count($chan->sessions()) === 0) {
+                $sess->delChannel($chan);
+
+                if ($chan->numSessions() === 0) {
                     $stor->channels()->detach($chan);
                 }
             }

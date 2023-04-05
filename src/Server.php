@@ -8,6 +8,7 @@ use PE\Component\IRC\Handler\HandlerNICK;
 use PE\Component\IRC\Handler\HandlerOPER;
 use PE\Component\IRC\Handler\HandlerPART;
 use PE\Component\IRC\Handler\HandlerPASS;
+use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerUSER;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -19,7 +20,6 @@ use React\Socket\SocketServer;
 
 final class Server
 {
-    use HandleRegistrationCommands;
     use HandleUserCommands;
     use HandleChannelCommands;
     use HandleOperatorCommands;
@@ -78,7 +78,7 @@ final class Server
             CMD::CMD_PING        => [$this, 'handlePING'],
             CMD::CMD_PONG        => [$this, 'handlePONG'],
             CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
-            CMD::CMD_QUIT        => [$this, 'handleQUIT'],
+            CMD::CMD_QUIT        => new HandlerQUIT(),
             CMD::CMD_REHASH      => [$this, 'handleREHASH'],
             CMD::CMD_RESTART     => [$this, 'handleRESTART'],
             CMD::CMD_SERVER      => [$this, ''],//TODO
@@ -110,7 +110,7 @@ final class Server
             call_user_func($this->handlers[$msg->getCode()], $msg, $sess, $this->storage);
         }
         $sess->updLastMessageTime();
-        //dump($msg->getCode(), $this->storage);
+        dump($this->storage);
     }
 
     public function config(string $key = null)

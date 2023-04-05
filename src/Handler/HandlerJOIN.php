@@ -27,7 +27,7 @@ final class HandlerJOIN implements HandlerInterface
 
             if (!$stor->isValidChannelName($name)) {
                 $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
-            } elseif ($stor->conf(Config::CFG_MAX_CHANNELS) > 0 && $stor->conf(Config::CFG_MAX_CHANNELS) <= count($sess->channels())) {
+            } elseif ($stor->conf(Config::CFG_MAX_CHANNELS) > 0 && $stor->conf(Config::CFG_MAX_CHANNELS) <= $sess->numChannels()) {
                 $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
             } else {
                 $chan = $stor->channels()->searchByName($name);
@@ -36,10 +36,10 @@ final class HandlerJOIN implements HandlerInterface
                     $chan = new Channel($name, $key);
 
                     $stor->channels()->attach($chan);
-                    $sess->channels()->attach($chan);
+                    $sess->addChannel($chan);
 
-                    $chan->sessions()->attach($sess);
-                    $chan->operators()->attach($sess);
+                    $chan->addSession($sess);
+                    $chan->addOperator($sess);
 
                     $this->sendInfo($chan, $sess, $stor);
                     continue;
@@ -50,7 +50,7 @@ final class HandlerJOIN implements HandlerInterface
                     continue;
                 }
 
-                if ($chan->getLimit() > 0 && count($chan->sessions()) >= $chan->getLimit()) {
+                if ($chan->getLimit() > 0 && $chan->numSessions() >= $chan->getLimit()) {
                     $sess->sendERR(ERR::ERR_CHANNEL_IS_FULL, [$name]);
                     continue;
                 }
@@ -67,14 +67,14 @@ final class HandlerJOIN implements HandlerInterface
                     }
                 }
 
-                if ($chan->sessions()->searchByName($sess->getNickname())) {
+                if ($chan->hasSession($sess)) {
                     continue;
                 }
 
                 $chan->invited()->detach($sess);
 
-                $chan->sessions()->attach($sess);
-                $sess->channels()->attach($chan);
+                $chan->addSession($sess);
+                $sess->addChannel($chan);
 
                 $this->sendInfo($chan, $sess, $stor);
             }
@@ -84,7 +84,7 @@ final class HandlerJOIN implements HandlerInterface
 
     private function sendInfo(ChannelInterface $chan, SessionInterface $sess, StorageInterface $stor): void
     {
-        foreach ($chan->sessions() as $user) {
+        foreach ($chan->getSessions($stor) as $user) {
             $user->sendCMD(CMD::CMD_JOIN, [], $chan->getName(), $sess->getPrefix());
         }
 

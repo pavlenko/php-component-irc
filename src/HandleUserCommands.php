@@ -41,14 +41,14 @@ trait HandleUserCommands
                         $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
                         return;
                     }
-                    if (!$chan->sessions()->searchByName($sess->getNickname())) {
+                    if (!$chan->hasSession($sess)) {
                         $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
                         return;
                     }
                     if (
                         $chan->hasFlag(ChannelInterface::FLAG_MODERATED) &&
-                        !$chan->operators()->searchByName($sess->getNickname()) &&
-                        !$chan->speakers()->searchByName($sess->getNickname())
+                        !$chan->hasOperator($sess) &&
+                        !$chan->hasSpeaker($sess)
                     ) {
                         $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
                         continue;
@@ -62,7 +62,7 @@ trait HandleUserCommands
             foreach ($unique as $receiver) {
                 if (in_array($receiver[0], ['#', '&'])) {
                     $chan = $this->storage->channels()->searchByName($receiver);
-                    foreach ($chan->sessions() as $user) {
+                    foreach ($chan->getSessions($this->storage) as $user) {
                         if ($user === $sess) {
                             continue;
                         }
@@ -110,15 +110,15 @@ trait HandleUserCommands
                     $channelName = '*';
                     $userStatus  = '';
 
-                    foreach ($user->channels() as $channel) {
+                    foreach ($user->getChannels($this->storage) as $channel) {
                         if (
                             (!$channel->hasFlag(ChannelInterface::FLAG_SECRET) && !$channel->hasFlag(ChannelInterface::FLAG_PRIVATE)) ||
-                            $channel->sessions()->containsName($sess->getNickname())
+                            $channel->hasSession($sess)
                         ) {
                             $channelName = $channel->getName();
-                            if ($channel->operators()->searchByName($user->getNickname())) {
+                            if ($channel->hasOperator($user)) {
                                 $userStatus = '@';
-                            } elseif ($channel->speakers()->searchByName($user->getNickname())) {
+                            } elseif ($channel->hasSpeaker($user)) {
                                 $userStatus = '+';
                             }
                             break;
@@ -166,13 +166,13 @@ trait HandleUserCommands
                 ], $user->getRealname());
 
                 $channels = [];
-                foreach ($user->channels() as $chan) {
+                foreach ($user->getChannels($this->storage) as $chan) {
                     if ($chan->hasFlag(ChannelInterface::FLAG_SECRET) || $chan->hasFlag(ChannelInterface::FLAG_PRIVATE)) {
                         continue;
                     }
-                    if ($chan->operators()->searchByName($user->getNickname())) {
+                    if ($chan->hasOperator($user)) {
                         $channels[] = '@' . $chan->getName();
-                    } elseif ($chan->speakers()->searchByName($user->getNickname())) {
+                    } elseif ($chan->hasSpeaker($user)) {
                         $channels[] = '+' . $chan->getName();
                     } else {
                         $channels[] = $chan->getName();

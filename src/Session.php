@@ -32,6 +32,8 @@ final class Session implements SessionInterface
         $this->channels = new ChannelMap();
 
         $this->registrationTime = time();
+
+        //$this->setFlag(self::FLAG_REGISTER_PASS);
     }
 
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool
@@ -54,6 +56,7 @@ final class Session implements SessionInterface
 
     public function close(): void
     {
+        //TODO detach from all automatically
         $this->connection->close();
     }
 

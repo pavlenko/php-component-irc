@@ -8,5 +8,5 @@ use PE\Component\IRC\StorageInterface;
 
 interface HandlerInterface
 {
-    public function __invoke(CMD $CMD, SessionInterface $sess, StorageInterface $stor): void;
+    public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int;
 }

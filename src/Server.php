@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC;
 
+use PE\Component\IRC\Handler\HandlerUSER;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
@@ -18,52 +19,6 @@ final class Server
     use HandleOperatorCommands;
     use HandleOtherCommands;
 
-    private const COMMANDS = [
-        //CMD::CMD_CAP         => [self::class, 'handleCAP'],
-        CMD::CMD_ADMIN       => [self::class, 'handleADMIN'],
-        CMD::CMD_AWAY        => [self::class, 'handleAWAY'],
-        CMD::CMD_CONNECT     => [self::class, ''],//TODO
-        CMD::CMD_ERROR       => [self::class, ''],//TODO
-        CMD::CMD_INFO        => [self::class, 'handleINFO'],
-        CMD::CMD_INVITE      => [self::class, 'handleINVITE'],
-        CMD::CMD_IS_ON       => [self::class, 'handleISON'],
-        CMD::CMD_JOIN        => [self::class, 'handleJOIN'],
-        CMD::CMD_KICK        => [self::class, 'handleKICK'],
-        CMD::CMD_KILL        => [self::class, 'handleKILL'],
-        CMD::CMD_LINKS       => [self::class, ''],//TODO
-        CMD::CMD_LIST        => [self::class, 'handleLIST'],
-        CMD::CMD_MODE        => [self::class, 'handleMODE'],
-        CMD::CMD_MOTD        => [self::class, 'handleMOTD'],
-        CMD::CMD_LIST_USERS  => [self::class, ''],//TODO
-        CMD::CMD_NAMES       => [self::class, 'handleNAMES'],
-        CMD::CMD_NICK        => [self::class, 'handleNICK'],
-        CMD::CMD_NOTICE      => [self::class, 'handleNOTICE'],
-        CMD::CMD_OPERATOR    => [self::class, 'handleOPER'],
-        CMD::CMD_PART        => [self::class, 'handlePART'],
-        CMD::CMD_PASSWORD    => [self::class, 'handlePASS'],
-        CMD::CMD_PING        => [self::class, 'handlePING'],
-        CMD::CMD_PONG        => [self::class, 'handlePONG'],
-        CMD::CMD_PRIVATE_MSG => [self::class, 'handlePRIVMSG'],
-        CMD::CMD_QUIT        => [self::class, 'handleQUIT'],
-        CMD::CMD_REHASH      => [self::class, 'handleREHASH'],
-        CMD::CMD_RESTART     => [self::class, 'handleRESTART'],
-        CMD::CMD_SERVER      => [self::class, ''],//TODO
-        CMD::CMD_SERVER_QUIT => [self::class, ''],//TODO
-        CMD::CMD_STATS       => [self::class, ''],//TODO
-        CMD::CMD_SUMMON      => [self::class, ''],//TODO
-        CMD::CMD_TIME        => [self::class, 'handleTIME'],
-        CMD::CMD_TOPIC       => [self::class, 'handleTOPIC'],
-        CMD::CMD_TRACE       => [self::class, ''],//TODO
-        CMD::CMD_USER_HOST   => [self::class, 'handleUSERHOST'],
-        CMD::CMD_USER        => [self::class, 'handleUSER'],
-        CMD::CMD_USERS       => [self::class, ''],//TODO
-        CMD::CMD_VERSION     => [self::class, 'handleVERSION'],
-        CMD::CMD_WALLOPS     => [self::class, 'handleWALLOPS'],
-        CMD::CMD_WHOIS       => [self::class, 'handleWHOIS'],
-        CMD::CMD_WHO         => [self::class, 'handleWHO'],
-        CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
-    ];
-
     private ConfigInterface $config;
     private LoggerInterface $logger;
     private LoopInterface $loop;
@@ -73,6 +28,8 @@ final class Server
 
     private ?SocketServer $socket = null;
     private ?TimerInterface $timer = null;
+
+    private array $handlers;
 
     public function __construct(string $config, LoggerInterface $logger = null, LoopInterface $loop = null)
     {
@@ -84,6 +41,53 @@ final class Server
 
         $this->storage = new Storage($this->config, new Events(), $this->logger);
         $this->history = new History();
+
+        $this->handlers = [
+            //CMD::CMD_CAP         => [self::class, 'handleCAP'],
+            CMD::CMD_ADMIN       => [$this, 'handleADMIN'],
+            CMD::CMD_AWAY        => [$this, 'handleAWAY'],
+            CMD::CMD_CONNECT     => [$this, ''],//TODO
+            CMD::CMD_ERROR       => [$this, ''],//TODO
+            CMD::CMD_INFO        => [$this, 'handleINFO'],
+            CMD::CMD_INVITE      => [$this, 'handleINVITE'],
+            CMD::CMD_IS_ON       => [$this, 'handleISON'],
+            CMD::CMD_JOIN        => [$this, 'handleJOIN'],
+            CMD::CMD_KICK        => [$this, 'handleKICK'],
+            CMD::CMD_KILL        => [$this, 'handleKILL'],
+            CMD::CMD_LINKS       => [$this, ''],//TODO
+            CMD::CMD_LIST        => [$this, 'handleLIST'],
+            CMD::CMD_MODE        => [$this, 'handleMODE'],
+            CMD::CMD_MOTD        => [$this, 'handleMOTD'],
+            CMD::CMD_LIST_USERS  => [$this, ''],//TODO
+            CMD::CMD_NAMES       => [$this, 'handleNAMES'],
+            CMD::CMD_NICK        => [$this, 'handleNICK'],
+            CMD::CMD_NOTICE      => [$this, 'handleNOTICE'],
+            CMD::CMD_OPERATOR    => [$this, 'handleOPER'],
+            CMD::CMD_PART        => [$this, 'handlePART'],
+            CMD::CMD_PASSWORD    => [$this, 'handlePASS'],
+            CMD::CMD_PING        => [$this, 'handlePING'],
+            CMD::CMD_PONG        => [$this, 'handlePONG'],
+            CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
+            CMD::CMD_QUIT        => [$this, 'handleQUIT'],
+            CMD::CMD_REHASH      => [$this, 'handleREHASH'],
+            CMD::CMD_RESTART     => [$this, 'handleRESTART'],
+            CMD::CMD_SERVER      => [$this, ''],//TODO
+            CMD::CMD_SERVER_QUIT => [$this, ''],//TODO
+            CMD::CMD_STATS       => [$this, ''],//TODO
+            CMD::CMD_SUMMON      => [$this, ''],//TODO
+            CMD::CMD_TIME        => [$this, 'handleTIME'],
+            CMD::CMD_TOPIC       => [$this, 'handleTOPIC'],
+            CMD::CMD_TRACE       => [$this, ''],//TODO
+            CMD::CMD_USER_HOST   => [$this, 'handleUSERHOST'],
+            //CMD::CMD_USER        => [self::class, 'handleUSER'],
+            CMD::CMD_USER        => new HandlerUSER,
+            CMD::CMD_USERS       => [$this, ''],//TODO
+            CMD::CMD_VERSION     => [$this, 'handleVERSION'],
+            CMD::CMD_WALLOPS     => [$this, 'handleWALLOPS'],
+            CMD::CMD_WHOIS       => [$this, 'handleWHOIS'],
+            CMD::CMD_WHO         => [$this, 'handleWHO'],
+            CMD::CMD_WHO_WAS     => [$this, 'handleWHOWAS'],
+        ];
     }
 
     public function config(string $key = null)
@@ -131,15 +135,8 @@ final class Server
                     !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
                 ) {
                     $sess->sendERR(ERR::ERR_NOT_REGISTERED);
-                } elseif (
-                    array_key_exists($msg->getCode(), self::COMMANDS) &&
-                    (!empty(self::COMMANDS[$msg->getCode()][1]) || is_callable(self::COMMANDS[$msg->getCode()]))
-                ) {
-                    if (is_callable(self::COMMANDS[$msg->getCode()][1])) {
-                        call_user_func(self::COMMANDS[$msg->getCode()], $sess, $this->storage);
-                    } else {
-                        $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
-                    }
+                } elseif (is_callable($this->handlers[$msg->getCode()] ?? null)) {
+                    call_user_func($this->handlers[$msg->getCode()], $msg, $sess, $this->storage);
                 }
                 $sess->updLastMessageTime();
                 dump($this->storage);

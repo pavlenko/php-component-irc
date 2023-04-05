@@ -51,7 +51,16 @@ interface ChannelInterface
     public function addOperator(SessionInterface $session): void;
     public function delOperator(SessionInterface $session): void;
 
-    public function invited(): SessionMap;
+    public function numInvited(): int;
+
+    /**
+     * @param StorageInterface $storage
+     * @return SessionInterface[]
+     */
+    public function getInvited(StorageInterface $storage): array;
+    public function hasInvited(SessionInterface $session): bool;
+    public function addInvited(SessionInterface $session): void;
+    public function delInvited(SessionInterface $session): void;
 
     public function getName(): string;
     public function getPass(): string;

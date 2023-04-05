@@ -55,7 +55,7 @@ final class HandlerJOIN implements HandlerInterface
                     continue;
                 }
 
-                if ($chan->hasFlag(Channel::FLAG_INVITE_ONLY) && !$chan->invited()->searchByName($sess->getNickname())) {
+                if ($chan->hasFlag(Channel::FLAG_INVITE_ONLY) && !$chan->hasInvited($sess)) {
                     $sess->sendERR(ERR::ERR_INVITE_ONLY_CHANNEL, [$name]);
                     continue;
                 }
@@ -71,8 +71,7 @@ final class HandlerJOIN implements HandlerInterface
                     continue;
                 }
 
-                $chan->invited()->detach($sess);
-
+                $chan->delInvited($sess);
                 $chan->addSession($sess);
                 $sess->addChannel($chan);
 

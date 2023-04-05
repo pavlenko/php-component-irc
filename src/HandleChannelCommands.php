@@ -47,7 +47,7 @@ trait HandleChannelCommands
             } elseif ($chan->hasFlag(ChannelInterface::FLAG_INVITE_ONLY) && !$chan->hasOperator($sess)) {
                 $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
             } else {
-                $chan->invited()->attach($user);
+                $chan->addInvited($user);
                 $user->sendCMD(CMD::CMD_INVITE, [$user->getNickname()], $chan->getName(), $sess->getPrefix());
                 $sess->sendRPL(RPL::RPL_INVITING, [$chan->getName(), $user->getNickname()]);
                 if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {

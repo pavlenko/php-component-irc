@@ -16,15 +16,12 @@ final class Channel implements ChannelInterface
     private array $sessions = [];
     private array $speakers = [];
     private array $operators = [];
-    private SessionMap $invited;
+    private array $invited = [];
 
     public function __construct(string $name, string $pass = null)
     {
         $this->name = $name;
         $this->pass = (string) $pass;
-
-        $this->invited   = new SessionMap();
-
         $this->setFlag(self::FLAG_NO_MSG_OUT);
     }
 
@@ -65,7 +62,9 @@ final class Channel implements ChannelInterface
 
     public function delSession(SessionInterface $session): void
     {
-        //TODO detach from all
+        $this->delInvited($session);
+        $this->delSpeaker($session);
+        $this->delOperator($session);
         unset($this->sessions[spl_object_hash($session)]);
     }
 
@@ -119,9 +118,29 @@ final class Channel implements ChannelInterface
         unset($this->operators[spl_object_hash($session)]);
     }
 
-    public function invited(): SessionMap
+    public function numInvited(): int
     {
-        return $this->invited;
+        return count($this->invited);
+    }
+
+    public function getInvited(StorageInterface $storage): array
+    {
+        return array_filter(iterator_to_array($storage->sessions()), fn($i) => $this->hasInvited($i));
+    }
+
+    public function hasInvited(SessionInterface $session): bool
+    {
+        return array_key_exists(spl_object_hash($session), $this->invited);
+    }
+
+    public function addInvited(SessionInterface $session): void
+    {
+        $this->invited[spl_object_hash($session)] = spl_object_id($session);
+    }
+
+    public function delInvited(SessionInterface $session): void
+    {
+        unset($this->invited[spl_object_hash($session)]);
     }
 
     public function getName(): string

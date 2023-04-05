@@ -12,6 +12,8 @@ interface StorageInterface
      */
     public function conf(string $name);
 
+    public function history(): History;
+
     public function channels(): ChannelMap;
 
     public function sessions(): SessionMap;

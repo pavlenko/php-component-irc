@@ -64,19 +64,15 @@ final class Server
         CMD::CMD_WHO_WAS     => [self::class, 'handleWHOWAS'],
     ];
 
-    /**
-     * @var Config
-     */
-    private Config $config;
+    private ConfigInterface $config;
+    private LoggerInterface $logger;
+    private LoopInterface $loop;
+
+    private Storage $storage;
     private History $history;
     private SessionMap $sessions;
     private ChannelMap $channels;
 
-    /** @var array<string, string> */
-    private array $operators = [];
-
-    private LoopInterface $loop;
-    private LoggerInterface $logger;
     private ?SocketServer $socket = null;
     private ?TimerInterface $timer = null;
 
@@ -85,12 +81,13 @@ final class Server
         $this->config = new Config($config);
         $this->config->load();
 
+        $this->logger = $logger ?: new NullLogger();
+        $this->loop   = $loop ?: Loop::get();
+
+        $this->storage  = new Storage($this->config, new Events(), $this->logger);
         $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();
-
-        $this->logger = $logger ?: new NullLogger();
-        $this->loop   = $loop ?: Loop::get();
     }
 
     public function config(string $key = null)

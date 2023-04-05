@@ -10,6 +10,7 @@ final class Storage implements StorageInterface
     private ConfigInterface $config;
     private EventsInterface $events;
     private LoggerInterface $logger;
+    private History $history;
     private ChannelMap $channels;
     private SessionMap $sessions;
 
@@ -19,6 +20,7 @@ final class Storage implements StorageInterface
         $this->events = $events;
         $this->logger = $logger ?: new NullLogger();
 
+        $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();
     }
@@ -26,6 +28,11 @@ final class Storage implements StorageInterface
     public function conf(string $name)
     {
         return $this->config->get($name);
+    }
+
+    public function history(): History
+    {
+        return $this->history;
     }
 
     public function channels(): ChannelMap

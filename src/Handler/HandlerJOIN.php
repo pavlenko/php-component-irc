@@ -30,10 +30,10 @@ final class HandlerJOIN implements HandlerInterface
                 $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
             } else {
                 $chan = $stor->channels()->searchByName($name);
+                //TODO debug this
                 if (null === $chan) {
                     $chan = new Channel($name, $key);
                     $chan->operators()->attach($sess);
-                    $chan->sessions()->attach($sess);
                     $stor->channels()->attach($chan);
                 } elseif ($chan->hasFlag(Channel::FLAG_PRIVATE) && $key !== $chan->getPass()) {
                     $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);

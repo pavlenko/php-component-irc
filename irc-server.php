@@ -58,6 +58,7 @@ VarDumper::setHandler(function ($var) {
             return $arr;
         },
         Storage::class => function ($obj, $arr) {
+            unset($arr["\x00" . Storage::class . "\x00config"]);
             unset($arr["\x00" . Storage::class . "\x00logger"]);
             unset($arr["\x00" . Storage::class . "\x00events"]);
             return $arr;

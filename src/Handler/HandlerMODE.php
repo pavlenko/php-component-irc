@@ -34,8 +34,7 @@ final class HandlerMODE implements HandlerInterface
                 foreach ($chan->getBanMasks() as $mask) {
                     $sess->sendRPL(RPL::RPL_BAN_LIST, [$cmd->getArg(0), $mask]);
                 }
-                $sess->sendRPL(RPL::RPL_END_OF_BAN_LIST, [$cmd->getArg(0)]);
-                return $sess->sendCMD(CMD::CMD_MODE, [$name, $flag], $sess->getPrefix());
+                return $sess->sendRPL(RPL::RPL_END_OF_BAN_LIST, [$cmd->getArg(0)]);
             }
 
             if (!$chan->hasOperator($sess)) {
@@ -52,6 +51,7 @@ final class HandlerMODE implements HandlerInterface
 
             if ($this->handleChannelFlags($cmd, $sess, $stor) === -1) {
                 foreach ($chan->getSessions($stor) as $user) {
+                    //TODO check reply format, it possibly invalid
                     $resp = $flag . ' ' . ('o' === $flag[1] || 'v' === $flag[1] ? $cmd->getArg(2) : '');
                     $user->sendCMD(CMD::CMD_MODE, [$name], $resp, $sess->getNickname());
                     //$user->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);

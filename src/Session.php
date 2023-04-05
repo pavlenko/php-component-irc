@@ -31,7 +31,6 @@ final class Session implements SessionInterface
 
         $this->channels = new ChannelMap();
 
-        $this->setFlag(self::FLAG_CAP_RESOLVED);// <-- set capabilities resolved for not supported by clients
         $this->registrationTime = time();
     }
 

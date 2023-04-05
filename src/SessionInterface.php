@@ -4,15 +4,18 @@ namespace PE\Component\IRC;
 
 interface SessionInterface
 {
-    public const FLAG_CAP_RESOLVED     = 0b000000001;
-    public const FLAG_REGISTERED       = 0b000000010;
-    public const FLAG_INVISIBLE        = 0b000000100;
-    public const FLAG_RECEIVE_NOTICE   = 0b000001000;
-    public const FLAG_RECEIVE_WALLOPS  = 0b000010000;
-    public const FLAG_IS_OPERATOR      = 0b000100000;
-    public const FLAG_AWAY             = 0b001000000;
-    public const FLAG_PINGING          = 0b010000000;
-    public const FLAG_BREAK_CONNECTION = 0b100000000;
+    public const FLAG_REGISTER_PASS    = 0b0000000001;
+    public const FLAG_REGISTER_NICK    = 0b0000000010;
+    public const FLAG_REGISTER_USER    = 0b0000000100;
+    public const FLAG_REGISTERED_ALL   = 0b0000000111;
+    public const FLAG_REGISTERED       = 0b0000000100;//deprecated
+    public const FLAG_INVISIBLE        = 0b0000001000;
+    public const FLAG_RECEIVE_NOTICE   = 0b0000010000;
+    public const FLAG_RECEIVE_WALLOPS  = 0b0000100000;
+    public const FLAG_IS_OPERATOR      = 0b0001000000;
+    public const FLAG_AWAY             = 0b0010000000;
+    public const FLAG_PINGING          = 0b0100000000;
+    public const FLAG_BREAK_CONNECTION = 0b1000000000;
 
     public function __construct(ConnectionInterface $connection, string $servername, string $hostname);
 

@@ -47,7 +47,7 @@ trait HandleRegistrationCommands
         $this->handleMOTD(new CMD(CMD::CMD_MOTD, [$sess->getServername()]), $sess);
     }
 
-    public function handleCAP(CMD $cmd, SessionInterface $sess): void
+    /*public function handleCAP(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() < 1) {
             $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
@@ -68,7 +68,7 @@ trait HandleRegistrationCommands
             }
         }
         $this->handleRegistration($sess);
-    }
+    }*/
 
     public function handlePASS(CMD $cmd, SessionInterface $sess): void
     {

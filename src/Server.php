@@ -133,9 +133,13 @@ final class Server
                     $sess->sendERR(ERR::ERR_NOT_REGISTERED);
                 } elseif (
                     array_key_exists($msg->getCode(), self::COMMANDS) &&
-                    !empty(self::COMMANDS[$msg->getCode()][1])
+                    (!empty(self::COMMANDS[$msg->getCode()][1]) || is_callable(self::COMMANDS[$msg->getCode()]))
                 ) {
-                    $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
+                    if (is_callable(self::COMMANDS[$msg->getCode()][1])) {
+                        call_user_func(self::COMMANDS[$msg->getCode()], $sess, $this->storage);
+                    } else {
+                        $this->{self::COMMANDS[$msg->getCode()][1]}($msg, $sess);
+                    }
                 }
                 $sess->updLastMessageTime();
                 dump($this->storage);

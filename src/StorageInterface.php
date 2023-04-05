@@ -19,4 +19,6 @@ interface StorageInterface
     public function isValidChannelName(string $name): bool;
 
     public function isValidSessionName(string $name): bool;
+
+    public function trigger(string $name, ...$args): int;
 }

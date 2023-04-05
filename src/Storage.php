@@ -8,13 +8,15 @@ use Psr\Log\NullLogger;
 final class Storage implements StorageInterface
 {
     private ConfigInterface $config;
+    private EventsInterface $events;
     private LoggerInterface $logger;
     private ChannelMap $channels;
     private SessionMap $sessions;
 
-    public function __construct(ConfigInterface $config, LoggerInterface $logger = null)
+    public function __construct(ConfigInterface $config, EventsInterface $events, LoggerInterface $logger = null)
     {
         $this->config = $config;
+        $this->events = $events;
         $this->logger = $logger ?: new NullLogger();
 
         $this->channels = new ChannelMap();
@@ -34,6 +36,11 @@ final class Storage implements StorageInterface
     public function sessions(): SessionMap
     {
         return $this->sessions;
+    }
+
+    public function trigger(string $name, ...$args): int
+    {
+        return $this->events->trigger($name, ...$args);
     }
 
     public function isValidChannelName(string $name): bool

@@ -51,10 +51,8 @@ final class HandlerMODE implements HandlerInterface
 
             if ($this->handleChannelFlags($cmd, $sess, $stor) === -1) {
                 foreach ($chan->getSessions($stor) as $user) {
-                    //TODO check reply format, it possibly invalid
-                    $resp = $flag . ' ' . ('o' === $flag[1] || 'v' === $flag[1] ? $cmd->getArg(2) : '');
-                    $user->sendCMD(CMD::CMD_MODE, [$name], $resp, $sess->getNickname());
-                    //$user->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);
+                    $resp = $flag . ' ' . (in_array($flag[1], ['o', 'v']) ? $cmd->getArg(2) : '');
+                    $user->sendCMD(CMD::CMD_MODE, [$name, trim($resp)], null, $sess->getServername());
                 }
             }
         } else {

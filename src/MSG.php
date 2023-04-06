@@ -55,13 +55,13 @@ abstract class MSG
             $parts[] = ':' . $this->prefix;
         }
 
-        array_push($parts, $this->code, ...$this->args);
+        array_push($parts, $this->code, ...array_filter($this->args));
 
         if (null !== $this->comment) {
             $parts[] = ':' . $this->comment;
         }
 
-        return implode(' ', $parts);
+        return trim(implode(' ', $parts));
     }
 
     public function toLogger(): string

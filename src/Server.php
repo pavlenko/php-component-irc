@@ -6,10 +6,12 @@ use PE\Component\IRC\Handler\HandlerADMIN;
 use PE\Component\IRC\Handler\HandlerAWAY;
 use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerMODE;
+use PE\Component\IRC\Handler\HandlerMOTD;
 use PE\Component\IRC\Handler\HandlerNICK;
 use PE\Component\IRC\Handler\HandlerOPER;
 use PE\Component\IRC\Handler\HandlerPART;
 use PE\Component\IRC\Handler\HandlerPASS;
+use PE\Component\IRC\Handler\HandlerPING;
 use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerUSER;
@@ -70,7 +72,7 @@ final class Server
             CMD::CMD_LINKS       => [$this, ''],//TODO
             CMD::CMD_LIST        => [$this, 'handleLIST'],
             CMD::CMD_MODE        => new HandlerMODE(),
-            CMD::CMD_MOTD        => [$this, 'handleMOTD'],
+            CMD::CMD_MOTD        => new HandlerMOTD(),
             CMD::CMD_LIST_USERS  => [$this, ''],//TODO
             CMD::CMD_NAMES       => [$this, 'handleNAMES'],
             CMD::CMD_NICK        => new HandlerNICK(),
@@ -78,7 +80,7 @@ final class Server
             CMD::CMD_OPERATOR    => new HandlerOPER(),
             CMD::CMD_PART        => new HandlerPART(),
             CMD::CMD_PASSWORD    => new HandlerPASS(),
-            CMD::CMD_PING        => [$this, 'handlePING'],
+            CMD::CMD_PING        => new HandlerPING(),
             CMD::CMD_PONG        => [$this, 'handlePONG'],
             CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
             CMD::CMD_QUIT        => new HandlerQUIT(),

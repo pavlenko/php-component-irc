@@ -18,6 +18,8 @@ use PE\Component\IRC\Handler\HandlerPONG;
 use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerUSER;
+use PE\Component\IRC\Handler\HandlerUSERHOST;
+use PE\Component\IRC\Handler\HandlerVERSION;
 use PE\Component\IRC\Handler\HandlerWALLOPS;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -32,7 +34,6 @@ final class Server
     use HandleUserCommands;
     use HandleChannelCommands;
     use HandleOperatorCommands;
-    use HandleOtherCommands;
 
     private ConfigInterface $config;
     private EventsInterface $events;
@@ -97,10 +98,10 @@ final class Server
             CMD::CMD_TIME        => new HandlerTIME(),
             CMD::CMD_TOPIC       => [$this, 'handleTOPIC'],
             CMD::CMD_TRACE       => [$this, ''],//TODO
-            CMD::CMD_USER_HOST   => [$this, 'handleUSERHOST'],
+            CMD::CMD_USER_HOST   => new HandlerUSERHOST(),
             CMD::CMD_USER        => new HandlerUSER(),
             CMD::CMD_USERS       => [$this, ''],//TODO
-            CMD::CMD_VERSION     => [$this, 'handleVERSION'],
+            CMD::CMD_VERSION     => new HandlerVERSION(),
             CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
             CMD::CMD_WHOIS       => [$this, 'handleWHOIS'],
             CMD::CMD_WHO         => [$this, 'handleWHO'],

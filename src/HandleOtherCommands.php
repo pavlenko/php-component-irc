@@ -75,18 +75,6 @@ trait HandleOtherCommands
         }
     }
 
-    public function handleADMIN(CMD $cmd, SessionInterface $sess): void
-    {
-        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
-            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]);
-        } else {
-            $sess->sendRPL(RPL::RPL_ADMIN_ME, [$sess->getServername()]);
-            $sess->sendRPL(RPL::RPL_ADMIN_LOC1, [$this->config(Config::CFG_ADMIN_LOCATION1)]);
-            $sess->sendRPL(RPL::RPL_ADMIN_LOC2, [$this->config(Config::CFG_ADMIN_LOCATION2)]);
-            $sess->sendRPL(RPL::RPL_ADMIN_ME, [$this->config(Config::CFG_ADMIN_EMAIL)]);
-        }
-    }
-
     public function handleUSERHOST(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {

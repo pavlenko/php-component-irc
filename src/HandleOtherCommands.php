@@ -66,15 +66,6 @@ trait HandleOtherCommands
         }
     }
 
-    public function handleTIME(CMD $cmd, SessionInterface $sess): void
-    {
-        if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
-            $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]);
-        } else {
-            $sess->sendRPL(RPL::RPL_TIME, [$sess->getServername()], date(Config::DEFAULT_DATETIME_FORMAT));
-        }
-    }
-
     public function handleUSERHOST(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {

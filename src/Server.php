@@ -11,6 +11,7 @@ use PE\Component\IRC\Handler\HandlerOPER;
 use PE\Component\IRC\Handler\HandlerPART;
 use PE\Component\IRC\Handler\HandlerPASS;
 use PE\Component\IRC\Handler\HandlerQUIT;
+use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerUSER;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -87,7 +88,7 @@ final class Server
             CMD::CMD_SERVER_QUIT => [$this, ''],//TODO
             CMD::CMD_STATS       => [$this, ''],//TODO
             CMD::CMD_SUMMON      => [$this, ''],//TODO
-            CMD::CMD_TIME        => [$this, 'handleTIME'],
+            CMD::CMD_TIME        => new HandlerTIME(),
             CMD::CMD_TOPIC       => [$this, 'handleTOPIC'],
             CMD::CMD_TRACE       => [$this, ''],//TODO
             CMD::CMD_USER_HOST   => [$this, 'handleUSERHOST'],

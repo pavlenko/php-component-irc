@@ -36,19 +36,4 @@ trait HandleOtherCommands
             ], $this->config(Config::CFG_VERSION_COMMENT) ?: null);
         }
     }
-
-    public function handleWALLOPS(CMD $cmd, SessionInterface $sess): void
-    {
-        if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
-            $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
-        } elseif ($cmd->numArgs() === 0) {
-            $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
-        } else {
-            foreach ($this->storage->sessions() as $user) {
-                if ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
-                    $user->sendCMD($cmd->getCode(), [], $cmd->getArg(0));
-                }
-            }
-        }
-    }
 }

@@ -18,6 +18,7 @@ use PE\Component\IRC\Handler\HandlerPONG;
 use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerUSER;
+use PE\Component\IRC\Handler\HandlerWALLOPS;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
@@ -100,7 +101,7 @@ final class Server
             CMD::CMD_USER        => new HandlerUSER(),
             CMD::CMD_USERS       => [$this, ''],//TODO
             CMD::CMD_VERSION     => [$this, 'handleVERSION'],
-            CMD::CMD_WALLOPS     => [$this, 'handleWALLOPS'],
+            CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
             CMD::CMD_WHOIS       => [$this, 'handleWHOIS'],
             CMD::CMD_WHO         => [$this, 'handleWHO'],
             CMD::CMD_WHO_WAS     => [$this, 'handleWHOWAS'],

@@ -14,12 +14,7 @@ final class Config implements ConfigInterface
         $this->path = $path;
     }
 
-    public function path(): string
-    {
-        return $this->path;
-    }
-
-    public function load(): void
+    public function load(): string
     {
         if (!is_readable($this->path)) {
             throw new \RuntimeException('Cannot load config file ' . $this->path);
@@ -64,6 +59,8 @@ final class Config implements ConfigInterface
             self::CFG_MAX_RESPONSE_TIMEOUT => $data[self::CFG_MAX_RESPONSE_TIMEOUT] ?? self::DEFAULT_RESPONSE_TIMEOUT,
             self::CFG_OPERATORS            => array_filter((array) ($data[self::CFG_OPERATORS] ?? [])),
         ];
+
+        return $this->path;
     }
 
     /**

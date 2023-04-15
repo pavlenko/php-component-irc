@@ -7,6 +7,7 @@ use PE\Component\IRC\Handler\HandlerAWAY;
 use PE\Component\IRC\Handler\HandlerINFO;
 use PE\Component\IRC\Handler\HandlerISON;
 use PE\Component\IRC\Handler\HandlerJOIN;
+use PE\Component\IRC\Handler\HandlerKILL;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerMOTD;
 use PE\Component\IRC\Handler\HandlerNICK;
@@ -16,6 +17,8 @@ use PE\Component\IRC\Handler\HandlerPASS;
 use PE\Component\IRC\Handler\HandlerPING;
 use PE\Component\IRC\Handler\HandlerPONG;
 use PE\Component\IRC\Handler\HandlerQUIT;
+use PE\Component\IRC\Handler\HandlerREHASH;
+use PE\Component\IRC\Handler\HandlerRESTART;
 use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerUSER;
 use PE\Component\IRC\Handler\HandlerUSERHOST;
@@ -31,9 +34,11 @@ use React\Socket\SocketServer;
 
 final class Server
 {
+    public const EVT_REHASH  = 'rehash';
+    public const EVT_RESTART = 'restart';
+
     use HandleUserCommands;
     use HandleChannelCommands;
-    use HandleOperatorCommands;
 
     private ConfigInterface $config;
     private EventsInterface $events;
@@ -55,6 +60,7 @@ final class Server
 
         $this->events = $events ?: new Events();
         $this->events->attach(Connection::EVT_INPUT, fn() => $this->onInput(...func_get_args()));
+        $this->events->attach(self::EVT_REHASH, fn(Event $e) => $e->setPayload($this->config->load()));
 
         $this->logger = $logger ?: new NullLogger();
         $this->loop   = $loop ?: Loop::get();
@@ -73,7 +79,7 @@ final class Server
             CMD::CMD_IS_ON       => new HandlerISON(),
             CMD::CMD_JOIN        => new HandlerJOIN(),
             CMD::CMD_KICK        => [$this, 'handleKICK'],
-            CMD::CMD_KILL        => [$this, 'handleKILL'],
+            CMD::CMD_KILL        => new HandlerKILL(),
             CMD::CMD_LINKS       => [$this, ''],//TODO
             CMD::CMD_LIST        => [$this, 'handleLIST'],
             CMD::CMD_MODE        => new HandlerMODE(),
@@ -89,8 +95,8 @@ final class Server
             CMD::CMD_PONG        => new HandlerPONG(),
             CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
             CMD::CMD_QUIT        => new HandlerQUIT(),
-            CMD::CMD_REHASH      => [$this, 'handleREHASH'],
-            CMD::CMD_RESTART     => [$this, 'handleRESTART'],
+            CMD::CMD_REHASH      => new HandlerREHASH(),
+            CMD::CMD_RESTART     => new HandlerRESTART(),
             CMD::CMD_SERVER      => [$this, ''],//TODO
             CMD::CMD_SERVER_QUIT => [$this, ''],//TODO
             CMD::CMD_STATS       => [$this, ''],//TODO
@@ -168,6 +174,17 @@ final class Server
         });
 
         $this->logger->info('Listening on ' . $this->socket->getAddress());
+    }
+
+    public function restart()
+    {
+        foreach ($this->storage->sessions() as $user) {
+            $user->close();
+        }
+        $this->stop();
+        $this->config->load();
+        $this->listen();
+        $this->loop->run();
     }
 
     public function stop()

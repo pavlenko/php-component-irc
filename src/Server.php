@@ -3,6 +3,7 @@
 namespace PE\Component\IRC;
 
 use PE\Component\IRC\Handler\HandlerADMIN;
+use PE\Component\IRC\Handler\HandlerAWAY;
 use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerNICK;
@@ -56,7 +57,7 @@ final class Server
         $this->handlers = [
             //CMD::CMD_CAP         => [self::class, 'handleCAP'],
             CMD::CMD_ADMIN       => new HandlerADMIN(),
-            CMD::CMD_AWAY        => [$this, 'handleAWAY'],
+            CMD::CMD_AWAY        => new HandlerAWAY(),
             CMD::CMD_CONNECT     => [$this, ''],//TODO
             CMD::CMD_ERROR       => [$this, ''],//TODO
             CMD::CMD_INFO        => [$this, 'handleINFO'],

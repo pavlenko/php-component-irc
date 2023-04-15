@@ -21,5 +21,6 @@ final class HandlerADMIN implements HandlerInterface
         $sess->sendRPL(RPL::RPL_ADMIN_LOC1, [$stor->conf(Config::CFG_ADMIN_LOCATION1)]);
         $sess->sendRPL(RPL::RPL_ADMIN_LOC2, [$stor->conf(Config::CFG_ADMIN_LOCATION2)]);
         $sess->sendRPL(RPL::RPL_ADMIN_ME, [$stor->conf(Config::CFG_ADMIN_EMAIL)]);
+        return 0;
     }
 }

@@ -85,18 +85,6 @@ trait HandleUserCommands
         $this->handlePRIVMSG($cmd, $sess);
     }
 
-    public function handleAWAY(CMD $cmd, SessionInterface $sess): void
-    {
-        if ($cmd->numArgs() === 0) {
-            $sess->clrFlag(SessionInterface::FLAG_AWAY);
-            $sess->sendRPL(RPL::RPL_UN_AWAY);
-        } else {
-            $sess->setFlag(SessionInterface::FLAG_AWAY);
-            $sess->setAwayMessage(implode(' ', $cmd->getArgs()));
-            $sess->sendRPL(RPL::RPL_NOW_AWAY);
-        }
-    }
-
     public function handleWHO(CMD $cmd, SessionInterface $sess): void
     {
         if ($cmd->numArgs() === 0) {

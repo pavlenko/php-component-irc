@@ -29,6 +29,7 @@ use PE\Component\IRC\Handler\HandlerUSER;
 use PE\Component\IRC\Handler\HandlerUSERHOST;
 use PE\Component\IRC\Handler\HandlerVERSION;
 use PE\Component\IRC\Handler\HandlerWALLOPS;
+use PE\Component\IRC\Handler\HandlerWHOWAS;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use React\EventLoop\Loop;
@@ -119,7 +120,7 @@ final class Server
             CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
             CMD::CMD_WHOIS       => [$this, 'handleWHOIS'],
             CMD::CMD_WHO         => [$this, 'handleWHO'],
-            CMD::CMD_WHO_WAS     => [$this, 'handleWHOWAS'],
+            CMD::CMD_WHO_WAS     => new HandlerWHOWAS(),
         ];
     }
 

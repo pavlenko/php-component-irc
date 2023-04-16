@@ -189,34 +189,4 @@ trait HandleUserCommands
             $sess->sendRPL(RPL::RPL_END_OF_WHO_IS, [$cmd->getArg(0)]);
         }
     }
-
-    public function handleWHOWAS(CMD $cmd, SessionInterface $sess): void
-    {
-        if ($cmd->numArgs() === 0) {
-            $sess->sendERR(ERR::ERR_NO_NICKNAME_GIVEN);
-        } else {
-            $user = $this->storage->sessions()->searchByName($cmd->getArg(0));
-            if (null === $user) {
-                $history = $this->history->getByName($cmd->getArg(0));
-                if (empty($history)) {
-                    $sess->sendERR(ERR::ERR_WAS_NO_SUCH_NICK, [$cmd->getArg(0)]);
-                } else {
-                    $limit = $cmd->getArg(1) ?: PHP_INT_MAX;
-                    for ($i = 0; $i < count($history) && $i < $limit; $i++) {
-                        $sess->sendRPL(RPL::RPL_WHO_WAS_USER, [
-                            $history[$i]->getNickname(),
-                            $history[$i]->getUsername(),
-                            $history[$i]->getHostname(),
-                            '*',
-                        ], $history[$i]->getRealname());
-                        $sess->sendRPL(RPL::RPL_WHO_IS_SERVER, [
-                            $history[$i]->getNickname(),
-                            $history[$i]->getServername()
-                        ], $this->config(Config::CFG_INFO));
-                    }
-                }
-            }
-            $sess->sendRPL(RPL::RPL_END_OF_WHO_WAS, [$cmd->getArg(0)]);
-        }
-    }
 }

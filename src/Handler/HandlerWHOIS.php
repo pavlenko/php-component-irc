@@ -21,7 +21,7 @@ final class HandlerWHOIS implements HandlerInterface
         $suckNick = false;
         foreach ($stor->sessions() as $user) {
             $skip = !$stor->isEqualToRegex($cmd->getArg(0), $user->getNickname())
-                || $user->hasFlag(SessionInterface::FLAG_IS_OPERATOR);
+                || $user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR);
             if ($skip) {
                 continue;
             }
@@ -57,7 +57,7 @@ final class HandlerWHOIS implements HandlerInterface
             if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {
                 $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
             }
-            if ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+            if ($user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
                 $sess->sendRPL(RPL::RPL_WHO_IS_OPERATOR, [$user->getNickname()]);
             }
             $sess->sendRPL(RPL::RPL_WHO_IS_IDLE, [

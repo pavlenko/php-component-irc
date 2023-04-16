@@ -26,7 +26,7 @@ final class HandlerOPER implements HandlerInterface
             return $sess->sendERR(ERR::ERR_PASSWORD_MISMATCH);
         }
 
-        $sess->setFlag($sess::FLAG_IS_OPERATOR);
+        $sess->setFlag($sess::FLAG_IRC_OPERATOR);
         $sess->sendRPL(RPL::RPL_YOU_ARE_OPERATOR);
         return 0;
     }

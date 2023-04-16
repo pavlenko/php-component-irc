@@ -151,7 +151,7 @@ final class Session implements SessionInterface
         if ($this->hasFlag(self::FLAG_RECEIVE_WALLOPS)) {
             $flags .= 'w';
         }
-        if ($this->hasFlag(self::FLAG_IS_OPERATOR)) {
+        if ($this->hasFlag(self::FLAG_IRC_OPERATOR)) {
             $flags .= 'o';
         }
         return $flags;

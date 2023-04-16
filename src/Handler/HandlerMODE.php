@@ -185,7 +185,7 @@ final class HandlerMODE implements HandlerInterface
                 $sess->clrFlag(SessionInterface::FLAG_RECEIVE_WALLOPS);
             }
         } elseif ('-o') {
-            $sess->clrFlag(SessionInterface::FLAG_IS_OPERATOR);
+            $sess->clrFlag(SessionInterface::FLAG_IRC_OPERATOR);
         } else {
             return $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
         }

@@ -115,7 +115,7 @@ trait HandleUserCommands
 
                     if (
                         $cmd->numArgs() === 1 ||
-                        ($cmd->getArg(1) === 'o' && $user->hasFlag(SessionInterface::FLAG_IS_OPERATOR))
+                        ($cmd->getArg(1) === 'o' && $user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR))
                     ) {
                         $sess->sendRPL(RPL::RPL_WHO_REPLY, [
                             $channelName,

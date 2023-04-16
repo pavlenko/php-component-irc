@@ -12,7 +12,7 @@ final class HandlerRESTART implements HandlerInterface
 {
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
-        if (!$sess->hasFlag(SessionInterface::FLAG_IS_OPERATOR)) {
+        if (!$sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
             return $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
         }
 

@@ -20,7 +20,7 @@ final class HandlerUSERHOST implements HandlerInterface
         foreach ($cmd->getArgs() as $arg) {
             if ($user = $stor->sessions()->searchByName($arg)) {
                 $resp[] = $arg
-                    . ($user->hasFlag(SessionInterface::FLAG_IS_OPERATOR) ? '*' : '')
+                    . ($user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR) ? '*' : '')
                     . '='
                     . ($user->hasFlag(SessionInterface::FLAG_AWAY) ? '-' : '+')
                     . $user->getUsername()

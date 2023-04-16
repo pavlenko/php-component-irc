@@ -12,7 +12,7 @@ interface SessionInterface
     public const FLAG_INVISIBLE        = 0b00000010000;
     public const FLAG_RECEIVE_NOTICE   = 0b00000100000;
     public const FLAG_RECEIVE_WALLOPS  = 0b00001000000;
-    public const FLAG_IS_OPERATOR      = 0b00010000000;
+    public const FLAG_IRC_OPERATOR     = 0b00010000000;
     public const FLAG_AWAY             = 0b00100000000;
     public const FLAG_PINGING          = 0b01000000000;
     public const FLAG_BREAK_CONNECTION = 0b10000000000;

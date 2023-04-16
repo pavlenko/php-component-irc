@@ -5,6 +5,7 @@ namespace PE\Component\IRC;
 use PE\Component\IRC\Handler\HandlerADMIN;
 use PE\Component\IRC\Handler\HandlerAWAY;
 use PE\Component\IRC\Handler\HandlerINFO;
+use PE\Component\IRC\Handler\HandlerINVITE;
 use PE\Component\IRC\Handler\HandlerISON;
 use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerKILL;
@@ -20,6 +21,7 @@ use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerREHASH;
 use PE\Component\IRC\Handler\HandlerRESTART;
 use PE\Component\IRC\Handler\HandlerTIME;
+use PE\Component\IRC\Handler\HandlerTOPIC;
 use PE\Component\IRC\Handler\HandlerUSER;
 use PE\Component\IRC\Handler\HandlerUSERHOST;
 use PE\Component\IRC\Handler\HandlerVERSION;
@@ -75,7 +77,7 @@ final class Server
             CMD::CMD_CONNECT     => [$this, ''],//TODO
             CMD::CMD_ERROR       => [$this, ''],//TODO
             CMD::CMD_INFO        => new HandlerINFO(),
-            CMD::CMD_INVITE      => [$this, 'handleINVITE'],
+            CMD::CMD_INVITE      => new HandlerINVITE(),
             CMD::CMD_IS_ON       => new HandlerISON(),
             CMD::CMD_JOIN        => new HandlerJOIN(),
             CMD::CMD_KICK        => [$this, 'handleKICK'],
@@ -102,7 +104,7 @@ final class Server
             CMD::CMD_STATS       => [$this, ''],//TODO
             CMD::CMD_SUMMON      => [$this, ''],//TODO
             CMD::CMD_TIME        => new HandlerTIME(),
-            CMD::CMD_TOPIC       => [$this, 'handleTOPIC'],
+            CMD::CMD_TOPIC       => new HandlerTOPIC(),
             CMD::CMD_TRACE       => [$this, ''],//TODO
             CMD::CMD_USER_HOST   => new HandlerUSERHOST(),
             CMD::CMD_USER        => new HandlerUSER(),

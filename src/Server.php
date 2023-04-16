@@ -10,6 +10,7 @@ use PE\Component\IRC\Handler\HandlerISON;
 use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerKICK;
 use PE\Component\IRC\Handler\HandlerKILL;
+use PE\Component\IRC\Handler\HandlerLIST;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerMOTD;
 use PE\Component\IRC\Handler\HandlerNAMES;
@@ -42,7 +43,6 @@ final class Server
     public const EVT_RESTART = 'restart';
 
     use HandleUserCommands;
-    use HandleChannelCommands;
 
     private ConfigInterface $config;
     private EventsInterface $events;
@@ -57,8 +57,12 @@ final class Server
 
     private array $handlers;
 
-    public function __construct(string $config, EventsInterface $events = null, LoggerInterface $logger = null, LoopInterface $loop = null)
-    {
+    public function __construct(
+        string $config,
+        EventsInterface $events = null,
+        LoggerInterface $logger = null,
+        LoopInterface $loop = null
+    ) {
         $this->config = new Config($config);
         $this->config->load();
 
@@ -85,7 +89,7 @@ final class Server
             CMD::CMD_KICK        => new HandlerKICK(),
             CMD::CMD_KILL        => new HandlerKILL(),
             CMD::CMD_LINKS       => [$this, ''],//TODO
-            CMD::CMD_LIST        => [$this, 'handleLIST'],
+            CMD::CMD_LIST        => new HandlerLIST(),
             CMD::CMD_MODE        => new HandlerMODE(),
             CMD::CMD_MOTD        => new HandlerMOTD(),
             CMD::CMD_LIST_USERS  => [$this, ''],//TODO

@@ -29,6 +29,7 @@ use PE\Component\IRC\Handler\HandlerUSER;
 use PE\Component\IRC\Handler\HandlerUSERHOST;
 use PE\Component\IRC\Handler\HandlerVERSION;
 use PE\Component\IRC\Handler\HandlerWALLOPS;
+use PE\Component\IRC\Handler\HandlerWHOIS;
 use PE\Component\IRC\Handler\HandlerWHOWAS;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -70,6 +71,7 @@ final class Server
         $this->events = $events ?: new Events();
         $this->events->attach(Connection::EVT_INPUT, fn() => $this->onInput(...func_get_args()));
         $this->events->attach(self::EVT_REHASH, fn(Event $e) => $e->setPayload($this->config->load()));
+        $this->events->attach(self::EVT_RESTART, fn() => $this->restart());
 
         $this->logger = $logger ?: new NullLogger();
         $this->loop   = $loop ?: Loop::get();
@@ -118,7 +120,7 @@ final class Server
             CMD::CMD_USERS       => [$this, ''],//TODO
             CMD::CMD_VERSION     => new HandlerVERSION(),
             CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
-            CMD::CMD_WHOIS       => [$this, 'handleWHOIS'],
+            CMD::CMD_WHOIS       => new HandlerWHOIS(),
             CMD::CMD_WHO         => [$this, 'handleWHO'],
             CMD::CMD_WHO_WAS     => new HandlerWHOWAS(),
         ];
@@ -126,10 +128,8 @@ final class Server
 
     private function onInput(MSG $msg, SessionInterface $sess)
     {
-        if (
-            !$sess->hasFlag(SessionInterface::FLAG_REGISTERED) &&
-            !in_array($msg->getCode(), [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP])
-        ) {
+        $allowed = [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP];
+        if (!$sess->hasFlag(SessionInterface::FLAG_REGISTERED) && !in_array($msg->getCode(), $allowed)) {
             $sess->sendERR(ERR::ERR_NOT_REGISTERED);
         } elseif (is_callable($this->handlers[$msg->getCode()] ?? null)) {
             call_user_func($this->handlers[$msg->getCode()], $msg, $sess, $this->storage);

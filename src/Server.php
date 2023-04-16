@@ -20,6 +20,7 @@ use PE\Component\IRC\Handler\HandlerPART;
 use PE\Component\IRC\Handler\HandlerPASS;
 use PE\Component\IRC\Handler\HandlerPING;
 use PE\Component\IRC\Handler\HandlerPONG;
+use PE\Component\IRC\Handler\HandlerPRIVMSG;
 use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerREHASH;
 use PE\Component\IRC\Handler\HandlerRESTART;
@@ -45,15 +46,12 @@ final class Server
     public const EVT_REHASH  = 'rehash';
     public const EVT_RESTART = 'restart';
 
-    use HandleUserCommands;
-
     private ConfigInterface $config;
     private EventsInterface $events;
     private LoggerInterface $logger;
     private LoopInterface $loop;
 
     private Storage $storage;
-    private History $history;
 
     private ?SocketServer $socket = null;
     private ?TimerInterface $timer = null;
@@ -78,7 +76,6 @@ final class Server
         $this->loop   = $loop ?: Loop::get();
 
         $this->storage = new Storage($this->config, $this->events, $this->logger);
-        $this->history = new History();
 
         $this->handlers = [
             //CMD::CMD_CAP         => [self::class, 'handleCAP'],
@@ -99,13 +96,13 @@ final class Server
             CMD::CMD_LIST_USERS  => [$this, ''],//TODO
             CMD::CMD_NAMES       => new HandlerNAMES(),
             CMD::CMD_NICK        => new HandlerNICK(),
-            CMD::CMD_NOTICE      => [$this, 'handleNOTICE'],
+            CMD::CMD_NOTICE      => new HandlerPRIVMSG(),
             CMD::CMD_OPERATOR    => new HandlerOPER(),
             CMD::CMD_PART        => new HandlerPART(),
             CMD::CMD_PASSWORD    => new HandlerPASS(),
             CMD::CMD_PING        => new HandlerPING(),
             CMD::CMD_PONG        => new HandlerPONG(),
-            CMD::CMD_PRIVATE_MSG => [$this, 'handlePRIVMSG'],
+            CMD::CMD_PRIVATE_MSG => new HandlerPRIVMSG(),
             CMD::CMD_QUIT        => new HandlerQUIT(),
             CMD::CMD_REHASH      => new HandlerREHASH(),
             CMD::CMD_RESTART     => new HandlerRESTART(),
@@ -151,17 +148,16 @@ final class Server
 
         $this->timer = $this->loop->addPeriodicTimer($this->config(Config::CFG_MAX_INACTIVE_TIMEOUT), function () {
             foreach ($this->storage->sessions() as $user) {
-                if (time() - $user->getLastMessageTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT)) {
+                $overdue = time() - $user->getLastMessageTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT);
+                if ($overdue) {
                     $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config::CFG_SERVER_NAME));
                     $user->updLastMessageTime();
                     $user->updLastPingingTime();
                     $user->setFlag(SessionInterface::FLAG_PINGING);
                 }
 
-                if (
-                    $user->hasFlag(SessionInterface::FLAG_PINGING) &&
-                    time() - $user->getLastPingingTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT)
-                ) {
+                $overdue = time() - $user->getLastPingingTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT);
+                if ($user->hasFlag(SessionInterface::FLAG_PINGING) && $overdue) {
                     $user->close();
                 }
             }
@@ -178,7 +174,7 @@ final class Server
 
             $this->storage->sessions()->attach($sess);
 
-            $conn->attach(Connection::EVT_INPUT, fn(MSG $msg) => $this->events->trigger(Connection::EVT_INPUT, $msg, $sess));
+            $conn->attach(Connection::EVT_INPUT, fn($m) => $this->events->trigger(Connection::EVT_INPUT, $m, $sess));
             $conn->attach(Connection::EVT_ERROR, fn() => $this->logger->error(func_get_arg(0)));
             $conn->attach(Connection::EVT_CLOSE, fn() => $this->storage->sessions()->detach($sess));
         });

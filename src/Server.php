@@ -29,6 +29,7 @@ use PE\Component\IRC\Handler\HandlerUSER;
 use PE\Component\IRC\Handler\HandlerUSERHOST;
 use PE\Component\IRC\Handler\HandlerVERSION;
 use PE\Component\IRC\Handler\HandlerWALLOPS;
+use PE\Component\IRC\Handler\HandlerWHO;
 use PE\Component\IRC\Handler\HandlerWHOIS;
 use PE\Component\IRC\Handler\HandlerWHOWAS;
 use Psr\Log\LoggerInterface;
@@ -121,7 +122,7 @@ final class Server
             CMD::CMD_VERSION     => new HandlerVERSION(),
             CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
             CMD::CMD_WHOIS       => new HandlerWHOIS(),
-            CMD::CMD_WHO         => [$this, 'handleWHO'],
+            CMD::CMD_WHO         => new HandlerWHO(),
             CMD::CMD_WHO_WAS     => new HandlerWHOWAS(),
         ];
     }

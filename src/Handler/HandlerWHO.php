@@ -27,7 +27,7 @@ final class HandlerWHO implements HandlerInterface
                         break;
                     }
                 }
-                if ($hasCommonChannel) {
+                if ($hasCommonChannel || $s->hasFlag(SessionInterface::FLAG_INVISIBLE)) {
                     continue;
                 }
                 $sessions[] = $s;
@@ -54,9 +54,6 @@ final class HandlerWHO implements HandlerInterface
                 return 0;
             }
         }
-
-        $sessions = array_filter($sessions, fn($s) => !$s->hasFlag(SessionInterface::FLAG_INVISIBLE));//
-
         //TODO end of who must follow each list item if arg0 passed, elsewhere without name at end of reply
 return 0;
         if ($cmd->numArgs() === 0) {

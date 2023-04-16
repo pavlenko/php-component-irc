@@ -8,6 +8,7 @@ use PE\Component\IRC\Handler\HandlerINFO;
 use PE\Component\IRC\Handler\HandlerINVITE;
 use PE\Component\IRC\Handler\HandlerISON;
 use PE\Component\IRC\Handler\HandlerJOIN;
+use PE\Component\IRC\Handler\HandlerKICK;
 use PE\Component\IRC\Handler\HandlerKILL;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerMOTD;
@@ -80,7 +81,7 @@ final class Server
             CMD::CMD_INVITE      => new HandlerINVITE(),
             CMD::CMD_IS_ON       => new HandlerISON(),
             CMD::CMD_JOIN        => new HandlerJOIN(),
-            CMD::CMD_KICK        => [$this, 'handleKICK'],
+            CMD::CMD_KICK        => new HandlerKICK(),
             CMD::CMD_KILL        => new HandlerKILL(),
             CMD::CMD_LINKS       => [$this, ''],//TODO
             CMD::CMD_LIST        => [$this, 'handleLIST'],

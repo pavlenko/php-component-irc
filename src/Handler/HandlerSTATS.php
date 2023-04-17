@@ -37,6 +37,8 @@ class HandlerSTATS implements HandlerInterface
             return $serv->sendCMD($cmd->getCode(), [$cmd->getArg(0)]);//TODO how to handle response to $sess
         }
 
+        $isOperator = $sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR);
+
         $query = $cmd->getArg(0);
         if (null === $query || 'c' === $query) {
             foreach ($stor->conf('servers') as $serv) {
@@ -63,7 +65,8 @@ class HandlerSTATS implements HandlerInterface
                 $sess->sendRPL(RPL::RPL_STATS_H_LINE, ['H', $serv['host'], '*', $serv['name']]);
             }
         }
-        if (null === $query || 'i' === $query) {//TODO need operator
+        if (null === $query || 'i' === $query) {
+            //TODO need operator
             foreach ($stor->conf('servers') as $serv) {
                 if (!$serv['allowed_from']) {//TODO flag
                     continue;
@@ -145,6 +148,10 @@ class HandlerSTATS implements HandlerInterface
                     $line['max_send_q'],
                 ]);
             }
+        }
+        if (null === $query || 'u' === $query) {
+            $interval = (new \DateTime())->diff($stor->getStartedAt(), true);
+            $sess->sendRPL(RPL::RPL_STATS_UPTIME, [], $interval->format('Server Up %a days %H:%I:%S'));
         }
         return $sess->sendRPL(RPL::RPL_END_OF_STATS, [$query]);
     }

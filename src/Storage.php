@@ -13,6 +13,7 @@ final class Storage implements StorageInterface
     private History $history;
     private ChannelMap $channels;
     private SessionMap $sessions;
+    private \DateTime $startedAt;
 
     public function __construct(ConfigInterface $config, EventsInterface $events, LoggerInterface $logger = null)
     {
@@ -23,6 +24,8 @@ final class Storage implements StorageInterface
         $this->history  = new History();
         $this->channels = new ChannelMap();
         $this->sessions = new SessionMap();
+
+        $this->startedAt = new \DateTime();
     }
 
     public function conf(string $name)
@@ -43,6 +46,11 @@ final class Storage implements StorageInterface
     public function sessions(): SessionMap
     {
         return $this->sessions;
+    }
+
+    public function getStartedAt(): \DateTimeInterface
+    {
+        return $this->startedAt;
     }
 
     public function trigger(string $name, ...$args): int

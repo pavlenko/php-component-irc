@@ -18,6 +18,8 @@ interface StorageInterface
 
     public function sessions(): SessionMap;
 
+    public function getStartedAt(): \DateTimeInterface;
+
     public function isValidChannelName(string $name): bool;
 
     public function isValidSessionName(string $name): bool;

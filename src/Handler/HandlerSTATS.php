@@ -40,20 +40,24 @@ class HandlerSTATS implements HandlerInterface
         $isOperator = $sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR);
 
         $query = $cmd->getArg(0);
-        if (null === $query || 'c' === $query) {
-            foreach ($stor->conf('servers') as $serv) {
-                if ($serv['role'] === 'hub') {//TODO flag
-                    continue;
+        if ($isOperator || 'c' === $query) {
+            if (!$isOperator) {
+                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            } else {
+                foreach ($stor->conf('servers') as $serv) {
+                    if ($serv['role'] === 'hub') {//TODO flag
+                        continue;
+                    }
+                    //C <host> * <name> <port> <class>
+                    $sess->sendRPL(RPL::RPL_STATS_C_LINE, [
+                        'C',
+                        $serv['host'],
+                        '*',
+                        $serv['name'],
+                        $serv['port'],
+                        $serv['class']
+                    ]);
                 }
-                //C <host> * <name> <port> <class>
-                $sess->sendRPL(RPL::RPL_STATS_C_LINE, [
-                    'C',
-                    $serv['host'],
-                    '*',
-                    $serv['name'],
-                    $serv['port'],
-                    $serv['class']
-                ]);
             }
         }
         if (null === $query || 'h' === $query) {
@@ -65,21 +69,24 @@ class HandlerSTATS implements HandlerInterface
                 $sess->sendRPL(RPL::RPL_STATS_H_LINE, ['H', $serv['host'], '*', $serv['name']]);
             }
         }
-        if (null === $query || 'i' === $query) {
-            //TODO need operator
-            foreach ($stor->conf('servers') as $serv) {
-                if (!$serv['allowed_from']) {//TODO flag
-                    continue;
+        if ($isOperator || 'i' === $query) {
+            if (!$isOperator) {
+                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            } else {
+                foreach ($stor->conf('servers') as $serv) {
+                    if (!$serv['allowed_from']) {//TODO flag
+                        continue;
+                    }
+                    //I <host> * <host> <port> <class>
+                    $sess->sendRPL(RPL::RPL_STATS_I_LINE, [
+                        'I',
+                        $serv['host'],
+                        '*',
+                        $serv['name'],
+                        $serv['port'],
+                        $serv['class']
+                    ]);
                 }
-                //I <host> * <host> <port> <class>
-                $sess->sendRPL(RPL::RPL_STATS_I_LINE, [
-                    'I',
-                    $serv['host'],
-                    '*',
-                    $serv['name'],
-                    $serv['port'],
-                    $serv['class']
-                ]);
             }
         }
         if (null === $query || 'k' === $query) {
@@ -125,28 +132,34 @@ class HandlerSTATS implements HandlerInterface
                 ]);
             }
         }
-        if (null === $query || 'o' === $query) {
-            //TODO check operator if y passed
-            foreach ($stor->conf('servers') as $serv) {
-                if (empty($serv['can_operate'])) {//TODO flag
-                    continue;
+        if ($isOperator || 'o' === $query) {
+            if (!$isOperator) {
+                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            } else {
+                foreach ($stor->conf('servers') as $serv) {
+                    if (empty($serv['can_operate'])) {//TODO flag
+                        continue;
+                    }
+                    //O <host mask> * <name>
+                    $sess->sendRPL(RPL::RPL_STATS_O_LINE, ['O', $serv['host'], '*', $serv['name']]);
                 }
-                //O <host mask> * <name>
-                $sess->sendRPL(RPL::RPL_STATS_O_LINE, ['O', $serv['host'], '*', $serv['name']]);
             }
         }
-        if (null === $query || 'y' === $query) {
-            //TODO check operator if y passed
-            $class = $stor->conf('class');
-            foreach ($class as $line) {
-                //Y <class> <ping frequency> <connect frequency> <max send q>
-                $sess->sendRPL(RPL::RPL_STATS_Y_LINE, [
-                    'Y',
-                    $line['class'],
-                    $line['ping_f'],
-                    $line['connect_f'],
-                    $line['max_send_q'],
-                ]);
+        if ($isOperator || 'y' === $query) {
+            if (!$isOperator) {
+                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            } else {
+                $class = $stor->conf('class');
+                foreach ($class as $line) {
+                    //Y <class> <ping frequency> <connect frequency> <max send q>
+                    $sess->sendRPL(RPL::RPL_STATS_Y_LINE, [
+                        'Y',
+                        $line['class'],
+                        $line['ping_f'],
+                        $line['connect_f'],
+                        $line['max_send_q'],
+                    ]);
+                }
             }
         }
         if (null === $query || 'u' === $query) {

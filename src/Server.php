@@ -28,6 +28,8 @@ use PE\Component\IRC\Handler\HandlerPRIVMSG;
 use PE\Component\IRC\Handler\HandlerQUIT;
 use PE\Component\IRC\Handler\HandlerREHASH;
 use PE\Component\IRC\Handler\HandlerRESTART;
+use PE\Component\IRC\Handler\HandlerSERVER;
+use PE\Component\IRC\Handler\HandlerSQUIT;
 use PE\Component\IRC\Handler\HandlerTIME;
 use PE\Component\IRC\Handler\HandlerTOPIC;
 use PE\Component\IRC\Handler\HandlerUSER;
@@ -110,8 +112,8 @@ final class Server
             CMD::CMD_QUIT        => new HandlerQUIT(),
             CMD::CMD_REHASH      => new HandlerREHASH(),
             CMD::CMD_RESTART     => new HandlerRESTART(),
-            CMD::CMD_SERVER      => [$this, ''],//TODO
-            CMD::CMD_SERVER_QUIT => [$this, ''],//TODO
+            CMD::CMD_SERVER      => new HandlerSERVER(),
+            CMD::CMD_SERVER_QUIT => new HandlerSQUIT(),
             CMD::CMD_STATS       => [$this, ''],//TODO
             CMD::CMD_SUMMON      => [$this, ''],//TODO
             CMD::CMD_TIME        => new HandlerTIME(),

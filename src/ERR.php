@@ -16,6 +16,8 @@ final class ERR extends MSG
     public const ERR_NO_TEXT_TO_SEND            = 412;//:<prefix> <rpl code> <curr nick> :No text to send
     public const ERR_NO_TOP_LEVEL               = 413;//:<prefix> <rpl code> <curr nick> <mask> :No toplevel domain specified
     public const ERR_WILDCARD_TOP_LEVEL         = 414;//:<prefix> <rpl code> <curr nick> <mask> :Wildcard in toplevel domain
+    // Returned by a server in response to a LIST or NAMES message to indicate the result contains too many items to be returned to the client.
+    public const ERR_TOO_MANY_MATCHES           = 416;//:<prefix> <rpl code> <curr nick> <channel> :Output too long (try locally)
     public const ERR_UNKNOWN_COMMAND            = 421;//:<prefix> <rpl code> <curr nick> <command> :Unknown command
     public const ERR_NO_MOTD                    = 422;//:<prefix> <rpl code> <curr nick> :MOTD File is missing
     public const ERR_NO_ADMIN_INFO              = 423;//:<prefix> <rpl code> <curr nick> <server> :No administrative info available

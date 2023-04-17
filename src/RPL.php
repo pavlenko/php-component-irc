@@ -26,11 +26,14 @@ final class RPL extends MSG
     public const RPL_STATS_K_LINE     = 216;//:<prefix> <rpl code> K <host> * <username> <port> <class>
     public const RPL_STATS_Y_LINE     = 218;//:<prefix> <rpl code> Y <class> <ping frequency> <connect frequency> <max send q>
     public const RPL_END_OF_STATS     = 219;//:<prefix> <rpl code> <stats letter> :End of /STATS report
+    public const RPL_USER_MODE_IS     = 221;//:<prefix> <rpl code> <user mode string>
     public const RPL_STATS_L_LINE     = 241;//:<prefix> <rpl code> L <host mask> * <servername> <max depth>
     public const RPL_STATS_UPTIME     = 242;//:<prefix> <rpl code> :Server Up %d days %d:%02d:%02d
     public const RPL_STATS_O_LINE     = 243;//:<prefix> <rpl code> O <host mask> * <name>
     public const RPL_STATS_H_LINE     = 244;//:<prefix> <rpl code> H <host mask> * <servername>
-    public const RPL_USER_MODE_IS     = 221;//:<prefix> <rpl code> <user mode string>
+    public const RPL_STATS_S_LINE     = 245;//:<prefix> <rpl code>//TODO
+    //TODO are below valid reply name
+    public const RPL_STATS_D_LINE     = 250;//:<prefix> <rpl code> :Highest connection count: N (N clients) (N connections received)
     public const RPL_L_USER_CLIENT    = 251;//:<prefix> <rpl code> :There are <integer> users and <integer> invisible on <integer> servers
     public const RPL_L_USER_OPERATORS = 252;//:<prefix> <rpl code> <integer> :operator(s) online
     public const RPL_L_USER_UNKNOWN   = 253;//:<prefix> <rpl code> <integer> :unknown connection(s)
@@ -60,7 +63,7 @@ final class RPL extends MSG
     public const RPL_CHANNEL_MODE_IS  = 324;//:<prefix> <rpl code> <channel> <mode> <mode params>
     public const RPL_NO_TOPIC         = 331;//:<prefix> <rpl code> <channel> :No topic is set
     public const RPL_TOPIC            = 332;//:<prefix> <rpl code> <channel> :<topic>
-    public const RPL_INVITING         = 341;//:<prefix> <rpl code> <channel> <nick>
+    public const RPL_INVITING         = 341;//:<prefix> <rpl code> <nick> <channel>
     public const RPL_SUMMONING        = 342;//:<prefix> <rpl code> <user> :Summoning user to IRC
     public const RPL_VERSION          = 351;//:<prefix> <rpl code> <version>.<debug level> <server> :<comments>
     public const RPL_WHO_REPLY        = 352;//:<prefix> <rpl code> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hop count> <real name>

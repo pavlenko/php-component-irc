@@ -39,7 +39,7 @@ class HandlerSTATS implements HandlerInterface
 
         $isOperator = $sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR);
 
-        $query = $cmd->getArg(0);
+        $query = $cmd->getArg(0);//TODO required
         if ($isOperator || 'c' === $query) {
             if (!$isOperator) {
                 $sess->sendERR(ERR::ERR_NO_PRIVILEGES);

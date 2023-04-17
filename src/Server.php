@@ -5,6 +5,7 @@ namespace PE\Component\IRC;
 use PE\Component\IRC\Handler\HandlerADMIN;
 use PE\Component\IRC\Handler\HandlerAWAY;
 use PE\Component\IRC\Handler\HandlerCONNECT;
+use PE\Component\IRC\Handler\HandlerERROR;
 use PE\Component\IRC\Handler\HandlerINFO;
 use PE\Component\IRC\Handler\HandlerINVITE;
 use PE\Component\IRC\Handler\HandlerISON;
@@ -83,7 +84,7 @@ final class Server
             CMD::CMD_ADMIN       => new HandlerADMIN(),
             CMD::CMD_AWAY        => new HandlerAWAY(),
             CMD::CMD_CONNECT     => new HandlerCONNECT(),
-            CMD::CMD_ERROR       => [$this, ''],//TODO
+            CMD::CMD_ERROR       => new HandlerERROR(),
             CMD::CMD_INFO        => new HandlerINFO(),
             CMD::CMD_INVITE      => new HandlerINVITE(),
             CMD::CMD_IS_ON       => new HandlerISON(),

@@ -4,6 +4,10 @@ namespace PE\Component\IRC;
 
 interface SessionInterface
 {
+    //TODO mark session by type after success registration
+    public const TYPE_CLIENT = 'CLIENT';
+    public const TYPE_SERVER = 'SERVER';
+
     public const FLAG_REGISTER_PASS    = 0b00000000001;
     public const FLAG_REGISTER_NICK    = 0b00000000010;
     public const FLAG_REGISTER_USER    = 0b00000000100;
@@ -34,6 +38,9 @@ interface SessionInterface
     public function hasChannel(ChannelInterface $channel): bool;
     public function addChannel(ChannelInterface $channel): void;
     public function delChannel(ChannelInterface $channel): void;
+
+    public function getType(): ?string;
+    public function setType(string $type): void;
 
     public function getServername(): string;
     public function getPassword(): string;

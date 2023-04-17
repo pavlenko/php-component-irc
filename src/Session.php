@@ -6,6 +6,7 @@ final class Session implements SessionInterface
 {
     private ConnectionInterface $connection;
 
+    private ?string $type = null;
     private string $servername;
     private string $hostname;
     private string $password = '';
@@ -81,6 +82,16 @@ final class Session implements SessionInterface
     public function delChannel(ChannelInterface $channel): void
     {
         unset($this->channels[spl_object_hash($channel)]);
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this->type = $type;
     }
 
     public function getServername(): string

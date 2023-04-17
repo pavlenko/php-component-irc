@@ -14,6 +14,7 @@ use PE\Component\IRC\Handler\HandlerKICK;
 use PE\Component\IRC\Handler\HandlerKILL;
 use PE\Component\IRC\Handler\HandlerLINKS;
 use PE\Component\IRC\Handler\HandlerLIST;
+use PE\Component\IRC\Handler\HandlerLUSERS;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerMOTD;
 use PE\Component\IRC\Handler\HandlerNAMES;
@@ -96,7 +97,7 @@ final class Server
             CMD::CMD_LIST        => new HandlerLIST(),
             CMD::CMD_MODE        => new HandlerMODE(),
             CMD::CMD_MOTD        => new HandlerMOTD(),
-            CMD::CMD_LIST_USERS  => [$this, ''],//TODO
+            CMD::CMD_LIST_USERS  => new HandlerLUSERS(),
             CMD::CMD_NAMES       => new HandlerNAMES(),
             CMD::CMD_NICK        => new HandlerNICK(),
             CMD::CMD_NOTICE      => new HandlerPRIVMSG(),

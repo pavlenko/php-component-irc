@@ -12,6 +12,7 @@ use PE\Component\IRC\Handler\HandlerISON;
 use PE\Component\IRC\Handler\HandlerJOIN;
 use PE\Component\IRC\Handler\HandlerKICK;
 use PE\Component\IRC\Handler\HandlerKILL;
+use PE\Component\IRC\Handler\HandlerLINKS;
 use PE\Component\IRC\Handler\HandlerLIST;
 use PE\Component\IRC\Handler\HandlerMODE;
 use PE\Component\IRC\Handler\HandlerMOTD;
@@ -91,7 +92,7 @@ final class Server
             CMD::CMD_JOIN        => new HandlerJOIN(),
             CMD::CMD_KICK        => new HandlerKICK(),
             CMD::CMD_KILL        => new HandlerKILL(),
-            CMD::CMD_LINKS       => [$this, ''],//TODO
+            CMD::CMD_LINKS       => new HandlerLINKS(),
             CMD::CMD_LIST        => new HandlerLIST(),
             CMD::CMD_MODE        => new HandlerMODE(),
             CMD::CMD_MOTD        => new HandlerMOTD(),

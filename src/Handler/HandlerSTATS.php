@@ -122,6 +122,30 @@ class HandlerSTATS implements HandlerInterface
                 ]);
             }
         }
+        if (null === $query || 'o' === $query) {
+            //TODO check operator if y passed
+            foreach ($stor->conf('servers') as $serv) {
+                if (empty($serv['can_operate'])) {//TODO flag
+                    continue;
+                }
+                //O <host mask> * <name>
+                $sess->sendRPL(RPL::RPL_STATS_O_LINE, ['O', $serv['host'], '*', $serv['name']]);
+            }
+        }
+        if (null === $query || 'y' === $query) {
+            //TODO check operator if y passed
+            $class = $stor->conf('class');
+            foreach ($class as $line) {
+                //Y <class> <ping frequency> <connect frequency> <max send q>
+                $sess->sendRPL(RPL::RPL_STATS_Y_LINE, [
+                    'Y',
+                    $line['class'],
+                    $line['ping_f'],
+                    $line['connect_f'],
+                    $line['max_send_q'],
+                ]);
+            }
+        }
         return $sess->sendRPL(RPL::RPL_END_OF_STATS, [$query]);
     }
 }

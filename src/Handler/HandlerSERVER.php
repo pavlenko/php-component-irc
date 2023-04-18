@@ -10,6 +10,7 @@ use PE\Component\IRC\StorageInterface;
 /**
  * <code>
  * SERVER <servername> <hop_count> <token> :<info>
+ * SERVER <servername> <pass> <hop_count> <id> :<info>
  * </code>
  */
 class HandlerSERVER implements HandlerInterface

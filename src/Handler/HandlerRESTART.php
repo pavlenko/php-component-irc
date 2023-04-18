@@ -4,7 +4,7 @@ namespace PE\Component\IRC\Handler;
 
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\ERR;
-use PE\Component\IRC\Server;
+use PE\Component\IRC\Daemon;
 use PE\Component\IRC\SessionInterface;
 use PE\Component\IRC\StorageInterface;
 
@@ -16,7 +16,7 @@ final class HandlerRESTART implements HandlerInterface
             return $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
         }
 
-        $stor->trigger(Server::EVT_RESTART);
+        $stor->trigger(Daemon::EVT_RESTART);
         return 0;
     }
 }

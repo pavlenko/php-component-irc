@@ -49,7 +49,7 @@ use React\EventLoop\TimerInterface;
 use React\Socket\ConnectionInterface as SocketConnection;
 use React\Socket\SocketServer;
 
-final class Server
+final class Daemon
 {
     public const EVT_REHASH  = 'rehash';
     public const EVT_RESTART = 'restart';

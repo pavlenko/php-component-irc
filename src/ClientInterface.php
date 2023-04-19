@@ -7,6 +7,7 @@ namespace PE\Component\IRC;
  * @property $nickname
  * @property $username
  * @property $realname
+ * @property $hostname
  *
  * @property $servername
  *

@@ -8,7 +8,13 @@ final class CMD extends MSG
     public const ADMIN       = 'ADMIN';//ADMIN [<server>]
     public const AWAY        = 'AWAY';
     public const CONNECT     = 'CONNECT';
-    public const ERROR       = 'ERROR';
+
+    /**
+     * @example CMD(ERROR :Closing Link: 127.0.0.1 (Connection timed out))
+     * @example CMD(ERROR :Closing Link: 127.0.0.1 (Non-TS server)) & close immediately
+     */
+    public const ERROR = 'ERROR';
+
     public const INFO        = 'INFO';
     public const INVITE      = 'INVITE';
     public const IS_ON       = 'ISON';//ISON <nickname> [...<nickname>]
@@ -56,7 +62,15 @@ final class CMD extends MSG
     public const QUIT        = 'QUIT';//QUIT [<quit message>]
     public const REHASH      = 'REHASH';
     public const RESTART     = 'RESTART';
-    public const SERVER      = 'SERVER';
+
+    /**
+     * <code>
+     * CMD(SERVER $servername> $hop_count $token :$info)
+     * </code>
+     * @see ERR::ALREADY_REGISTERED
+     */
+    public const SERVER = 'SERVER';
+
     public const SERVER_QUIT = 'SQUIT';
 
     /**

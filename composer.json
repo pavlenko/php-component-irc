@@ -9,6 +9,7 @@
   "require": {
     "php": "^7.4",
     "ext-json": "*",
+    "pe/php-component-stream": "^1.0",
     "psr/log": "^1.1",
     "react/socket": "^1.12"
   },

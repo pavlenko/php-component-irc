@@ -27,7 +27,7 @@ final class HandlerPASS implements HandlerInterface
         } elseif ($cmd->numArgs() === 0) {
             return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         } else {
-            $sess->setPassword($cmd->getArg(0));
+            $sess->set('password', $cmd->getArg(0));
         }
         return 0;
     }

@@ -7,17 +7,15 @@ use PE\Component\IRC\ERR;
 use PE\Component\IRC\SessionInterface;
 use PE\Component\IRC\StorageInterface;
 
-/**
- * <code>
- * SERVER <servername> <hop_count> <token> :<info>
- * SERVER <servername> <pass> <hop_count> <id> :<info>
- * </code>
- */
 class HandlerSERVER implements HandlerInterface
 {
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
-        if ($cmd->numArgs() < 3) {
+        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            return $sess->sendERR(ERR::ALREADY_REGISTERED, [$cmd->getArg(0)]);
+        }
+
+        if ($cmd->numArgs() < 3 || empty($cmd->getComment())) {
             $sess->close();
             return $sess->sendCMD(CMD::ERROR, [], 'Need more params');
         }

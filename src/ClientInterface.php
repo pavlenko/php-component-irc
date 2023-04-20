@@ -14,13 +14,23 @@ namespace PE\Component\IRC;
  * @property $flags
  * @property $channels
  *
- * @property $registrationTime //TODO rename
- * @property $lastPingingTime
- * @property $lastMessageTime
+ * @property \DateTimeInterface $registeredAt
+ * @property \DateTimeInterface $lastPingingAt
+ * @property \DateTimeInterface $lastMessageAt
  *
- * @property $awayMessage
- * @property $quitMessage
+ * @property string $awayMessage
+ * @property string $quitMessage
  */
 interface ClientInterface
 {
+    //REGISTRATION: A
+    //-->PASS <password>
+    //-->NICK <nickname>
+    //-->USER <user> <mode> <unused> <realname>
+    //<--RPL_WELCOME
+
+    //REGISTRATION: B
+    //-->PASS <password>
+    //-->SERVICE <nickname> <reserved> <distribution> <type> <reserved> <info>
+    //<--RPL_YOURESERVICE
 }

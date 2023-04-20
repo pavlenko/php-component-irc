@@ -34,7 +34,7 @@ final class CMD extends MSG
      * @see ERR::UNAVAILABLE_RESOURCE
      * @see ERR::RESTRICTED
      */
-    public const NICK        = 'NICK';
+    public const NICK = 'NICK';
 
     public const NOTICE      = 'NOTICE';
     public const OPERATOR    = 'OPER';
@@ -48,7 +48,8 @@ final class CMD extends MSG
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED
      */
-    public const PASSWORD    = 'PASS';
+    public const PASSWORD = 'PASS';
+
     public const PING        = 'PING';//PING <server> [...<server>]
     public const PONG        = 'PONG';//PONG <server> [...<server>]
     public const PRIVATE_MSG = 'PRIVMSG';
@@ -63,7 +64,18 @@ final class CMD extends MSG
     public const TOPIC       = 'TOPIC';
     public const TRACE       = 'TRACE';
     public const USER_HOST   = 'USERHOST';//USERHOST <nickname> [...<nickname>]
-    public const USER        = 'USER';
+
+    /**
+     * <code>
+     * CMD(USER $user $mode $unused :$realname)
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::ALREADY_REGISTERED
+     * @see RPL::WELCOME
+     * TODO other minimal replies
+     */
+    public const USER = 'USER';
+
     public const USERS       = 'USERS';
     public const VERSION     = 'VERSION';//VERSION [<server>]
     public const WALLOPS     = 'WALLOPS';//WALLOPS <text>

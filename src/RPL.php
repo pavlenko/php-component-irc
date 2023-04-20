@@ -4,7 +4,13 @@ namespace PE\Component\IRC;
 
 final class RPL extends MSG
 {
-    public const WELCOME          = 001;//:<prefix> <rpl code> <nick> :Welcome to the Internet Relay Network <nick>!<user>@<host>
+    /**
+     * <code>
+     * RPL($prefix WELCOME $nick :Welcome to the Internet Relay Network)
+     * </code>
+     */
+    public const WELCOME = 001;
+
     public const YOUR_HOST        = 002;//:<prefix> <rpl code> <nick> :Your host is <servername>, running version <ver>
     public const CREATED          = 003;//:<prefix> <rpl code> <nick> :This server was created <date>
     public const MY_INFO          = 004;//:<prefix> <rpl code> <servername> <version> <available user modes> <available channel modes> [<channel modes that take a parameter>]

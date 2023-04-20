@@ -29,7 +29,7 @@ final class ERR extends MSG
 
     /**
      * <code>
-     * ERR(UNAVAILABLE_RESOURCE $nick/$channel :Nick/channel is temporarily unavailable)
+     * ERR($prefix UNAVAILABLE_RESOURCE $nick $nick/$channel :Nick/channel is temporarily unavailable)
      * </code>
      */
     public const UNAVAILABLE_RESOURCE = 437;
@@ -41,8 +41,21 @@ final class ERR extends MSG
     public const SUMMON_DISABLED            = 445;//:<prefix> <rpl code> <curr nick> :SUMMON has been disabled
     public const USERS_DISABLED             = 446;//:<prefix> <rpl code> <curr nick> :USERS has been disabled
     public const NOT_REGISTERED             = 451;//:<prefix> <rpl code> <curr nick> :You have not registered
-    public const NEED_MORE_PARAMS           = 461;//:<prefix> <rpl code> <curr nick> <command> :Not enough parameters
-    public const ALREADY_REGISTERED         = 462;//:<prefix> <rpl code> <curr nick> :You may not re-register
+
+    /**
+     * <code>
+     * ERR($prefix NEED_MORE_PARAMS $nick $command :Not enough parameters)
+     * </code>
+     */
+    public const NEED_MORE_PARAMS = 461;
+
+    /**
+     * <code>
+     * ERR($prefix ALREADY_REGISTERED $nick :You may not re-register)
+     * </code>
+     */
+    public const ALREADY_REGISTERED = 462;
+
     public const NO_PERM_FOR_HOST           = 463;//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
     public const PASSWORD_MISMATCH          = 464;//:<prefix> <rpl code> <curr nick> :Password incorrect
     public const YOU_ARE_BANNED_CREEP       = 465;//:<prefix> <rpl code> <curr nick> :You are banned from this server
@@ -58,7 +71,7 @@ final class ERR extends MSG
 
     /**
      * <code>
-     * ERR(RESTRICTED :Your connection is restricted!)
+     * ERR($prefix RESTRICTED $nick :Your connection is restricted!)
      * </code>
      */
     public const RESTRICTED = 484;

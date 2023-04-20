@@ -26,6 +26,14 @@ final class ERR extends MSG
     public const ERRONEOUS_NICKNAME         = 432;//:<prefix> <rpl code> <curr nick> <nick> :Erroneous nickname
     public const NICKNAME_IN_USE            = 433;//:<prefix> <rpl code> <curr nick> <nick> :Nickname is already in use
     public const NICKNAME_COLLISION         = 436;//:<prefix> <rpl code> <curr nick> <nick> :Nickname collision KILL
+
+    /**
+     * <code>
+     * ERR(UNAVAILABLE_RESOURCE $nick/$channel :Nick/channel is temporarily unavailable)
+     * </code>
+     */
+    public const UNAVAILABLE_RESOURCE = 437;
+
     public const USER_NOT_IN_CHANNEL        = 441;//:<prefix> <rpl code> <curr nick> <nick> <channel> :They aren’t on that channel
     public const NOT_ON_CHANNEL             = 442;//:<prefix> <rpl code> <curr nick> <channel> :You’re not on that channel
     public const USER_ON_CHANNEL            = 443;//:<prefix> <rpl code> <curr nick> <user> <channel> :is already on channel
@@ -47,6 +55,14 @@ final class ERR extends MSG
     public const NO_PRIVILEGES              = 481;//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
     public const OPERATOR_PRIVILEGES_NEEDED = 482;//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
     public const CANNOT_KILL_SERVER         = 483;//:<prefix> <rpl code> <curr nick> :You cant kill a server!
+
+    /**
+     * <code>
+     * ERR(RESTRICTED :Your connection is restricted!)
+     * </code>
+     */
+    public const RESTRICTED = 484;
+
     public const NO_OPERATOR_HOST           = 491;//:<prefix> <rpl code> <curr nick> :No O-lines for your host
     public const U_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
     public const USERS_DONT_MATCH           = 502;//:<prefix> <rpl code> <curr nick> :Cant change mode for other users

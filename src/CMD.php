@@ -21,10 +21,33 @@ final class CMD extends MSG
     public const MOTD        = 'MOTD';//MODT [<server>]
     public const LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]
     public const NAMES       = 'NAMES';
+
+    /**
+     * <code>
+     * CMD(NICK $nickname)
+     * CMD(NICK $nickname $hop_count $username $host $server_token $u_mode $realname)
+     * </code>
+     * @see ERR::NO_NICKNAME_GIVEN
+     * @see ERR::ERRONEOUS_NICKNAME
+     * @see ERR::NICKNAME_IN_USE
+     * @see ERR::NICKNAME_COLLISION
+     * @see ERR::UNAVAILABLE_RESOURCE
+     * @see ERR::RESTRICTED
+     */
     public const NICK        = 'NICK';
+
     public const NOTICE      = 'NOTICE';
     public const OPERATOR    = 'OPER';
     public const PART        = 'PART';
+
+    /**
+     * <code>
+     * CMD(PASS $password)
+     * CMD(PASS $password $version $flags [$options])
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::ALREADY_REGISTERED
+     */
     public const PASSWORD    = 'PASS';
     public const PING        = 'PING';//PING <server> [...<server>]
     public const PONG        = 'PONG';//PONG <server> [...<server>]

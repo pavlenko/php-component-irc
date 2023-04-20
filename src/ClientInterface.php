@@ -27,10 +27,10 @@ interface ClientInterface
     //-->PASS <password>
     //-->NICK <nickname>
     //-->USER <user> <mode> <unused> <realname>
-    //<--RPL_WELCOME
+    //<--WELCOME
 
     //REGISTRATION: B
     //-->PASS <password>
     //-->SERVICE <nickname> <reserved> <distribution> <type> <reserved> <info>
-    //<--RPL_YOURESERVICE
+    //<--YOURESERVICE
 }

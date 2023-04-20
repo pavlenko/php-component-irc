@@ -4,52 +4,52 @@ namespace PE\Component\IRC;
 
 final class ERR extends MSG
 {
-    public const ERR_NO_SUCH_NICK               = 401;//:<prefix> <rpl code> <curr nick> <nickname> :No such nick/channel
-    public const ERR_NO_SUCH_SERVER             = 402;//:<prefix> <rpl code> <curr nick> <server name> :No such server
-    public const ERR_NO_SUCH_CHANNEL            = 403;//:<prefix> <rpl code> <curr nick> <channel name> :No such channel
-    public const ERR_CANNOT_SEND_TO_CHANNEL     = 404;//:<prefix> <rpl code> <curr nick> <channel name> :Cannot send to channel
-    public const ERR_TOO_MANY_CHANNELS          = 405;//:<prefix> <rpl code> <curr nick> <channel name> :You have joined too many channels
-    public const ERR_WAS_NO_SUCH_NICK           = 406;//:<prefix> <rpl code> <curr nick> <nickname> :There was no such nickname
-    public const ERR_TOO_MANY_TARGETS           = 407;//:<prefix> <rpl code> <curr nick> <target> :Duplicate recipients. No message delivered
-    public const ERR_NO_ORIGIN                  = 409;//:<prefix> <rpl code> <curr nick> :No origin specified
-    public const ERR_NO_RECIPIENT               = 411;//:<prefix> <rpl code> <curr nick> :No recipient given (<command>)
-    public const ERR_NO_TEXT_TO_SEND            = 412;//:<prefix> <rpl code> <curr nick> :No text to send
-    public const ERR_NO_TOP_LEVEL               = 413;//:<prefix> <rpl code> <curr nick> <mask> :No toplevel domain specified
-    public const ERR_WILDCARD_TOP_LEVEL         = 414;//:<prefix> <rpl code> <curr nick> <mask> :Wildcard in toplevel domain
+    public const NO_SUCH_NICK               = 401;//:<prefix> <rpl code> <curr nick> <nickname> :No such nick/channel
+    public const NO_SUCH_SERVER             = 402;//:<prefix> <rpl code> <curr nick> <server name> :No such server
+    public const NO_SUCH_CHANNEL            = 403;//:<prefix> <rpl code> <curr nick> <channel name> :No such channel
+    public const CANNOT_SEND_TO_CHANNEL     = 404;//:<prefix> <rpl code> <curr nick> <channel name> :Cannot send to channel
+    public const TOO_MANY_CHANNELS          = 405;//:<prefix> <rpl code> <curr nick> <channel name> :You have joined too many channels
+    public const WAS_NO_SUCH_NICK           = 406;//:<prefix> <rpl code> <curr nick> <nickname> :There was no such nickname
+    public const TOO_MANY_TARGETS           = 407;//:<prefix> <rpl code> <curr nick> <target> :Duplicate recipients. No message delivered
+    public const NO_ORIGIN                  = 409;//:<prefix> <rpl code> <curr nick> :No origin specified
+    public const NO_RECIPIENT               = 411;//:<prefix> <rpl code> <curr nick> :No recipient given (<command>)
+    public const NO_TEXT_TO_SEND            = 412;//:<prefix> <rpl code> <curr nick> :No text to send
+    public const NO_TOP_LEVEL               = 413;//:<prefix> <rpl code> <curr nick> <mask> :No toplevel domain specified
+    public const WILDCARD_TOP_LEVEL         = 414;//:<prefix> <rpl code> <curr nick> <mask> :Wildcard in toplevel domain
     // Returned by a server in response to a LIST or NAMES message to indicate the result contains too many items to be returned to the client.
-    public const ERR_TOO_MANY_MATCHES           = 416;//:<prefix> <rpl code> <curr nick> <channel> :Output too long (try locally)
-    public const ERR_UNKNOWN_COMMAND            = 421;//:<prefix> <rpl code> <curr nick> <command> :Unknown command
-    public const ERR_NO_MOTD                    = 422;//:<prefix> <rpl code> <curr nick> :MOTD File is missing
-    public const ERR_NO_ADMIN_INFO              = 423;//:<prefix> <rpl code> <curr nick> <server> :No administrative info available
-    public const ERR_FILE_ERROR                 = 424;//:<prefix> <rpl code> <curr nick> :File error doing <file op> on <file>
-    public const ERR_NO_NICKNAME_GIVEN          = 431;//:<prefix> <rpl code> <curr nick> :No nickname given
-    public const ERR_ERRONEOUS_NICKNAME         = 432;//:<prefix> <rpl code> <curr nick> <nick> :Erroneous nickname
-    public const ERR_NICKNAME_IN_USE            = 433;//:<prefix> <rpl code> <curr nick> <nick> :Nickname is already in use
-    public const ERR_NICKNAME_COLLISION         = 436;//:<prefix> <rpl code> <curr nick> <nick> :Nickname collision KILL
-    public const ERR_USER_NOT_IN_CHANNEL        = 441;//:<prefix> <rpl code> <curr nick> <nick> <channel> :They aren’t on that channel
-    public const ERR_NOT_ON_CHANNEL             = 442;//:<prefix> <rpl code> <curr nick> <channel> :You’re not on that channel
-    public const ERR_USER_ON_CHANNEL            = 443;//:<prefix> <rpl code> <curr nick> <user> <channel> :is already on channel
-    public const ERR_NO_LOGIN                   = 444;//:<prefix> <rpl code> <curr nick> <user> :User not logged in
-    public const ERR_SUMMON_DISABLED            = 445;//:<prefix> <rpl code> <curr nick> :SUMMON has been disabled
-    public const ERR_USERS_DISABLED             = 446;//:<prefix> <rpl code> <curr nick> :USERS has been disabled
-    public const ERR_NOT_REGISTERED             = 451;//:<prefix> <rpl code> <curr nick> :You have not registered
-    public const ERR_NEED_MORE_PARAMS           = 461;//:<prefix> <rpl code> <curr nick> <command> :Not enough parameters
-    public const ERR_ALREADY_REGISTERED         = 462;//:<prefix> <rpl code> <curr nick> :You may not re-register
-    public const ERR_NO_PERM_FOR_HOST           = 463;//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
-    public const ERR_PASSWORD_MISMATCH          = 464;//:<prefix> <rpl code> <curr nick> :Password incorrect
-    public const ERR_YOU_ARE_BANNED_CREEP       = 465;//:<prefix> <rpl code> <curr nick> :You are banned from this server
-    public const ERR_KEY_SET                    = 467;//:<prefix> <rpl code> <curr nick> <channel> :Channel key already set
-    public const ERR_CHANNEL_IS_FULL            = 471;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+l)
-    public const ERR_UNKNOWN_MODE               = 472;//:<prefix> <rpl code> <curr nick> <char> :is unknown mode char to me
-    public const ERR_INVITE_ONLY_CHANNEL        = 473;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+i)
-    public const ERR_BANNED_FROM_CHANNEL        = 474;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+b)
-    public const ERR_BAD_CHANNEL_KEY            = 475;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+k)
-    public const ERR_NO_PRIVILEGES              = 481;//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
-    public const ERR_OPERATOR_PRIVILEGES_NEEDED = 482;//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
-    public const ERR_CANNOT_KILL_SERVER         = 483;//:<prefix> <rpl code> <curr nick> :You cant kill a server!
-    public const ERR_NO_OPERATOR_HOST           = 491;//:<prefix> <rpl code> <curr nick> :No O-lines for your host
-    public const ERR_U_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
-    public const ERR_USERS_DONT_MATCH           = 502;//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
+    public const TOO_MANY_MATCHES           = 416;//:<prefix> <rpl code> <curr nick> <channel> :Output too long (try locally)
+    public const UNKNOWN_COMMAND            = 421;//:<prefix> <rpl code> <curr nick> <command> :Unknown command
+    public const NO_MOTD                    = 422;//:<prefix> <rpl code> <curr nick> :MOTD File is missing
+    public const NO_ADMIN_INFO              = 423;//:<prefix> <rpl code> <curr nick> <server> :No administrative info available
+    public const FILE_ERROR                 = 424;//:<prefix> <rpl code> <curr nick> :File error doing <file op> on <file>
+    public const NO_NICKNAME_GIVEN          = 431;//:<prefix> <rpl code> <curr nick> :No nickname given
+    public const ERRONEOUS_NICKNAME         = 432;//:<prefix> <rpl code> <curr nick> <nick> :Erroneous nickname
+    public const NICKNAME_IN_USE            = 433;//:<prefix> <rpl code> <curr nick> <nick> :Nickname is already in use
+    public const NICKNAME_COLLISION         = 436;//:<prefix> <rpl code> <curr nick> <nick> :Nickname collision KILL
+    public const USER_NOT_IN_CHANNEL        = 441;//:<prefix> <rpl code> <curr nick> <nick> <channel> :They aren’t on that channel
+    public const NOT_ON_CHANNEL             = 442;//:<prefix> <rpl code> <curr nick> <channel> :You’re not on that channel
+    public const USER_ON_CHANNEL            = 443;//:<prefix> <rpl code> <curr nick> <user> <channel> :is already on channel
+    public const NO_LOGIN                   = 444;//:<prefix> <rpl code> <curr nick> <user> :User not logged in
+    public const SUMMON_DISABLED            = 445;//:<prefix> <rpl code> <curr nick> :SUMMON has been disabled
+    public const USERS_DISABLED             = 446;//:<prefix> <rpl code> <curr nick> :USERS has been disabled
+    public const NOT_REGISTERED             = 451;//:<prefix> <rpl code> <curr nick> :You have not registered
+    public const NEED_MORE_PARAMS           = 461;//:<prefix> <rpl code> <curr nick> <command> :Not enough parameters
+    public const ALREADY_REGISTERED         = 462;//:<prefix> <rpl code> <curr nick> :You may not re-register
+    public const NO_PERM_FOR_HOST           = 463;//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
+    public const PASSWORD_MISMATCH          = 464;//:<prefix> <rpl code> <curr nick> :Password incorrect
+    public const YOU_ARE_BANNED_CREEP       = 465;//:<prefix> <rpl code> <curr nick> :You are banned from this server
+    public const KEY_SET                    = 467;//:<prefix> <rpl code> <curr nick> <channel> :Channel key already set
+    public const CHANNEL_IS_FULL            = 471;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+l)
+    public const UNKNOWN_MODE               = 472;//:<prefix> <rpl code> <curr nick> <char> :is unknown mode char to me
+    public const INVITE_ONLY_CHANNEL        = 473;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+i)
+    public const BANNED_FROM_CHANNEL        = 474;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+b)
+    public const BAD_CHANNEL_KEY            = 475;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+k)
+    public const NO_PRIVILEGES              = 481;//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
+    public const OPERATOR_PRIVILEGES_NEEDED = 482;//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
+    public const CANNOT_KILL_SERVER         = 483;//:<prefix> <rpl code> <curr nick> :You cant kill a server!
+    public const NO_OPERATOR_HOST           = 491;//:<prefix> <rpl code> <curr nick> :No O-lines for your host
+    public const U_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
+    public const USERS_DONT_MATCH           = 502;//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
 
     public function __construct(string $prefix, int $code, array $args = [], string $comment = null)
     {
@@ -59,93 +59,93 @@ final class ERR extends MSG
     protected function resolveComment(): ?string
     {
         switch ($this->getCode()) {
-            case self::ERR_NO_SUCH_NICK:
+            case self::NO_SUCH_NICK:
                 return 'No such nick/channel';
-            case self::ERR_NO_SUCH_SERVER:
+            case self::NO_SUCH_SERVER:
                 return 'No such server';
-            case self::ERR_NO_SUCH_CHANNEL:
+            case self::NO_SUCH_CHANNEL:
                 return 'No such channel';
-            case self::ERR_CANNOT_SEND_TO_CHANNEL:
+            case self::CANNOT_SEND_TO_CHANNEL:
                 return 'Cannot send to channel';
-            case self::ERR_TOO_MANY_CHANNELS:
+            case self::TOO_MANY_CHANNELS:
                 return 'You have joined too many channels';
-            case self::ERR_WAS_NO_SUCH_NICK:
+            case self::WAS_NO_SUCH_NICK:
                 return 'There was no such nickname';
-            case self::ERR_TOO_MANY_TARGETS:
+            case self::TOO_MANY_TARGETS:
                 return 'Duplicate recipients. No message delivered';
-            case self::ERR_NO_ORIGIN:
+            case self::NO_ORIGIN:
                 return 'No origin specified';
-            case self::ERR_NO_RECIPIENT:
+            case self::NO_RECIPIENT:
                 return 'No recipient given (<command>)';
-            case self::ERR_NO_TEXT_TO_SEND:
+            case self::NO_TEXT_TO_SEND:
                 return 'No text to send';
-            case self::ERR_NO_TOP_LEVEL:
+            case self::NO_TOP_LEVEL:
                 return 'No toplevel domain specified';
-            case self::ERR_WILDCARD_TOP_LEVEL:
+            case self::WILDCARD_TOP_LEVEL:
                 return 'Wildcard in toplevel domain';
-            case self::ERR_UNKNOWN_COMMAND:
+            case self::UNKNOWN_COMMAND:
                 return 'Unknown command';
-            case self::ERR_NO_MOTD:
+            case self::NO_MOTD:
                 return 'MOTD File is missing';
-            case self::ERR_NO_ADMIN_INFO:
+            case self::NO_ADMIN_INFO:
                 return 'No administrative info available';
-            case self::ERR_FILE_ERROR:
+            case self::FILE_ERROR:
                 return 'File error doing <file op> on <file>';
-            case self::ERR_NO_NICKNAME_GIVEN:
+            case self::NO_NICKNAME_GIVEN:
                 return 'No nickname given';
-            case self::ERR_ERRONEOUS_NICKNAME:
+            case self::ERRONEOUS_NICKNAME:
                 return 'Erroneous nickname';
-            case self::ERR_NICKNAME_IN_USE:
+            case self::NICKNAME_IN_USE:
                 return 'Nickname is already in use';
-            case self::ERR_NICKNAME_COLLISION:
+            case self::NICKNAME_COLLISION:
                 return 'Nickname collision KILL';
-            case self::ERR_USER_NOT_IN_CHANNEL:
+            case self::USER_NOT_IN_CHANNEL:
                 return 'They aren’t on that channel';
-            case self::ERR_NOT_ON_CHANNEL:
+            case self::NOT_ON_CHANNEL:
                 return 'You’re not on that channel';
-            case self::ERR_USER_ON_CHANNEL:
+            case self::USER_ON_CHANNEL:
                 return 'is already on channel';
-            case self::ERR_NO_LOGIN:
+            case self::NO_LOGIN:
                 return 'User not logged in';
-            case self::ERR_SUMMON_DISABLED:
+            case self::SUMMON_DISABLED:
                 return 'SUMMON has been disabled';
-            case self::ERR_USERS_DISABLED:
+            case self::USERS_DISABLED:
                 return 'USERS has been disabled';
-            case self::ERR_NOT_REGISTERED:
+            case self::NOT_REGISTERED:
                 return 'You have not registered';
-            case self::ERR_NEED_MORE_PARAMS:
+            case self::NEED_MORE_PARAMS:
                 return 'Not enough parameters';
-            case self::ERR_ALREADY_REGISTERED:
+            case self::ALREADY_REGISTERED:
                 return 'You may not re-register';
-            case self::ERR_NO_PERM_FOR_HOST:
+            case self::NO_PERM_FOR_HOST:
                 return 'Your host isn’t among the privileged';
-            case self::ERR_PASSWORD_MISMATCH:
+            case self::PASSWORD_MISMATCH:
                 return 'Password incorrect';
-            case self::ERR_YOU_ARE_BANNED_CREEP:
+            case self::YOU_ARE_BANNED_CREEP:
                 return 'You are banned from this server';
-            case self::ERR_KEY_SET:
+            case self::KEY_SET:
                 return 'Channel key already set';
-            case self::ERR_CHANNEL_IS_FULL:
+            case self::CHANNEL_IS_FULL:
                 return 'Cannot join channel (+l)';
-            case self::ERR_UNKNOWN_MODE:
+            case self::UNKNOWN_MODE:
                 return 'is unknown mode char to me';
-            case self::ERR_INVITE_ONLY_CHANNEL:
+            case self::INVITE_ONLY_CHANNEL:
                 return 'Cannot join channel (+i)';
-            case self::ERR_BANNED_FROM_CHANNEL:
+            case self::BANNED_FROM_CHANNEL:
                 return 'Cannot join channel (+b)';
-            case self::ERR_BAD_CHANNEL_KEY:
+            case self::BAD_CHANNEL_KEY:
                 return 'Cannot join channel (+k)';
-            case self::ERR_NO_PRIVILEGES:
+            case self::NO_PRIVILEGES:
                 return 'Permission Denied - You’re not an IRC operator';
-            case self::ERR_OPERATOR_PRIVILEGES_NEEDED:
+            case self::OPERATOR_PRIVILEGES_NEEDED:
                 return 'You’re not channel operator';
-            case self::ERR_CANNOT_KILL_SERVER:
+            case self::CANNOT_KILL_SERVER:
                 return 'You cant kill a server!';
-            case self::ERR_NO_OPERATOR_HOST:
+            case self::NO_OPERATOR_HOST:
                 return 'No O-lines for your host';
-            case self::ERR_U_MODE_UNKNOWN_FLAG:
+            case self::U_MODE_UNKNOWN_FLAG:
                 return 'Unknown MODE flag';
-            case self::ERR_USERS_DONT_MATCH:
+            case self::USERS_DONT_MATCH:
                 return 'Cant change mode for other users';
         }
         return null;

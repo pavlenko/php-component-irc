@@ -15,7 +15,7 @@ final class HandlerWHOIS implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NO_NICKNAME_GIVEN);
+            return $sess->sendERR(ERR::NO_NICKNAME_GIVEN);
         }
 
         $suckNick = false;
@@ -26,7 +26,7 @@ final class HandlerWHOIS implements HandlerInterface
                 continue;
             }
 
-            $sess->sendRPL(RPL::RPL_WHO_IS_USER, [
+            $sess->sendRPL(RPL::WHO_IS_USER, [
                 $user->getNickname(),
                 $user->getUsername(),
                 $user->getHostname(),
@@ -47,20 +47,20 @@ final class HandlerWHOIS implements HandlerInterface
                 }
             }
 
-            $sess->sendRPL(RPL::RPL_WHO_IS_CHANNELS, [$user->getNickname()], implode(' ', $channels));
+            $sess->sendRPL(RPL::WHO_IS_CHANNELS, [$user->getNickname()], implode(' ', $channels));
             $sess->sendRPL(
-                RPL::RPL_WHO_IS_SERVER,
+                RPL::WHO_IS_SERVER,
                 [$user->getNickname(), $user->getServername()],
                 $stor->conf(Config::CFG_INFO)
             );
 
             if ($user->hasFlag(SessionInterface::FLAG_AWAY)) {
-                $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
+                $sess->sendRPL(RPL::AWAY, [$user->getNickname()], $user->getAwayMessage());
             }
             if ($user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
-                $sess->sendRPL(RPL::RPL_WHO_IS_OPERATOR, [$user->getNickname()]);
+                $sess->sendRPL(RPL::WHO_IS_OPERATOR, [$user->getNickname()]);
             }
-            $sess->sendRPL(RPL::RPL_WHO_IS_IDLE, [
+            $sess->sendRPL(RPL::WHO_IS_IDLE, [
                 $user->getNickname(),
                 time() - $user->getRegistrationTime(),
                 $user->getRegistrationTime(),
@@ -68,8 +68,8 @@ final class HandlerWHOIS implements HandlerInterface
             $suckNick = true;
         }
         if (!$suckNick) {
-            $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
+            $sess->sendERR(ERR::NO_SUCH_NICK, [$cmd->getArg(0)]);
         }
-        return $sess->sendRPL(RPL::RPL_END_OF_WHO_IS, [$cmd->getArg(0)]);
+        return $sess->sendRPL(RPL::END_OF_WHO_IS, [$cmd->getArg(0)]);
     }
 }

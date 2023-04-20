@@ -26,9 +26,9 @@ final class HandlerNAMES implements HandlerInterface
 
         foreach ($channels as $chan) {
             if (!$chan->hasFlag(ChannelInterface::FLAG_PRIVATE) && !$chan->hasFlag(ChannelInterface::FLAG_SECRET)) {
-                $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString($stor));
+                $sess->sendRPL(RPL::NAMES_REPLY, ['= ' . $chan->getName()], $chan->getNamesAsString($stor));
                 if ($cmd->numArgs() !== 0) {
-                    $sess->sendRPL(RPL::RPL_END_OF_NAMES, [$chan->getName()]);
+                    $sess->sendRPL(RPL::END_OF_NAMES, [$chan->getName()]);
                 }
             }
         }
@@ -40,8 +40,8 @@ final class HandlerNAMES implements HandlerInterface
                     $names[] = $user->getNickname();
                 }
             }
-            $sess->sendRPL(RPL::RPL_NAMES_REPLY, ['* *'], implode(' ', $names));
-            $sess->sendRPL(RPL::RPL_END_OF_NAMES, ['*']);
+            $sess->sendRPL(RPL::NAMES_REPLY, ['* *'], implode(' ', $names));
+            $sess->sendRPL(RPL::END_OF_NAMES, ['*']);
         }
         return 0;
     }

@@ -19,11 +19,11 @@ class HandlerSERVER implements HandlerInterface
     {
         if ($cmd->numArgs() < 3) {
             $sess->close();
-            return $sess->sendCMD(CMD::CMD_ERROR, [], 'Need more params');
+            return $sess->sendCMD(CMD::ERROR, [], 'Need more params');
         }
 
         if ($stor->sessions()->searchByName($cmd->getArg(0))) {
-            return $sess->sendERR(ERR::ERR_ALREADY_REGISTERED, [$cmd->getArg(0)]);
+            return $sess->sendERR(ERR::ALREADY_REGISTERED, [$cmd->getArg(0)]);
         }
 
         $sess->setType(SessionInterface::TYPE_SERVER);
@@ -33,7 +33,7 @@ class HandlerSERVER implements HandlerInterface
         $sess->set('info', $cmd->getComment());
 
         foreach ($stor->sessions() as $serv) {
-            $serv->sendCMD(CMD::CMD_SERVER, $cmd->getArgs(), $cmd->getComment(), $sess->getServername());
+            $serv->sendCMD(CMD::SERVER, $cmd->getArgs(), $cmd->getComment(), $sess->getServername());
         }
         return 0;
     }

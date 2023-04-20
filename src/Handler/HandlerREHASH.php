@@ -15,10 +15,10 @@ final class HandlerREHASH implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if (!$sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
-            return $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            return $sess->sendERR(ERR::NO_PRIVILEGES);
         }
 
         $stor->trigger(Daemon::EVT_REHASH, $event = new Event());
-        return $sess->sendRPL(RPL::RPL_REHASHING, [$event->getPayload()]);
+        return $sess->sendRPL(RPL::REHASHING, [$event->getPayload()]);
     }
 }

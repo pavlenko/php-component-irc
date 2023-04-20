@@ -32,7 +32,7 @@ class HandlerSTATS implements HandlerInterface
         if ($cmd->numArgs() === 2) {
             $serv = $stor->sessions()->searchByName($cmd->getArg(1));
             if (null === $serv) {
-                return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]);
+                return $sess->sendERR(ERR::NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]);
             }
             return $serv->sendCMD($cmd->getCode(), [$cmd->getArg(0)]);//TODO how to handle response to $sess
         }
@@ -42,14 +42,14 @@ class HandlerSTATS implements HandlerInterface
         $query = $cmd->getArg(0);//TODO required
         if ($isOperator || 'c' === $query) {
             if (!$isOperator) {
-                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+                $sess->sendERR(ERR::NO_PRIVILEGES);
             } else {
                 foreach ($stor->conf('servers') as $serv) {
                     if ($serv['role'] === 'hub') {//TODO flag
                         continue;
                     }
                     //C <host> * <name> <port> <class>
-                    $sess->sendRPL(RPL::RPL_STATS_C_LINE, [
+                    $sess->sendRPL(RPL::STATS_C_LINE, [
                         'C',
                         $serv['host'],
                         '*',
@@ -66,19 +66,19 @@ class HandlerSTATS implements HandlerInterface
                     continue;
                 }
                 //H <host mask> * <servername>
-                $sess->sendRPL(RPL::RPL_STATS_H_LINE, ['H', $serv['host'], '*', $serv['name']]);
+                $sess->sendRPL(RPL::STATS_H_LINE, ['H', $serv['host'], '*', $serv['name']]);
             }
         }
         if ($isOperator || 'i' === $query) {
             if (!$isOperator) {
-                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+                $sess->sendERR(ERR::NO_PRIVILEGES);
             } else {
                 foreach ($stor->conf('servers') as $serv) {
                     if (!$serv['allowed_from']) {//TODO flag
                         continue;
                     }
                     //I <host> * <host> <port> <class>
-                    $sess->sendRPL(RPL::RPL_STATS_I_LINE, [
+                    $sess->sendRPL(RPL::STATS_I_LINE, [
                         'I',
                         $serv['host'],
                         '*',
@@ -95,7 +95,7 @@ class HandlerSTATS implements HandlerInterface
                 foreach ($channel->getBanMasks() as $mask) {
                     foreach ($stor->sessions() as $user) {
                         if ($stor->isEqualToRegex($mask, $sess->getPrefix())) {
-                            $sess->sendRPL(RPL::RPL_STATS_K_LINE, [
+                            $sess->sendRPL(RPL::STATS_K_LINE, [
                                 'I',
                                 $user->getHostname(),
                                 '*',
@@ -112,7 +112,7 @@ class HandlerSTATS implements HandlerInterface
             foreach ($stor->sessions(1) as $serv) {
                 $serv->getRegistrationTime();
                 //<link name> <send q> <sent messages> <sent bytes> <received messages> <received bytes> <time open>
-                $sess->sendRPL(RPL::RPL_STATS_LINK_INFO, [
+                $sess->sendRPL(RPL::STATS_LINK_INFO, [
                     $serv->getServername(),//TODO master_[~master@46.98.139.136]
                     0,
                     $serv->get('sent_num'),
@@ -126,7 +126,7 @@ class HandlerSTATS implements HandlerInterface
         if (null === $query || 'm' === $query) {
             foreach ($stor->commands() as $stat) {
                 //<command> <count> [<num> [<num>]] <-- what is nums in reply from libera???
-                $sess->sendRPL(RPL::RPL_STATS_COMMANDS, [
+                $sess->sendRPL(RPL::STATS_COMMANDS, [
                     $stat['name'],
                     $stat['count'],
                 ]);
@@ -134,25 +134,25 @@ class HandlerSTATS implements HandlerInterface
         }
         if ($isOperator || 'o' === $query) {
             if (!$isOperator) {
-                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+                $sess->sendERR(ERR::NO_PRIVILEGES);
             } else {
                 foreach ($stor->conf('servers') as $serv) {
                     if (empty($serv['can_operate'])) {//TODO flag
                         continue;
                     }
                     //O <host mask> * <name>
-                    $sess->sendRPL(RPL::RPL_STATS_O_LINE, ['O', $serv['host'], '*', $serv['name']]);
+                    $sess->sendRPL(RPL::STATS_O_LINE, ['O', $serv['host'], '*', $serv['name']]);
                 }
             }
         }
         if ($isOperator || 'y' === $query) {
             if (!$isOperator) {
-                $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+                $sess->sendERR(ERR::NO_PRIVILEGES);
             } else {
                 $class = $stor->conf('class');
                 foreach ($class as $line) {
                     //Y <class> <ping frequency> <connect frequency> <max send q>
-                    $sess->sendRPL(RPL::RPL_STATS_Y_LINE, [
+                    $sess->sendRPL(RPL::STATS_Y_LINE, [
                         'Y',
                         $line['class'],
                         $line['ping_f'],
@@ -164,8 +164,8 @@ class HandlerSTATS implements HandlerInterface
         }
         if (null === $query || 'u' === $query) {
             $interval = (new \DateTime())->diff($stor->getStartedAt(), true);
-            $sess->sendRPL(RPL::RPL_STATS_UPTIME, [], $interval->format('Server Up %a days %H:%I:%S'));
+            $sess->sendRPL(RPL::STATS_UPTIME, [], $interval->format('Server Up %a days %H:%I:%S'));
         }
-        return $sess->sendRPL(RPL::RPL_END_OF_STATS, [$query]);
+        return $sess->sendRPL(RPL::END_OF_STATS, [$query]);
     }
 }

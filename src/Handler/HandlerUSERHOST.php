@@ -13,7 +13,7 @@ final class HandlerUSERHOST implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $resp = [];
@@ -28,6 +28,6 @@ final class HandlerUSERHOST implements HandlerInterface
                     . $user->getHostname();
             }
         }
-        return $sess->sendRPL(RPL::RPL_USER_HOST, [], implode(' ', $resp));
+        return $sess->sendRPL(RPL::USER_HOST, [], implode(' ', $resp));
     }
 }

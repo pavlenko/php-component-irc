@@ -13,7 +13,7 @@ final class HandlerISON implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
         $resp = [];
         foreach ($cmd->getArgs() as $arg) {
@@ -21,6 +21,6 @@ final class HandlerISON implements HandlerInterface
                 $resp[] = $arg;
             }
         }
-        return $sess->sendRPL(RPL::RPL_IS_ON, [], implode(' ', $resp));
+        return $sess->sendRPL(RPL::IS_ON, [], implode(' ', $resp));
     }
 }

@@ -12,7 +12,7 @@ final class HandlerPART implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() == 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $channels = explode(',', $cmd->getArg(0));
@@ -20,9 +20,9 @@ final class HandlerPART implements HandlerInterface
             $chan = $stor->channels()->searchByName($channel);
 
             if (null === $chan) {
-                $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$channel]);
+                $sess->sendERR(ERR::NO_SUCH_CHANNEL, [$channel]);
             } elseif (!$chan->hasSession($sess)) {
-                $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+                $sess->sendERR(ERR::NOT_ON_CHANNEL, [$chan->getName()]);
             } else {
                 foreach ($chan->getSessions($stor) as $user) {
                     $user->sendCMD($cmd->getCode(), [$chan->getName()], $cmd->getComment(), $sess->getPrefix());

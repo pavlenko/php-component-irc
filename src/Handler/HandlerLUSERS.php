@@ -23,10 +23,10 @@ class HandlerLUSERS implements HandlerInterface
         if ($target) {
             foreach ($stor->sessions(1) as $serv) {
                 if ($stor->isEqualToRegex($target, $serv->getServername())) {
-                    return $serv->sendCMD(CMD::CMD_LIST_USERS, $pattern);
+                    return $serv->sendCMD(CMD::LIST_USERS, $pattern);
                 }
             }
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $target]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$sess->getNickname(), $target]);
         }
 
         $normal    = 0;
@@ -49,17 +49,17 @@ class HandlerLUSERS implements HandlerInterface
         }
 
         $sess->sendRPL(
-            RPL::RPL_L_USER_CLIENT,
+            RPL::L_USER_CLIENT,
             [$sess->getNickname()],
             sprintf('There are %d users and %d invisible on %d servers', $normal, $invisible, count($stor->sessions(1)))
         );
 
-        $sess->sendRPL(RPL::RPL_L_USER_OPERATORS, [$operators]);
-        $sess->sendRPL(RPL::RPL_L_USER_UNKNOWN, [$unknown]);
-        $sess->sendRPL(RPL::RPL_L_USER_CHANNELS, [count($stor->channels())]);
+        $sess->sendRPL(RPL::L_USER_OPERATORS, [$operators]);
+        $sess->sendRPL(RPL::L_USER_UNKNOWN, [$unknown]);
+        $sess->sendRPL(RPL::L_USER_CHANNELS, [count($stor->channels())]);
 
         return $sess->sendRPL(
-            RPL::RPL_L_USER_ME,
+            RPL::L_USER_ME,
             [],
             sprintf('I have %d clients and %d servers', count($stor->sessions()), count($stor->sessions(1)))
         );

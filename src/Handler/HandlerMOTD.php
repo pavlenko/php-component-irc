@@ -14,7 +14,7 @@ final class HandlerMOTD implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() > 0 && $cmd->getArg(0) !== $sess->getServername()) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER);
         }
 
         $motd = $stor->conf(Config::CFG_MOTD_FILE);
@@ -23,13 +23,13 @@ final class HandlerMOTD implements HandlerInterface
         }
 
         if (empty($motd)) {
-            return $sess->sendERR(ERR::ERR_NO_MOTD);
+            return $sess->sendERR(ERR::NO_MOTD);
         }
 
-        $sess->sendRPL(RPL::RPL_MOTD_START, [], '- Message of the day -');
+        $sess->sendRPL(RPL::MOTD_START, [], '- Message of the day -');
         foreach ($motd as $line) {
-            $sess->sendRPL(RPL::RPL_MOTD, [], $line);
+            $sess->sendRPL(RPL::MOTD, [], $line);
         }
-        return $sess->sendRPL(RPL::RPL_END_OF_MOTD);
+        return $sess->sendRPL(RPL::END_OF_MOTD);
     }
 }

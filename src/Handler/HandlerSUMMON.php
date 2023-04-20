@@ -11,7 +11,7 @@ class HandlerSUMMON implements HandlerInterface
 {
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
-        $sess->sendERR(ERR::ERR_SUMMON_DISABLED);
+        $sess->sendERR(ERR::SUMMON_DISABLED);
         return 0;
     }
 }

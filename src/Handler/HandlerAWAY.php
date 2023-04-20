@@ -13,11 +13,11 @@ final class HandlerAWAY implements HandlerInterface
     {
         if ($cmd->numArgs() === 0) {
             $sess->clrFlag(SessionInterface::FLAG_AWAY);
-            $sess->sendRPL(RPL::RPL_UN_AWAY);
+            $sess->sendRPL(RPL::UN_AWAY);
         } else {
             $sess->setFlag(SessionInterface::FLAG_AWAY);
             $sess->setAwayMessage(implode(' ', $cmd->getArgs()));
-            $sess->sendRPL(RPL::RPL_NOW_AWAY);
+            $sess->sendRPL(RPL::NOW_AWAY);
         }
         return 0;
     }

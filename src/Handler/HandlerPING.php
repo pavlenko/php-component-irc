@@ -12,7 +12,7 @@ final class HandlerPING implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         return $cmd->numArgs() === 0
-            ? $sess->sendERR(ERR::ERR_NO_ORIGIN)
-            : $sess->sendCMD(CMD::CMD_PONG, [], $cmd->getArg(0), $sess->getServername());
+            ? $sess->sendERR(ERR::NO_ORIGIN)
+            : $sess->sendCMD(CMD::PONG, [], $cmd->getArg(0), $sess->getServername());
     }
 }

@@ -16,7 +16,7 @@ final class HandlerJOIN implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $channels = array_filter(explode(',', (string) $cmd->getArg(0)));
@@ -26,9 +26,9 @@ final class HandlerJOIN implements HandlerInterface
             $key = $keys[$index] ?? null;
 
             if (!$stor->isValidChannelName($name)) {
-                $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
+                $sess->sendERR(ERR::NO_SUCH_CHANNEL, [$name]);
             } elseif ($stor->conf(Config::CFG_MAX_CHANNELS) > 0 && $stor->conf(Config::CFG_MAX_CHANNELS) <= $sess->numChannels()) {
-                $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
+                $sess->sendERR(ERR::TOO_MANY_CHANNELS, [$name]);
             } else {
                 $chan = $stor->channels()->searchByName($name);
 
@@ -46,23 +46,23 @@ final class HandlerJOIN implements HandlerInterface
                 }
 
                 if ($chan->hasFlag(Channel::FLAG_PRIVATE) && $key !== $chan->getPass()) {
-                    $sess->sendERR(ERR::ERR_TOO_MANY_CHANNELS, [$name]);
+                    $sess->sendERR(ERR::TOO_MANY_CHANNELS, [$name]);
                     continue;
                 }
 
                 if ($chan->getLimit() > 0 && $chan->numSessions() >= $chan->getLimit()) {
-                    $sess->sendERR(ERR::ERR_CHANNEL_IS_FULL, [$name]);
+                    $sess->sendERR(ERR::CHANNEL_IS_FULL, [$name]);
                     continue;
                 }
 
                 if ($chan->hasFlag(Channel::FLAG_INVITE_ONLY) && !$chan->hasInvited($sess)) {
-                    $sess->sendERR(ERR::ERR_INVITE_ONLY_CHANNEL, [$name]);
+                    $sess->sendERR(ERR::INVITE_ONLY_CHANNEL, [$name]);
                     continue;
                 }
 
                 foreach ($chan->getBanMasks() as $mask) {
                     if ($stor->isEqualToRegex($mask, $sess->getPrefix())) {
-                        $sess->sendERR(ERR::ERR_BANNED_FROM_CHANNEL, [$name]);
+                        $sess->sendERR(ERR::BANNED_FROM_CHANNEL, [$name]);
                         continue 2;
                     }
                 }
@@ -84,10 +84,10 @@ final class HandlerJOIN implements HandlerInterface
     private function sendInfo(ChannelInterface $chan, SessionInterface $sess, StorageInterface $stor): void
     {
         foreach ($chan->getSessions($stor) as $user) {
-            $user->sendCMD(CMD::CMD_JOIN, [], $chan->getName(), $sess->getPrefix());
+            $user->sendCMD(CMD::JOIN, [], $chan->getName(), $sess->getPrefix());
         }
 
-        $stor->trigger(Connection::EVT_INPUT, new CMD(CMD::CMD_TOPIC, [$chan->getName()]), $sess);
-        $stor->trigger(Connection::EVT_INPUT, new CMD(CMD::CMD_NAMES, [$chan->getName()]), $sess);
+        $stor->trigger(Connection::EVT_INPUT, new CMD(CMD::TOPIC, [$chan->getName()]), $sess);
+        $stor->trigger(Connection::EVT_INPUT, new CMD(CMD::NAMES, [$chan->getName()]), $sess);
     }
 }

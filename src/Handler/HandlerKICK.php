@@ -12,29 +12,29 @@ final class HandlerKICK implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() < 2) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $chan = $stor->channels()->searchByName($cmd->getArg(0));
         if (null === $chan) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$cmd->getArg(0)]);
+            return $sess->sendERR(ERR::NO_SUCH_CHANNEL, [$cmd->getArg(0)]);
         }
 
         if (!$chan->hasSession($sess)) {
-            return $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$chan->getName()]);
+            return $sess->sendERR(ERR::NOT_ON_CHANNEL, [$chan->getName()]);
         }
 
         if (!$chan->hasOperator($sess)) {
-            return $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
+            return $sess->sendERR(ERR::OPERATOR_PRIVILEGES_NEEDED, [$chan->getName()]);
         }
 
         $user = $stor->sessions()->searchByName($cmd->getArg(1));
         if (null === $user) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(1)]);
+            return $sess->sendERR(ERR::NO_SUCH_NICK, [$cmd->getArg(1)]);
         }
 
         if (!$chan->hasSession($user)) {
-            $sess->sendERR(ERR::ERR_USER_NOT_IN_CHANNEL, [$cmd->getArg(1), $cmd->getArg(0)]);
+            $sess->sendERR(ERR::USER_NOT_IN_CHANNEL, [$cmd->getArg(1), $cmd->getArg(0)]);
         }
 
         foreach ($chan->getSessions($stor) as $s) {

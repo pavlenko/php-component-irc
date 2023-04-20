@@ -32,7 +32,7 @@ final class HandlerWHO implements HandlerInterface
                     $this->replyWHO($cmd, $sess, $chan, $user);
                 }
             }
-            return $sess->sendRPL(RPL::RPL_END_OF_WHO);
+            return $sess->sendRPL(RPL::END_OF_WHO);
         }
 
         $chan = $stor->channels()->searchByName($cmd->getArg(0));
@@ -40,7 +40,7 @@ final class HandlerWHO implements HandlerInterface
             foreach ($chan->getSessions($stor) as $user) {
                 $this->replyWHO($cmd, $sess, $chan, $user);
             }
-            return $sess->sendRPL(RPL::RPL_END_OF_WHO, [$cmd->getArg(0)]);
+            return $sess->sendRPL(RPL::END_OF_WHO, [$cmd->getArg(0)]);
         }
 
         $suchNick = false;
@@ -57,10 +57,10 @@ final class HandlerWHO implements HandlerInterface
             foreach ($user->getChannels($stor) as $chan) {
                 $this->replyWHO($cmd, $sess, $chan, $user);
             }
-            $sess->sendRPL(RPL::RPL_END_OF_WHO, [$cmd->getArg(0)]);
+            $sess->sendRPL(RPL::END_OF_WHO, [$cmd->getArg(0)]);
         }
         if (!$suchNick) {
-            $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]);
+            $sess->sendERR(ERR::NO_SUCH_SERVER, [$cmd->getArg(0)]);
         }
         return 0;
     }
@@ -78,7 +78,7 @@ final class HandlerWHO implements HandlerInterface
             $userStatus = '+';
         }
 
-        $sess->sendRPL(RPL::RPL_WHO_REPLY, [
+        $sess->sendRPL(RPL::WHO_REPLY, [
             $chan->getName(),
             $user->getUsername(),
             $user->getHostname(),

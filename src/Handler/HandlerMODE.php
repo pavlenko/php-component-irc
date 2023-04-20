@@ -14,7 +14,7 @@ final class HandlerMODE implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $name = $cmd->getArg(0);
@@ -23,49 +23,49 @@ final class HandlerMODE implements HandlerInterface
         if ('#' === $name[0]) {
             $chan = $stor->channels()->searchByName($name);
             if (null === $chan) {
-                return $sess->sendERR(ERR::ERR_NO_SUCH_CHANNEL, [$name]);
+                return $sess->sendERR(ERR::NO_SUCH_CHANNEL, [$name]);
             }
 
             if ($cmd->numArgs() === 1) {
-                return $sess->sendRPL(RPL::RPL_CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);
+                return $sess->sendRPL(RPL::CHANNEL_MODE_IS, [$name, $chan->getFlagsAsString()]);
             }
 
             if ('+b' === $flag && $cmd->numArgs() === 2) {
                 foreach ($chan->getBanMasks() as $mask) {
-                    $sess->sendRPL(RPL::RPL_BAN_LIST, [$cmd->getArg(0), $mask]);
+                    $sess->sendRPL(RPL::BAN_LIST, [$cmd->getArg(0), $mask]);
                 }
-                return $sess->sendRPL(RPL::RPL_END_OF_BAN_LIST, [$cmd->getArg(0)]);
+                return $sess->sendRPL(RPL::END_OF_BAN_LIST, [$cmd->getArg(0)]);
             }
 
             if (!$chan->hasOperator($sess)) {
-                return $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$name]);
+                return $sess->sendERR(ERR::OPERATOR_PRIVILEGES_NEEDED, [$name]);
             }
 
             if (!$chan->hasSession($sess)) {
-                return $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$name]);
+                return $sess->sendERR(ERR::NOT_ON_CHANNEL, [$name]);
             }
 
             if ($cmd->numArgs() < 3 && preg_match('/^\+[bklov]|-[bov]$/', $flag)) {
-                return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+                return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
             }
 
             if ($this->handleChannelFlags($cmd, $sess, $stor) === -1) {
                 foreach ($chan->getSessions($stor) as $user) {
                     $resp = $flag . ' ' . (in_array($flag[1], ['o', 'v']) ? $cmd->getArg(2) : '');
-                    $user->sendCMD(CMD::CMD_MODE, [$name, trim($resp)], null, $sess->getServername());
+                    $user->sendCMD(CMD::MODE, [$name, trim($resp)], null, $sess->getServername());
                 }
             }
         } else {
             if ($cmd->getArg(0) !== $sess->getNickname()) {
-                return $sess->sendERR(ERR::ERR_USERS_DONT_MATCH, [$name]);
+                return $sess->sendERR(ERR::USERS_DONT_MATCH, [$name]);
             }
 
             if ($cmd->numArgs() === 1) {
-                return $sess->sendRPL(RPL::RPL_USER_MODE_IS, [$sess->getFlagsAsString()]);
+                return $sess->sendRPL(RPL::USER_MODE_IS, [$sess->getFlagsAsString()]);
             }
 
             if ($this->handleSessionFlags($cmd, $sess) === -1) {
-                $sess->sendCMD(CMD::CMD_MODE, [$name], $flag, $sess->getPrefix());
+                $sess->sendCMD(CMD::MODE, [$name], $flag, $sess->getPrefix());
             }
         }
         return 0;
@@ -79,7 +79,7 @@ final class HandlerMODE implements HandlerInterface
         if ('o' === $flag[1]) {
             $user = $stor->sessions()->searchByName($cmd->getArg(2));
             if (null === $user) {
-                return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
+                return $sess->sendERR(ERR::NO_SUCH_NICK, [$cmd->getArg(2)]);
             }
             if ('+' === $flag[0]) {
                 $chan->addOperator($user);
@@ -146,7 +146,7 @@ final class HandlerMODE implements HandlerInterface
         } elseif ('v' === $flag[1]) {
             $user = $stor->sessions()->searchByName($cmd->getArg(2));
             if (null === $user) {
-                return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(2)]);
+                return $sess->sendERR(ERR::NO_SUCH_NICK, [$cmd->getArg(2)]);
             }
             if ('+' === $flag[0]) {
                 $chan->addSpeaker($user);
@@ -155,7 +155,7 @@ final class HandlerMODE implements HandlerInterface
                 $chan->delSpeaker($user);
             }
         } elseif ('n' !== $flag[1]) {
-            return $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
+            return $sess->sendERR(ERR::UNKNOWN_MODE, [$flag]);
         }
         return -1;
     }
@@ -187,7 +187,7 @@ final class HandlerMODE implements HandlerInterface
         } elseif ('-o') {
             $sess->clrFlag(SessionInterface::FLAG_IRC_OPERATOR);
         } else {
-            return $sess->sendERR(ERR::ERR_UNKNOWN_MODE, [$flag]);
+            return $sess->sendERR(ERR::UNKNOWN_MODE, [$flag]);
         }
         return -1;
     }

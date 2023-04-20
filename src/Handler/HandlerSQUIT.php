@@ -17,17 +17,17 @@ class HandlerSQUIT implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0 || $cmd->getComment() === null) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]);
         }
 
         if (!$sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
             //TODO also check if session is client
-            return $sess->sendERR(ERR::ERR_NO_PRIVILEGES, [$sess->getNickname()]);
+            return $sess->sendERR(ERR::NO_PRIVILEGES, [$sess->getNickname()]);
         }
 
         $serv = $stor->sessions()->searchByName($cmd->getArg(0));
         if (null === $serv) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$sess->getNickname(), $cmd->getArg(0)]);
         }
 
         $serv->close();

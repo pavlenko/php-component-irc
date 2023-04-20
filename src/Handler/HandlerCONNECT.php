@@ -15,15 +15,15 @@ class HandlerCONNECT implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$sess->getNickname(), $cmd->getCode()]);
         }
 
         if (!$sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
-            return $sess->sendERR(ERR::ERR_NO_PRIVILEGES, [$sess->getNickname()]);
+            return $sess->sendERR(ERR::NO_PRIVILEGES, [$sess->getNickname()]);
         }
 
         if (!isset($stor->conf('servers')[$cmd->getArg(0)])) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(0)]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$cmd->getArg(0)]);
         }
 
         $stor->trigger('connect', ...$cmd->getArgs());

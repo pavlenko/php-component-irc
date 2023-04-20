@@ -12,10 +12,10 @@ final class HandlerPASS implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
         if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
-            return $sess->sendERR(ERR::ERR_ALREADY_REGISTERED);
+            return $sess->sendERR(ERR::ALREADY_REGISTERED);
         }
         $sess->setPassword($cmd->getArg(0));
         return 0;

@@ -14,27 +14,27 @@ final class HandlerTOPIC implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() < 1) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         $chan = $stor->channels()->searchByName($cmd->getArg(0));
         if (null === $chan || !$chan->hasSession($sess)) {
-            return $sess->sendERR(ERR::ERR_NOT_ON_CHANNEL, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NOT_ON_CHANNEL, [$cmd->getCode()]);
         }
 
         if ($cmd->numArgs() < 2) {
             return !empty($chan->getTopic())
-                ? $sess->sendRPL(RPL::RPL_TOPIC, [$cmd->getArg(0)], $chan->getTopic())
-                : $sess->sendRPL(RPL::RPL_NO_TOPIC, [$cmd->getArg(0)]);
+                ? $sess->sendRPL(RPL::TOPIC, [$cmd->getArg(0)], $chan->getTopic())
+                : $sess->sendRPL(RPL::NO_TOPIC, [$cmd->getArg(0)]);
         }
 
         if ($chan->hasFlag(ChannelInterface::FLAG_TOPIC_SET) && !$chan->hasOperator($sess)) {
-            return $sess->sendERR(ERR::ERR_OPERATOR_PRIVILEGES_NEEDED, [$cmd->getArg(0)]);
+            return $sess->sendERR(ERR::OPERATOR_PRIVILEGES_NEEDED, [$cmd->getArg(0)]);
         }
 
         $chan->setTopic($cmd->getArg(1));
         foreach ($chan->getSessions($stor) as $user) {
-            $user->sendCMD(CMD::CMD_TOPIC, [$cmd->getArg(0)], $cmd->getArg(1));
+            $user->sendCMD(CMD::TOPIC, [$cmd->getArg(0)], $cmd->getArg(1));
         }
         return 0;
     }

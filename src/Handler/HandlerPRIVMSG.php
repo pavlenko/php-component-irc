@@ -14,32 +14,32 @@ final class HandlerPRIVMSG implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0) {
-            return $sess->sendERR(ERR::ERR_NO_RECIPIENT, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NO_RECIPIENT, [$cmd->getCode()]);
         }
 
         if (empty($cmd->getComment())) {
-            return $sess->sendERR(ERR::ERR_NO_TEXT_TO_SEND);
+            return $sess->sendERR(ERR::NO_TEXT_TO_SEND);
         }
 
         $targets = array_filter(explode(',', $cmd->getArg(0)));
-        if ($cmd->getCode() === CMD::CMD_NOTICE && (count($targets) > 1 || in_array($cmd->getArg(0)[0], ['#', '&']))) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $cmd->getArg(0));
+        if ($cmd->getCode() === CMD::NOTICE && (count($targets) > 1 || in_array($cmd->getArg(0)[0], ['#', '&']))) {
+            return $sess->sendERR(ERR::NO_SUCH_NICK, $cmd->getArg(0));
         }
 
         $unique = [];
         foreach ($targets as $receiver) {
             if (in_array($receiver, $unique)) {
-                return $sess->sendERR(ERR::ERR_TOO_MANY_TARGETS, $receiver);
+                return $sess->sendERR(ERR::TOO_MANY_TARGETS, $receiver);
             }
 
             if (in_array($receiver[0], ['#', '&'])) {
                 $chan = $stor->channels()->searchByName($receiver);
                 if (null === $chan) {
-                    return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
+                    return $sess->sendERR(ERR::NO_SUCH_NICK, $receiver);
                 }
 
                 if (!$chan->hasSession($sess)) {
-                    return $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
+                    return $sess->sendERR(ERR::CANNOT_SEND_TO_CHANNEL, $receiver);
                 }
 
                 $canSend = !$chan->hasFlag(ChannelInterface::FLAG_MODERATED)
@@ -47,11 +47,11 @@ final class HandlerPRIVMSG implements HandlerInterface
                     || $chan->hasSpeaker($sess);
 
                 if (!$canSend) {
-                    $sess->sendERR(ERR::ERR_CANNOT_SEND_TO_CHANNEL, $receiver);
+                    $sess->sendERR(ERR::CANNOT_SEND_TO_CHANNEL, $receiver);
                     continue;
                 }
             } elseif (!$stor->sessions()->searchByName($receiver)) {
-                return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, $receiver);
+                return $sess->sendERR(ERR::NO_SUCH_NICK, $receiver);
             }
             $unique[] = $receiver;
         }
@@ -68,12 +68,12 @@ final class HandlerPRIVMSG implements HandlerInterface
             } else {
                 $user = $stor->sessions()->searchByName($receiver);
 
-                if ($cmd->getCode() === CMD::CMD_PRIVATE_MSG && $user->hasFlag(SessionInterface::FLAG_AWAY)) {
-                    $sess->sendRPL(RPL::RPL_AWAY, [$user->getNickname()], $user->getAwayMessage());
+                if ($cmd->getCode() === CMD::PRIVATE_MSG && $user->hasFlag(SessionInterface::FLAG_AWAY)) {
+                    $sess->sendRPL(RPL::AWAY, [$user->getNickname()], $user->getAwayMessage());
                     continue;
                 }
 
-                if ($cmd->getCode() !== CMD::CMD_NOTICE || $user->hasFlag(SessionInterface::FLAG_RECEIVE_NOTICE)) {
+                if ($cmd->getCode() !== CMD::NOTICE || $user->hasFlag(SessionInterface::FLAG_RECEIVE_NOTICE)) {
                     $user->sendCMD($cmd->getCode(), [$receiver], $cmd->getComment(), $sess->getPrefix());
                 }
             }

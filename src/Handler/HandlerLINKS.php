@@ -24,23 +24,23 @@ class HandlerLINKS implements HandlerInterface
             /** @var $serv SessionInterface */
             foreach ($stor->servers() as $serv) {/*TODO discriminate sessions by type: server/client*/
                 if ($stor->isEqualToRegex($pattern, $serv->getServername())) {
-                    return $serv->sendCMD(CMD::CMD_LINKS);
+                    return $serv->sendCMD(CMD::LINKS);
                 }
             }
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$remote]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$remote]);
         }
 
         /** @var $serv SessionInterface */
         foreach ($stor->servers() as $serv) {
             if (empty($pattern) || $stor->isEqualToRegex($pattern, $serv->getServername())) {
                 $sess->sendRPL(
-                    RPL::RPL_LINKS,
+                    RPL::LINKS,
                     [$pattern, $serv->getServername()],
                     $serv->get('hop_count') . ' ' . $serv->get('info')/* hop count from serv auth, info from CMD(INFO)*/
                 );
             }
         }
 
-        return $sess->sendRPL(RPL::RPL_END_OF_LINKS, [$pattern]);
+        return $sess->sendRPL(RPL::END_OF_LINKS, [$pattern]);
     }
 }

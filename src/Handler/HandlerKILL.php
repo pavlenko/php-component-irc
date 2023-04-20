@@ -13,20 +13,20 @@ final class HandlerKILL implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if (!$sess->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
-            return $sess->sendERR(ERR::ERR_NO_PRIVILEGES);
+            return $sess->sendERR(ERR::NO_PRIVILEGES);
         }
 
         if ($cmd->numArgs() === 0 || empty($cmd->getComment())) {
-            return $sess->sendERR(ERR::ERR_NEED_MORE_PARAMS, [$cmd->getCode()]);
+            return $sess->sendERR(ERR::NEED_MORE_PARAMS, [$cmd->getCode()]);
         }
 
         if ($stor->conf(Config::CFG_SERVER_NAME) === $cmd->getArg(0)) {
-            return $sess->sendERR(ERR::ERR_CANNOT_KILL_SERVER);
+            return $sess->sendERR(ERR::CANNOT_KILL_SERVER);
         }
 
         $user = $stor->sessions()->searchByName($cmd->getArg(0));
         if (null === $user) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_NICK, [$cmd->getArg(0)]);
+            return $sess->sendERR(ERR::NO_SUCH_NICK, [$cmd->getArg(0)]);
         }
 
         //TODO check what response needed

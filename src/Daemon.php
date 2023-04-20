@@ -86,57 +86,57 @@ final class Daemon
         $this->storage = new Storage($this->config, $this->events, $this->logger);
 
         $this->handlers = [
-            //CMD::CMD_CAP         => [self::class, 'handleCAP'],
-            CMD::CMD_ADMIN       => new HandlerADMIN(),
-            CMD::CMD_AWAY        => new HandlerAWAY(),
-            CMD::CMD_CONNECT     => new HandlerCONNECT(),
-            CMD::CMD_ERROR       => new HandlerERROR(),
-            CMD::CMD_INFO        => new HandlerINFO(),
-            CMD::CMD_INVITE      => new HandlerINVITE(),
-            CMD::CMD_IS_ON       => new HandlerISON(),
-            CMD::CMD_JOIN        => new HandlerJOIN(),
-            CMD::CMD_KICK        => new HandlerKICK(),
-            CMD::CMD_KILL        => new HandlerKILL(),
-            CMD::CMD_LINKS       => new HandlerLINKS(),
-            CMD::CMD_LIST        => new HandlerLIST(),
-            CMD::CMD_MODE        => new HandlerMODE(),
-            CMD::CMD_MOTD        => new HandlerMOTD(),
-            CMD::CMD_LIST_USERS  => new HandlerLUSERS(),
-            CMD::CMD_NAMES       => new HandlerNAMES(),
-            CMD::CMD_NICK        => new HandlerNICK(),
-            CMD::CMD_NOTICE      => new HandlerPRIVMSG(),
-            CMD::CMD_OPERATOR    => new HandlerOPER(),
-            CMD::CMD_PART        => new HandlerPART(),
-            CMD::CMD_PASSWORD    => new HandlerPASS(),
-            CMD::CMD_PING        => new HandlerPING(),
-            CMD::CMD_PONG        => new HandlerPONG(),
-            CMD::CMD_PRIVATE_MSG => new HandlerPRIVMSG(),
-            CMD::CMD_QUIT        => new HandlerQUIT(),
-            CMD::CMD_REHASH      => new HandlerREHASH(),
-            CMD::CMD_RESTART     => new HandlerRESTART(),
-            CMD::CMD_SERVER      => new HandlerSERVER(),
-            CMD::CMD_SERVER_QUIT => new HandlerSQUIT(),
-            CMD::CMD_STATS       => new HandlerSTATS(),
-            CMD::CMD_SUMMON      => new HandlerSUMMON(),
-            CMD::CMD_TIME        => new HandlerTIME(),
-            CMD::CMD_TOPIC       => new HandlerTOPIC(),
-            CMD::CMD_TRACE       => [$this, ''],//TODO
-            CMD::CMD_USER_HOST   => new HandlerUSERHOST(),
-            CMD::CMD_USER        => new HandlerUSER(),
-            CMD::CMD_USERS       => [$this, ''],//TODO
-            CMD::CMD_VERSION     => new HandlerVERSION(),
-            CMD::CMD_WALLOPS     => new HandlerWALLOPS(),
-            CMD::CMD_WHOIS       => new HandlerWHOIS(),
-            CMD::CMD_WHO         => new HandlerWHO(),
-            CMD::CMD_WHO_WAS     => new HandlerWHOWAS(),
+            //CMD::CAP         => [self::class, 'handleCAP'],
+            CMD::ADMIN       => new HandlerADMIN(),
+            CMD::AWAY        => new HandlerAWAY(),
+            CMD::CONNECT     => new HandlerCONNECT(),
+            CMD::ERROR       => new HandlerERROR(),
+            CMD::INFO        => new HandlerINFO(),
+            CMD::INVITE      => new HandlerINVITE(),
+            CMD::IS_ON       => new HandlerISON(),
+            CMD::JOIN        => new HandlerJOIN(),
+            CMD::KICK        => new HandlerKICK(),
+            CMD::KILL        => new HandlerKILL(),
+            CMD::LINKS       => new HandlerLINKS(),
+            CMD::LIST        => new HandlerLIST(),
+            CMD::MODE        => new HandlerMODE(),
+            CMD::MOTD        => new HandlerMOTD(),
+            CMD::LIST_USERS  => new HandlerLUSERS(),
+            CMD::NAMES       => new HandlerNAMES(),
+            CMD::NICK        => new HandlerNICK(),
+            CMD::NOTICE      => new HandlerPRIVMSG(),
+            CMD::OPERATOR    => new HandlerOPER(),
+            CMD::PART        => new HandlerPART(),
+            CMD::PASSWORD    => new HandlerPASS(),
+            CMD::PING        => new HandlerPING(),
+            CMD::PONG        => new HandlerPONG(),
+            CMD::PRIVATE_MSG => new HandlerPRIVMSG(),
+            CMD::QUIT        => new HandlerQUIT(),
+            CMD::REHASH      => new HandlerREHASH(),
+            CMD::RESTART     => new HandlerRESTART(),
+            CMD::SERVER      => new HandlerSERVER(),
+            CMD::SERVER_QUIT => new HandlerSQUIT(),
+            CMD::STATS       => new HandlerSTATS(),
+            CMD::SUMMON      => new HandlerSUMMON(),
+            CMD::TIME        => new HandlerTIME(),
+            CMD::TOPIC       => new HandlerTOPIC(),
+            CMD::TRACE       => [$this, ''],//TODO
+            CMD::USER_HOST   => new HandlerUSERHOST(),
+            CMD::USER        => new HandlerUSER(),
+            CMD::USERS       => [$this, ''],//TODO
+            CMD::VERSION     => new HandlerVERSION(),
+            CMD::WALLOPS     => new HandlerWALLOPS(),
+            CMD::WHOIS       => new HandlerWHOIS(),
+            CMD::WHO         => new HandlerWHO(),
+            CMD::WHO_WAS     => new HandlerWHOWAS(),
         ];
     }
 
     private function onInput(MSG $msg, SessionInterface $sess)
     {
-        $allowed = [CMD::CMD_PASSWORD, CMD::CMD_NICK, CMD::CMD_USER, CMD::CMD_QUIT, CMD::CMD_CAP];
+        $allowed = [CMD::PASSWORD, CMD::NICK, CMD::USER, CMD::QUIT, CMD::CAP];
         if (!$sess->hasFlag(SessionInterface::FLAG_REGISTERED) && !in_array($msg->getCode(), $allowed)) {
-            $sess->sendERR(ERR::ERR_NOT_REGISTERED);
+            $sess->sendERR(ERR::NOT_REGISTERED);
         } elseif (is_callable($this->handlers[$msg->getCode()] ?? null)) {
             call_user_func($this->handlers[$msg->getCode()], $msg, $sess, $this->storage);
         }
@@ -158,7 +158,7 @@ final class Daemon
             foreach ($this->storage->sessions() as $user) {
                 $overdue = time() - $user->getLastMessageTime() > $this->config(Config::CFG_MAX_INACTIVE_TIMEOUT);
                 if ($overdue) {
-                    $user->sendCMD(CMD::CMD_PING, [], null, $this->config(Config::CFG_SERVER_NAME));
+                    $user->sendCMD(CMD::PING, [], null, $this->config(Config::CFG_SERVER_NAME));
                     $user->updLastMessageTime();
                     $user->updLastPingingTime();
                     $user->setFlag(SessionInterface::FLAG_PINGING);

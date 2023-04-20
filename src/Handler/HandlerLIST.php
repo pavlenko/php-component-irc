@@ -14,12 +14,12 @@ final class HandlerLIST implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() > 1 && $cmd->getArg(1) !== $sess->getServername()) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->getArg(1)]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$cmd->getArg(1)]);
         }
 
         $selected = $cmd->numArgs() > 0 ? array_filter(explode(',', $cmd->getArg(0))) : [];
 
-        $sess->sendRPL(RPL::RPL_LIST_START, ['Channel'], 'Users Name');
+        $sess->sendRPL(RPL::LIST_START, ['Channel'], 'Users Name');
         foreach ($stor->channels() as $chan) {
             if (!empty($selected) && !in_array($chan->getName(), $selected)) {
                 continue;
@@ -33,8 +33,8 @@ final class HandlerLIST implements HandlerInterface
                 $name  = $chan->getName();
                 $info  = '[' . $chan->getFlagsAsString() . '] ' . $chan->getTopic();
             }
-            $sess->sendRPL(RPL::RPL_LIST, [$name, $chan->numSessions()], $info ?? null);
+            $sess->sendRPL(RPL::LIST, [$name, $chan->numSessions()], $info ?? null);
         }
-        return $sess->sendRPL(RPL::RPL_LIST_END);
+        return $sess->sendRPL(RPL::LIST_END);
     }
 }

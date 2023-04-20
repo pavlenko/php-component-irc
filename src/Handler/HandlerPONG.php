@@ -13,7 +13,7 @@ final class HandlerPONG implements HandlerInterface
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
         if ($cmd->numArgs() === 0 || $cmd->getArg(0) !== $stor->conf(Config::CFG_SERVER_NAME)) {
-            return $sess->sendERR(ERR::ERR_NO_SUCH_SERVER, [$cmd->numArgs()]);
+            return $sess->sendERR(ERR::NO_SUCH_SERVER, [$cmd->numArgs()]);
         }
         $sess->clrFlag(SessionInterface::FLAG_PINGING);
         return 0;

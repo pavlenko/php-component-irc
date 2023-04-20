@@ -21,7 +21,7 @@ class HandlerERROR implements HandlerInterface
             if (!$user->hasFlag(SessionInterface::FLAG_IRC_OPERATOR)) {
                 continue;
             }
-            $user->sendCMD(CMD::CMD_NOTICE, [$user->getNickname()], $cmd->getComment());
+            $user->sendCMD(CMD::NOTICE, [$user->getNickname()], $cmd->getComment());
         }
         return 0;
     }

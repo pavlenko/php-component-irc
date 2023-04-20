@@ -24,8 +24,8 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * CMD(NICK $nickname)
-     * CMD(NICK $nickname $hop_count $username $host $server_token $u_mode $realname)
+     * client: CMD(NICK $nickname)
+     * server: CMD(NICK $nickname $hop_count $username $host $server_token $u_mode $realname)
      * </code>
      * @see ERR::NO_NICKNAME_GIVEN
      * @see ERR::ERRONEOUS_NICKNAME
@@ -42,8 +42,8 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * CMD(PASS $password)
-     * CMD(PASS $password $version $flags [$options])
+     * client: CMD(PASS $password)
+     * server: CMD(PASS $password $version $flags [$options])
      * </code>
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED

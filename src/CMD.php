@@ -82,7 +82,8 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * CMD(USER $user $mode $unused :$realname)
+     * client: CMD(USER $user $mode $unused :$realname)
+     * server: CMD(USER $user $mode $servername :$realname)
      * </code>
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED

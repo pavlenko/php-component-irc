@@ -71,8 +71,13 @@ final class CMD extends MSG
      * </code>
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED
+     * @see ERR::NO_NICKNAME_GIVEN
+     * @see ERR::PASSWORD_MISMATCH
      * @see RPL::WELCOME
-     * TODO other minimal replies
+     * @see RPL::YOUR_HOST
+     * @see RPL::CREATED
+     * @see RPL::MY_INFO
+     * @see RPL::I_SUPPORT
      */
     public const USER = 'USER';
 

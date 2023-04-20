@@ -11,10 +11,29 @@ final class RPL extends MSG
      */
     public const WELCOME = 001;
 
-    public const YOUR_HOST        = 002;//:<prefix> <rpl code> <nick> :Your host is <servername>, running version <ver>
-    public const CREATED          = 003;//:<prefix> <rpl code> <nick> :This server was created <date>
-    public const MY_INFO          = 004;//:<prefix> <rpl code> <servername> <version> <available user modes> <available channel modes> [<channel modes that take a parameter>]
+    /**
+     * <code>
+     * RPL($prefix YOUR_HOST $nick :Your host is $servername, running version $version)
+     * </code>
+     */
+    public const YOUR_HOST = 002;
+
+    /**
+     * <code>
+     * RPL($prefix CREATED $nick :This server was created $datetime)
+     * </code>
+     */
+    public const CREATED = 003;
+
+    /**
+     * <code>
+     * RPL($prefix MY_INFO $nick $servername $version $avail_u_modes $avail_c_modes [$avail_c_modes_with_params])
+     * </code>
+     */
+    public const MY_INFO = 004;
+
     public const BOUNCE           = 005;//:<prefix> <rpl code> :Try server <server name>, port <port number>
+    public const I_SUPPORT        = 005;//TODO
     public const TRACE_LINK       = 200;//:<prefix> <rpl code> Link <version & debug level> <destination> <next server>
     public const TRACE_CONNECTING = 201;//:<prefix> <rpl code> Try. <class> <server>
     public const TRACE_HANDSHAKE  = 202;//:<prefix> <rpl code> H.S. <class> <server>

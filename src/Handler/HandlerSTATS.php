@@ -115,10 +115,10 @@ class HandlerSTATS implements HandlerInterface
                 $sess->sendRPL(RPL::STATS_LINK_INFO, [
                     $serv->getServername(),//TODO master_[~master@46.98.139.136]
                     0,
-                    $serv->get('sent_num'),
-                    $serv->get('sent_bytes'),
-                    $serv->get('recv_num'),
-                    $serv->get('recv_bytes'),
+                    $serv->__get('sent_num'),
+                    $serv->__get('sent_bytes'),
+                    $serv->__get('recv_num'),
+                    $serv->__get('recv_bytes'),
                     time() - $serv->getRegistrationTime(),
                 ]);
             }

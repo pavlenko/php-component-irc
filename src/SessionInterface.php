@@ -23,6 +23,11 @@ interface SessionInterface
 
     public function __construct(ConnectionInterface $connection, string $servername, string $hostname);
 
+    public function get(string $key, $default = null);
+    public function set(string $key, $value): void;
+    public function has(string $key): bool;
+    public function del(string $key): void;
+
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool;
     public function sendERR(int $code, array $args = [], string $comment = null): bool;
     public function sendRPL(int $code, array $args = [], string $comment = null): bool;

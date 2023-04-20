@@ -36,7 +36,7 @@ class HandlerLINKS implements HandlerInterface
                 $sess->sendRPL(
                     RPL::LINKS,
                     [$pattern, $serv->getServername()],
-                    $serv->get('hop_count') . ' ' . $serv->get('info')/* hop count from serv auth, info from CMD(INFO)*/
+                    $serv->__get('hop_count') . ' ' . $serv->__get('info')/* hop count from serv auth, info from CMD(INFO)*/
                 );
             }
         }

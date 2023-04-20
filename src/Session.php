@@ -6,6 +6,8 @@ final class Session implements SessionInterface
 {
     private ConnectionInterface $connection;
 
+    private array $data = [];
+
     private ?string $type = null;
     private string $servername;
     private string $hostname;
@@ -31,6 +33,26 @@ final class Session implements SessionInterface
         $this->hostname   = $hostname;
 
         $this->registrationTime = time();
+    }
+
+    public function get(string $key, $default = null)
+    {
+        return $this->data[$key] ?? $default;
+    }
+
+    public function set(string $key, $value): void
+    {
+        $this->data[$key] = $value;
+    }
+
+    public function has(string $key): bool
+    {
+        return isset($this->data[$key]);
+    }
+
+    public function del(string $key): void
+    {
+        unset($this->data[$key]);
     }
 
     public function sendCMD(string $code, array $args = [], string $comment = null, string $prefix = null): bool

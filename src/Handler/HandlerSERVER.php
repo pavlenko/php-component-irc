@@ -27,10 +27,10 @@ class HandlerSERVER implements HandlerInterface
         }
 
         $sess->setType(SessionInterface::TYPE_SERVER);
-        $sess->set('servername', $cmd->getArg(0));
-        $sess->set('hop_count', $cmd->getArg(1));
-        $sess->set('token', $cmd->getArg(2));
-        $sess->set('info', $cmd->getComment());
+        $sess->__set('servername', $cmd->getArg(0));
+        $sess->__set('hop_count', $cmd->getArg(1));
+        $sess->__set('token', $cmd->getArg(2));
+        $sess->__set('info', $cmd->getComment());
 
         foreach ($stor->sessions() as $serv) {
             $serv->sendCMD(CMD::SERVER, $cmd->getArgs(), $cmd->getComment(), $sess->getServername());

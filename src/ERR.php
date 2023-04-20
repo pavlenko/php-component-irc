@@ -22,14 +22,38 @@ final class ERR extends MSG
     public const NO_MOTD                    = 422;//:<prefix> <rpl code> <curr nick> :MOTD File is missing
     public const NO_ADMIN_INFO              = 423;//:<prefix> <rpl code> <curr nick> <server> :No administrative info available
     public const FILE_ERROR                 = 424;//:<prefix> <rpl code> <curr nick> :File error doing <file op> on <file>
-    public const NO_NICKNAME_GIVEN          = 431;//:<prefix> <rpl code> <curr nick> :No nickname given
-    public const ERRONEOUS_NICKNAME         = 432;//:<prefix> <rpl code> <curr nick> <nick> :Erroneous nickname
-    public const NICKNAME_IN_USE            = 433;//:<prefix> <rpl code> <curr nick> <nick> :Nickname is already in use
-    public const NICKNAME_COLLISION         = 436;//:<prefix> <rpl code> <curr nick> <nick> :Nickname collision KILL
 
     /**
      * <code>
-     * ERR($prefix UNAVAILABLE_RESOURCE $nick $nick/$channel :Nick/channel is temporarily unavailable)
+     * ERR(:$prefix NO_NICKNAME_GIVEN $curr_nick :No nickname given)
+     * </code>
+     */
+    public const NO_NICKNAME_GIVEN = 431;
+
+    /**
+     * <code>
+     * ERR(:$prefix ERRONEOUS_NICKNAME $curr_nick $nick :Erroneous nickname)
+     * </code>
+     */
+    public const ERRONEOUS_NICKNAME = 432;
+
+    /**
+     * <code>
+     * ERR(:$prefix NICKNAME_IN_USE $curr_nick $nick :Nickname is already in use)
+     * </code>
+     */
+    public const NICKNAME_IN_USE = 433;
+
+    /**
+     * <code>
+     * ERR(:$prefix NICKNAME_COLLISION $curr_nick $nick :Nickname collision KILL)
+     * </code>
+     */
+    public const NICKNAME_COLLISION = 436;
+
+    /**
+     * <code>
+     * ERR(:$prefix UNAVAILABLE_RESOURCE $curr_nick $nick/$channel :Nick/channel is temporarily unavailable)
      * </code>
      */
     public const UNAVAILABLE_RESOURCE = 437;
@@ -44,20 +68,33 @@ final class ERR extends MSG
 
     /**
      * <code>
-     * ERR($prefix NEED_MORE_PARAMS $nick $command :Not enough parameters)
+     * ERR(:$prefix NEED_MORE_PARAMS $curr_nick $command :Not enough parameters)
      * </code>
      */
     public const NEED_MORE_PARAMS = 461;
 
     /**
      * <code>
-     * ERR($prefix ALREADY_REGISTERED $nick :You may not re-register)
+     * ERR(:$prefix ALREADY_REGISTERED $curr_nick :You may not re-register)
      * </code>
+     * @see CMD::PASSWORD
+     * @see CMD::SERVER
+     * @see CMD::SERVICE
+     * @see CMD::USER
      */
     public const ALREADY_REGISTERED = 462;
 
     public const NO_PERM_FOR_HOST           = 463;//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
-    public const PASSWORD_MISMATCH          = 464;//:<prefix> <rpl code> <curr nick> :Password incorrect
+
+    /**
+     * <code>
+     * ERR(:$prefix PASSWORD_MISMATCH $curr_nick :Password incorrect)
+     * </code>
+     * @see CMD::USER
+     * @see CMD::OPERATOR
+     */
+    public const PASSWORD_MISMATCH = 464;
+
     public const YOU_ARE_BANNED_CREEP       = 465;//:<prefix> <rpl code> <curr nick> :You are banned from this server
     public const KEY_SET                    = 467;//:<prefix> <rpl code> <curr nick> <channel> :Channel key already set
     public const CHANNEL_IS_FULL            = 471;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+l)
@@ -71,8 +108,9 @@ final class ERR extends MSG
 
     /**
      * <code>
-     * ERR($prefix RESTRICTED $nick :Your connection is restricted!)
+     * ERR(:$prefix RESTRICTED $curr_nick :Your connection is restricted!)
      * </code>
+     * @see CMD::NICK
      */
     public const RESTRICTED = 484;
 

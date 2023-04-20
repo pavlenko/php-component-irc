@@ -8,6 +8,7 @@ final class RPL extends MSG
      * <code>
      * RPL($prefix WELCOME $nick :Welcome to the Internet Relay Network)
      * </code>
+     * @see CMD::USER
      */
     public const WELCOME = 001;
 
@@ -15,6 +16,8 @@ final class RPL extends MSG
      * <code>
      * RPL($prefix YOUR_HOST $nick :Your host is $servername, running version $version)
      * </code>
+     * @see CMD::SERVICE
+     * @see CMD::USER
      */
     public const YOUR_HOST = 002;
 
@@ -22,6 +25,7 @@ final class RPL extends MSG
      * <code>
      * RPL($prefix CREATED $nick :This server was created $datetime)
      * </code>
+     * @see CMD::USER
      */
     public const CREATED = 003;
 
@@ -29,6 +33,8 @@ final class RPL extends MSG
      * <code>
      * RPL($prefix MY_INFO $nick $servername $version $avail_u_modes $avail_c_modes [$avail_c_modes_with_params])
      * </code>
+     * @see CMD::SERVICE
+     * @see CMD::USER
      */
     public const MY_INFO = 004;
 
@@ -106,6 +112,15 @@ final class RPL extends MSG
     public const END_OF_MOTD      = 376;//:<prefix> <rpl code> <nick> :End of /MOTD
     public const YOU_ARE_OPERATOR = 381;//:<prefix> <rpl code> :You are now an IRC operator
     public const REHASHING        = 382;//:<prefix> <rpl code> <config file> :Rehashing
+
+    /**
+     * <code>
+     * RPL(:$prefix YOU_ARE_SERVICE $curr_nick :You are service $service_name)
+     * </code>
+     * @see CMD::SERVICE
+     */
+    public const YOU_ARE_SERVICE = 383;
+
     public const TIME             = 391;//:<prefix> <rpl code> <server> :<string showing server’s local time>
     public const USERS_START      = 392;//:<prefix> <rpl code> :UserID Terminal Host
     public const USERS            = 393;//:<prefix> <rpl code> :%-8s %-9s %-8s

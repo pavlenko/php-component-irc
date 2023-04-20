@@ -58,6 +58,21 @@ final class CMD extends MSG
     public const RESTART     = 'RESTART';
     public const SERVER      = 'SERVER';
     public const SERVER_QUIT = 'SQUIT';
+
+    /**
+     * <code>
+     * client: CMD(SERVICE $nickname $_reserved $distribution $type $_reserved :$info)
+     * server: CMD(SERVICE $service_name $server_token $distribution $type $hop_count :$info)
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::ALREADY_REGISTERED
+     * @see ERR::ERRONEOUS_NICKNAME
+     * @see RPL::YOU_ARE_SERVICE
+     * @see RPL::YOUR_HOST
+     * @see RPL::MY_INFO
+     */
+    public const SERVICE = 'SERVICE';
+
     public const STATS       = 'STATS';
     public const SUMMON      = 'SUMMON';
     public const TIME        = 'TIME';

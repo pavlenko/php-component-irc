@@ -11,7 +11,7 @@ class HandlerSERVER implements HandlerInterface
 {
     public function __invoke(CMD $cmd, SessionInterface $sess, StorageInterface $stor): int
     {
-        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+        if ($sess->hasFlag(SessionInterface::FLAG_REGISTERED)/*TODO also check server by name*/) {
             return $sess->sendERR(ERR::ALREADY_REGISTERED, [$cmd->getArg(0)]);
         }
 
@@ -20,19 +20,14 @@ class HandlerSERVER implements HandlerInterface
             return $sess->sendCMD(CMD::ERROR, [], 'Need more params');
         }
 
-        if ($stor->sessions()->searchByName($cmd->getArg(0))) {
-            return $sess->sendERR(ERR::ALREADY_REGISTERED, [$cmd->getArg(0)]);
-        }
+        $sess->set('servername', $cmd->getArg(0));
+        $sess->set('hop_count', $cmd->getArg(1));
+        $sess->set('token', $cmd->getArg(2));
+        $sess->set('info', $cmd->getComment());
 
-        $sess->setType(SessionInterface::TYPE_SERVER);
-        $sess->__set('servername', $cmd->getArg(0));
-        $sess->__set('hop_count', $cmd->getArg(1));
-        $sess->__set('token', $cmd->getArg(2));
-        $sess->__set('info', $cmd->getComment());
-
-        foreach ($stor->sessions() as $serv) {
-            $serv->sendCMD(CMD::SERVER, $cmd->getArgs(), $cmd->getComment(), $sess->getServername());
-        }
+        //TODO reply with pass and server
+        //TODO add to stor servers
+        //TODO notify others
         return 0;
     }
 }

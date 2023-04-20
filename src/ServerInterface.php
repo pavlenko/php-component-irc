@@ -27,7 +27,9 @@ interface ServerInterface
     //this message form for inform other servers about new service
     //-->SERVICE <servicename> <servertoken> <distribution> <type> <hopcount> <info>
 
+    //this message form for inform other servers about user joins channel
+    //NJOIN <channel> [ "@@" / "@" ] [ "+" ] <nickname> *( "," [ "@@" / "@" ] [ "+" ] <nickname> )
+
     //QUIT [:<Quit Message>]
     //SQUIT <server> <comment>
-    //NJOIN <channel> [ "@@" / "@" ] [ "+" ] <nickname> *( "," [ "@@" / "@" ] [ "+" ] <nickname> )
 }

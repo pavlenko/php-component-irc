@@ -50,7 +50,18 @@ final class RPL extends MSG
     public const TRACE_NEW_TYPE   = 208;//:<prefix> <rpl code> <new type> 0 <client name>
     public const TRACE_LOG        = 261;//:<prefix> <rpl code> File <logfile> <debug level>
     public const STATS_LINK_INFO  = 211;//:<prefix> <rpl code> <link name> <send q> <sent messages> <sent bytes> <received messages> <received bytes> <time open>
-    public const STATS_COMMANDS   = 212;//:<prefix> <rpl code> <command> <count>
+
+    /**
+     * <code>
+     * RPL(:$prefix STATS_COMMANDS $command $count $bytes $remote_count)
+     * </code>
+     * - $count_total - number of times command used
+     * - $count_remote - number of times command used by server
+     * - $bytes - bytes received for this command
+     * @see CMD::STATS
+     */
+    public const STATS_COMMANDS = 212;
+
     public const STATS_C_LINE     = 213;//:<prefix> <rpl code> C <host> * <name> <port> <class>
     public const STATS_N_LINE     = 214;//:<prefix> <rpl code> N <host> * <name> <port> <class>
     public const STATS_I_LINE     = 215;//:<prefix> <rpl code> I <host> * <host> <port> <class>

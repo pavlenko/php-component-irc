@@ -11,4 +11,5 @@ interface StorageInterface
     //--- service
     //- server
     //channels - channels state
+    //history - log client activity history, maybe also remote server
 }

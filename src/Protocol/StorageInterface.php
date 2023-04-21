@@ -5,8 +5,10 @@ namespace PE\Component\IRC\Protocol;
 interface StorageInterface
 {
     //commands - collect call count & payload bytes in tx/rx
-    //Command(name, executions, tx_bytes)
-
-    //sessions - all sessions (registered and stale)
+    //sessions - all sessions (registered and stale) - add role param
+    //- client
+    //--- user
+    //--- service
+    //- server
     //channels - channels state
 }

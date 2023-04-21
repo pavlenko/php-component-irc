@@ -65,7 +65,7 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * CMD(SERVER $servername> $hop_count $token :$info)
+     * CMD(SERVER $servername $hop_count $token :$info)
      * </code>
      * @see ERR::ALREADY_REGISTERED
      */

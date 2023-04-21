@@ -1,6 +1,6 @@
 <?php
 
-namespace PE\Component\IRC;
+namespace PE\Component\IRC\Protocol;
 
 /**
  * @property $password

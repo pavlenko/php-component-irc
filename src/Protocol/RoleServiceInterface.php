@@ -14,6 +14,7 @@ namespace PE\Component\IRC\Protocol;
  * @property string $name
  * @property string $mask
  * @property string $info
+ *
  * @property $session
  * @property $handler
  */

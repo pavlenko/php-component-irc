@@ -18,6 +18,7 @@ namespace PE\Component\IRC\Protocol;
  * @property string $realname
  * @property int $mode
  *
+ * @property $session
  * @property array $channels
  *
  * @property string $awayMessage

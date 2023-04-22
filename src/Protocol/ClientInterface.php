@@ -3,20 +3,20 @@
 namespace PE\Component\IRC\Protocol;
 
 /**
- * @property $password
+ * @property $password -- session
  * @property $nickname
  * @property $username
  * @property $realname
- * @property $hostname
+ * @property $hostname -- session
  *
- * @property $servername
+ * @property $servername -- session
  *
  * @property $flags
  * @property $channels
  *
- * @property \DateTimeInterface $registeredAt
- * @property \DateTimeInterface $lastPingingAt
- * @property \DateTimeInterface $lastMessageAt
+ * @property \DateTimeInterface $registeredAt -- session
+ * @property \DateTimeInterface $lastPingingAt -- session
+ * @property \DateTimeInterface $lastMessageAt -- session
  *
  * @property string $awayMessage
  * @property string $quitMessage

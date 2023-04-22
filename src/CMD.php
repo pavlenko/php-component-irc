@@ -75,9 +75,14 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * client: CMD(SERVICE $nickname $_reserved $distribution $type $_reserved :$info)
-     * server: CMD(SERVICE $service_name $server_token $distribution $type $hop_count :$info)
+     * CMD(SERVICE $name $server_id $distribution $type $hop_count :$info)
      * </code>
+     * - $name - name of service
+     * - $server_id - identify server, used only for forward command to other server, else must be 0
+     * - $distribution - mask for match server host
+     * - $type - for now unused and must be 0
+     * - $hop_count - used only for forward command to other server, else must be 0
+     * - $info - service short description
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED
      * @see ERR::ERRONEOUS_NICKNAME

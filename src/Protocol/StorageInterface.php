@@ -2,6 +2,11 @@
 
 namespace PE\Component\IRC\Protocol;
 
+/**
+ * @property CommandInterface[] $commands
+ * @property RoleClientInterface[] $clients
+ * @property RoleServiceInterface[] $services
+ */
 interface StorageInterface
 {
     //TODO create dto models for each state part, try to not use collections on use only them as typed collection

@@ -4,7 +4,7 @@ namespace PE\Component\IRC\Protocol;
 
 /**
  * @property CommandInterface[] $commands
- * @property RoleClientInterface[] $clients
+ * @property ClientInterface[] $clients
  * @property RoleServiceInterface[] $services
  */
 interface StorageInterface

@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC\Protocol;
 
+use PE\Component\IRC\Deferred;
+
 /**
  * User representation
  *
@@ -24,6 +26,11 @@ namespace PE\Component\IRC\Protocol;
  * @property string $awayMessage
  * @property string $quitMessage
  */
-interface RoleClientInterface
+interface ClientInterface
 {
+    public function connect(string $uri): Deferred;
+
+    public function wait(): void;
+
+    public function exit(): void;
 }

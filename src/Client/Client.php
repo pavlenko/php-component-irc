@@ -102,6 +102,10 @@ final class Client implements ClientInterface
 
     private function processReceive(Connection $connection, MSG $msg): void
     {
+        if ($msg->getCode() === CMD::PING) {
+            $connection->send(new CMD(CMD::PONG, [$msg->getArg(0)]));
+        }
+
         $this->emitter->dispatch(new Event('message', $msg, $connection));
         $this->emitter->dispatch(new Event($msg->getCode(), $msg, $connection));
     }

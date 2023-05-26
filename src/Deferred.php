@@ -38,15 +38,13 @@ final class Deferred
         $this->failureHandler = \Closure::fromCallable($handler);
     }
 
-    public function success(RPL $rpl): void
+    public function success(MSG $msg): void
     {
-        call_user_func($this->successHandler, $rpl);
-        $this->successHandler = fn() => null;
+        call_user_func($this->successHandler, $msg);
     }
 
-    public function failure(ERR $err): void
+    public function failure(\Throwable $exception): void
     {
-        call_user_func($this->failureHandler, $err);
-        $this->failureHandler = fn() => null;
+        call_user_func($this->failureHandler, $exception);
     }
 }

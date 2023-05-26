@@ -18,8 +18,13 @@ final class Connection
     private int $lastMessageTime = 0;
 
     private \Closure $onInput;
+    private \Closure $onWrite;
     private \Closure $onError;
     private \Closure $onClose;
+
+    /**
+     * @var Deferred[]
+     */
     private array $waitQueue = [];
 
     public function __construct(
@@ -31,32 +36,48 @@ final class Connection
         $this->inactiveTimeout = $inactiveTimeout;
 
         $this->onInput = fn() => null;
+        $this->onWrite = fn() => null;
         $this->onError = fn() => null;
         $this->onClose = fn() => null;
 
         $this->socket = $socket;
         $this->socket->setCloseHandler(fn(string $message = null) => $this->close($message));
-        $this->socket->setErrorHandler($this->onError);
+        $this->socket->setErrorHandler(fn(\Throwable $e) => call_user_func($this->onError, $e));
         $this->socket->setInputHandler(function (string $data) {
             try {
-                $this->onInput($data);
+                $lines = preg_split('/\n/', $data, 0, PREG_SPLIT_NO_EMPTY);
+                foreach ($lines as $line) {
+                    try {
+                        $msg = $this->decode(trim($line));
+                        call_user_func($this->onInput, $msg);
+                    } catch (\Throwable $error) {
+                        call_user_func($this->onError, $error, $line);
+                    }
+                }
             } catch (\Throwable $exception) {
                 call_user_func($this->onError, $exception);
             }
         });
     }
 
-    private function onInput(string $input): void
+    public function setInputHandler(callable $handler): void
     {
-        $lines = preg_split('/\n/', $input, 0, PREG_SPLIT_NO_EMPTY);
-        foreach ($lines as $line) {
-            try {
-                $msg = $this->decode(trim($line));
-                call_user_func($this->onInput, $msg);
-            } catch (\Throwable $error) {
-                call_user_func($this->onError, $error, $line);
-            }
-        }
+        $this->onInput = \Closure::fromCallable($handler);
+    }
+
+    public function setWriteHandler(callable $handler): void
+    {
+        $this->onWrite = \Closure::fromCallable($handler);
+    }
+
+    public function setErrorHandler(callable $handler): void
+    {
+        $this->onError = \Closure::fromCallable($handler);
+    }
+
+    public function setCloseHandler(callable $handler): void
+    {
+        $this->onClose = \Closure::fromCallable($handler);
     }
 
     private function decode(string $data): MSG
@@ -108,8 +129,10 @@ final class Connection
 
         $overdue = time() - $this->lastMessageTime > $this->inactiveTimeout;
         if ($overdue) {
-            $this->send(new CMD('PING'));
-            $this->wait('PONG')->onFailure(fn() => $this->close());
+            $this->send(new CMD('PING', [], null, /*TODO session prefix*/));
+            $this->wait('PONG')
+                ->onSuccess(fn() => null)//TODO check if error received
+                ->onFailure(fn() => $this->close());
         }
     }
 
@@ -120,6 +143,7 @@ final class Connection
 
     public function send(MSG $msg, bool $close = false): void
     {
+        call_user_func($this->onWrite, $msg);
         $this->socket->write($msg->toString(), $close);
     }
 

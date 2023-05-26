@@ -1,6 +1,6 @@
 <?php
 
-namespace PE\Component\IRC\Protocol;
+namespace PE\Component\IRC\Client;
 
 final class ClientConfig
 {

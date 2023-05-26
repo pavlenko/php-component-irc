@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC\Protocol;
 
+use PE\Component\IRC\Client\ClientInterface;
+
 /**
  * @property CommandInterface[] $commands
  * @property ClientInterface[] $clients

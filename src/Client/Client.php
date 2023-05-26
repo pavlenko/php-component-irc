@@ -1,10 +1,14 @@
 <?php
 
-namespace PE\Component\IRC\Protocol;
+namespace PE\Component\IRC\Client;
 
+use PE\Component\Event\Emitter;
+use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Deferred;
 use PE\Component\IRC\MSG;
+use PE\Component\IRC\Protocol\Connection;
+use PE\Component\IRC\Protocol\Factory;
 use PE\Component\IRC\RPL;
 use PE\Component\Loop\LoopInterface;
 use Psr\Log\LoggerInterface;
@@ -15,17 +19,24 @@ final class Client implements ClientInterface
 {
     private ClientConfig $config;
     private Factory $factory;
+    private Emitter $emitter;
     private LoggerInterface $logger;
     private LoopInterface $loop;
-    private Connection $connection;
 
-    public function __construct(ClientConfig $config, Factory $factory)
-    {
+    private ?Connection $connection = null;
+
+    public function __construct(
+        ClientConfig $config,
+        Factory $factory,
+        Emitter $emitter,
+        LoggerInterface $logger = null
+    ) {
         $this->config  = $config;
         $this->factory = $factory;
-        $this->logger  = new NullLogger();//TODO
+        $this->emitter = $emitter;
+        $this->logger  = $logger ?: new NullLogger();
 
-        $this->loop = $factory->createLoop(fn() => null);
+        $this->loop = $factory->createLoop(fn() => null);//TODO pass loop instead of create in factory?
     }
 
     public function connect(): Deferred
@@ -111,7 +122,7 @@ final class Client implements ClientInterface
 
     private function processReceive(Connection $connection, MSG $msg): void
     {
-        //TODO
+        $this->emitter->dispatch(new Event($msg->getCode(), $msg));
     }
 
     private function processErrored(Connection $connection, \Throwable $exception): void
@@ -126,6 +137,8 @@ final class Client implements ClientInterface
 
     public function exit(): void
     {
-        // TODO: Implement exit() method.
+        if ($this->connection) {
+            $this->connection->close();
+        }
     }
 }

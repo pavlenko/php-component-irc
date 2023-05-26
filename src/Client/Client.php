@@ -39,32 +39,11 @@ final class Client implements ClientInterface
         $this->loop = $factory->createLoop(fn() => null);//TODO pass loop instead of create in factory?
     }
 
-    public function connect(): Deferred
+    public function connect(string $address, array $context = [], ?float $timeout = null): Deferred
     {
-        //TODO tmp
-        $config = [
-            'socket' => [
-                'address' => 'tcp://127.0.0.1:6697',
-                'context' => [],
-                'timeout' => null,
-            ],
-            'client' => [
-                'type'     => 'client',// client|service
-                'password' => null,// client|service
-                'nickname' => 'mAsTeR',// client|service
-                'username' => 'mAsTeR',// client
-                'realname' => 'mAsTeR',// client
-                'servers'  => '',// service, servers mask
-                'mode'     => 0,// client, Bitmask
-                'info'     => '',// service
-            ],
-        ];
-
-        $this->connection = $this->factory->createConnection($this->factory->createSocketClient(
-            $config['socket']['address'],
-            $config['socket']['context'],
-            $config['socket']['timeout'],
-        ));
+        $this->connection = $this->factory->createConnection(
+            $this->factory->createSocketClient($address, $context, $timeout)
+        );
 
         $this->connection->setInputHandler(function (MSG $msg) {
             $this->logger->log(LogLevel::NOTICE, 'I: ' . $msg->toLogger());
@@ -94,7 +73,7 @@ final class Client implements ClientInterface
             $this->connection->send(new CMD(CMD::PASSWORD, [$this->config->password]));
         }
 
-        if ('client' === $this->config->type) {
+        if (ClientConfig::TYPE_USER === $this->config->type) {
             $this->connection->send(new CMD(CMD::NICK, [$this->config->nickname]));
             $this->connection->send(new CMD(
                 CMD::USER,
@@ -105,7 +84,7 @@ final class Client implements ClientInterface
             return $this->connection->wait(RPL::WELCOME);
         }
 
-        if ('service' === $this->config->type) {
+        if (ClientConfig::TYPE_SERVICE === $this->config->type) {
             $this->connection->send(new CMD(
                 CMD::SERVICE,
                 [$this->config->nickname, 0, $this->config->servers, 0, 0],
@@ -116,12 +95,13 @@ final class Client implements ClientInterface
         }
 
         throw new \UnexpectedValueException(
-            'Invalid client mode, allowed only "client" or "service", got: ' . $this->config->type
+            'Invalid client mode, allowed only ' . json_encode(ClientConfig::TYPES) . ', got: ' . $this->config->type
         );
     }
 
     private function processReceive(Connection $connection, MSG $msg): void
     {
+        $this->emitter->dispatch(new Event('message', $msg));
         $this->emitter->dispatch(new Event($msg->getCode(), $msg));
     }
 

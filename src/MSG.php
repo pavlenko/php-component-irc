@@ -55,7 +55,7 @@ abstract class MSG
             $parts[] = ':' . $this->prefix;
         }
 
-        array_push($parts, $this->code, ...array_filter($this->args));
+        array_push($parts, $this->code, ...array_filter($this->args, fn($arg) => is_numeric($arg) || !empty($arg)));
 
         if (null !== $this->comment) {
             $parts[] = ':' . $this->comment;

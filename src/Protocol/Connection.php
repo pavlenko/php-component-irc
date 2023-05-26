@@ -163,7 +163,7 @@ final class Connection
     public function send(MSG $msg, bool $close = false): void
     {
         call_user_func($this->onWrite, $msg);
-        $this->socket->write($msg->toString(), $close);
+        $this->socket->write($msg->toString() . "\r\n", $close);
     }
 
     public function close(string $message = null): void

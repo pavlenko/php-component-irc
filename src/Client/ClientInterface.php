@@ -28,7 +28,7 @@ use PE\Component\IRC\Deferred;
  */
 interface ClientInterface
 {
-    public function connect(): Deferred;
+    public function connect(string $address, array $context = [], ?float $timeout = null): Deferred;
 
     public function wait(): void;
 

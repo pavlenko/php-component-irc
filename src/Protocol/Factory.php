@@ -4,12 +4,15 @@ namespace PE\Component\IRC\Protocol;
 
 use PE\Component\Loop\Loop;
 use PE\Component\Loop\LoopInterface;
+use PE\Component\Socket\Client as SocketClient;
+use PE\Component\Socket\Factory as SocketFactory;
+use PE\Component\Socket\Server as SocketServer;
 
-class Factory
+final class Factory
 {
-    private \PE\Component\Socket\Factory $factory;
+    private SocketFactory $factory;
 
-    public function __construct(\PE\Component\Socket\Factory $factory)
+    public function __construct(SocketFactory $factory)
     {
         $this->factory = $factory;
     }
@@ -22,13 +25,18 @@ class Factory
         });
     }
 
+    public function createConnection(SocketClient $client): Connection
+    {
+        return new Connection($client);
+    }
 
-
-    public function createSocketClient(
-        string $address,
-        array $context = [],
-        ?float $timeout = null
-    ): \PE\Component\Socket\Client {
+    public function createSocketClient(string $address, array $context = [], ?float $timeout = null): SocketClient
+    {
         return $this->factory->createClient($address, $context, $timeout);
+    }
+
+    public function createSocketServer(string $address, array $context = []): SocketServer
+    {
+        return $this->factory->createServer($address, $context);
     }
 }

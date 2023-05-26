@@ -28,7 +28,7 @@ use PE\Component\IRC\Deferred;
  */
 interface ClientInterface
 {
-    public function connect(string $uri): Deferred;
+    public function connect(): Deferred;
 
     public function wait(): void;
 

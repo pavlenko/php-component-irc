@@ -22,6 +22,9 @@ final class Connection
     private \Closure $onError;
     private \Closure $onClose;
 
+    private ?string $clientAddress = null;
+    private ?string $remoteAddress = null;
+
     /**
      * @var Deferred[]
      */
@@ -78,6 +81,22 @@ final class Connection
     public function setCloseHandler(callable $handler): void
     {
         $this->onClose = \Closure::fromCallable($handler);
+    }
+
+    public function getClientAddress(): ?string
+    {
+        if (null === $this->clientAddress) {
+            $this->clientAddress = $this->socket->getClientAddress();
+        }
+        return $this->clientAddress;
+    }
+
+    public function getRemoteAddress(): ?string
+    {
+        if (null === $this->remoteAddress) {
+            $this->remoteAddress = $this->socket->getRemoteAddress();
+        }
+        return $this->remoteAddress;
     }
 
     private function decode(string $data): MSG

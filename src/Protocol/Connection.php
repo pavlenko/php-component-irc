@@ -16,6 +16,7 @@ final class Connection
     private SocketClient $socket;
     private int $responseTimeout;
     private int $inactiveTimeout;
+    private int $lastPingingTime = 0;
     private int $lastMessageTime = 0;
 
     private \Closure $onInput;

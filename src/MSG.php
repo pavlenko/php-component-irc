@@ -47,7 +47,7 @@ abstract class MSG
         return $this->prefix;
     }
 
-    public function toString(): string
+    public function toString(bool $pretty = false): string
     {
         $parts = [];
 
@@ -55,7 +55,12 @@ abstract class MSG
             $parts[] = ':' . $this->prefix;
         }
 
-        array_push($parts, $this->code, ...array_filter($this->args, fn($arg) => is_numeric($arg) || !empty($arg)));
+        $code = $this->code;
+        if ($pretty) {
+            $code = self::constants()[(int) $code] ?? $this->code;
+        }
+
+        array_push($parts, $code, ...array_filter($this->args, fn($arg) => is_numeric($arg) || !empty($arg)));
 
         if (null !== $this->comment) {
             $parts[] = ':' . $this->comment;
@@ -66,7 +71,12 @@ abstract class MSG
 
     public function toLogger(): string
     {
-        return (new \ReflectionObject($this))->getShortName() . '(' . $this->toString() . ')';
+        return (new \ReflectionObject($this))->getShortName() . '(' . $this->toString(true) . ')';
+    }
+
+    public static function constants(): array
+    {
+        return array_flip((new \ReflectionClass(static::class))->getConstants());
     }
 
     abstract protected function resolveComment(): ?string;

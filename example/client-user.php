@@ -21,8 +21,12 @@ $emitter = new Emitter();
 $logger = new ConsoleLogger(new ConsoleOutput(ConsoleOutput::VERBOSITY_DEBUG));
 $client = new Client($config, $factory, $emitter, $logger);
 
-$emitter->attach('message', function (MSG $msg) {
-    dump($msg->toString());
+$emitter->attach('message', function (MSG $msg, \PE\Component\IRC\Protocol\Connection $connection) use ($config) {
+    if ($msg->getCode() === sprintf('%03d', RPL::WELCOME)) {
+        dump($msg);
+        $connection->send(new CMD(CMD::LIST));
+        $connection->send(new CMD(CMD::WHOIS, [$config->nickname]));
+    }
 });
 
 $client->connect('tls://irc.libera.chat:6697')->onSuccess(function () {

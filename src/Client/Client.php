@@ -54,7 +54,8 @@ final class Client implements ClientInterface
             $this->logger->log(LogLevel::NOTICE, 'O: ' . $msg->toLogger());
         });
 
-        $this->connection->setErrorHandler(function (\Throwable $exception) {
+        $this->connection->setErrorHandler(function (\Throwable $exception, $line = null) {
+            dump($line);
             $this->logger->log(LogLevel::ERROR, 'E: ' . $exception->getCode() . ': ' . $exception->getMessage());
             $this->logger->log(LogLevel::DEBUG, 'E: ' . $exception->getTraceAsString());
             $this->processErrored($this->connection, $exception);
@@ -101,8 +102,8 @@ final class Client implements ClientInterface
 
     private function processReceive(Connection $connection, MSG $msg): void
     {
-        $this->emitter->dispatch(new Event('message', $msg));
-        $this->emitter->dispatch(new Event($msg->getCode(), $msg));
+        $this->emitter->dispatch(new Event('message', $msg, $connection));
+        $this->emitter->dispatch(new Event($msg->getCode(), $msg, $connection));
     }
 
     private function processErrored(Connection $connection, \Throwable $exception): void

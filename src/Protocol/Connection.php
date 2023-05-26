@@ -9,10 +9,11 @@ use PE\Component\IRC\ERR;
 use PE\Component\IRC\Exception\TimeoutException;
 use PE\Component\IRC\MSG;
 use PE\Component\IRC\RPL;
+use PE\Component\Socket\Client as SocketClient;
 
 final class Connection
 {
-    private \PE\Component\Socket\Client $socket;
+    private SocketClient $socket;
     private int $responseTimeout;
     private int $inactiveTimeout;
     private int $lastMessageTime = 0;
@@ -29,11 +30,12 @@ final class Connection
      * @var Deferred[]
      */
     private array $waitQueue = [];
+    private string $buffer = '';
 
     public function __construct(
-        \PE\Component\Socket\Client $socket,
-        int $responseTimeout = Config::DEFAULT_RESPONSE_TIMEOUT,
-        int $inactiveTimeout = Config::DEFAULT_INACTIVE_TIMEOUT
+        SocketClient $socket,
+        int          $responseTimeout = Config::DEFAULT_RESPONSE_TIMEOUT,
+        int          $inactiveTimeout = Config::DEFAULT_INACTIVE_TIMEOUT
     ) {
         $this->responseTimeout = $responseTimeout;
         $this->inactiveTimeout = $inactiveTimeout;
@@ -48,15 +50,7 @@ final class Connection
         $this->socket->setErrorHandler(fn(\Throwable $e) => call_user_func($this->onError, $e));
         $this->socket->setInputHandler(function (string $data) {
             try {
-                $lines = preg_split('/\n/', $data, 0, PREG_SPLIT_NO_EMPTY);
-                foreach ($lines as $line) {
-                    try {
-                        $msg = $this->decode(trim($line));
-                        call_user_func($this->onInput, $msg);
-                    } catch (\Throwable $error) {
-                        call_user_func($this->onError, $error, $line);
-                    }
-                }
+                $this->processReceive($data);
             } catch (\Throwable $exception) {
                 call_user_func($this->onError, $exception);
             }
@@ -97,6 +91,17 @@ final class Connection
             $this->remoteAddress = $this->socket->getRemoteAddress();
         }
         return $this->remoteAddress;
+    }
+
+    private function processReceive(string $data): void
+    {
+        $this->buffer .= $data;
+        while (strlen($this->buffer) > 0 && false !== ($pos = strpos($this->buffer, "\n"))) {
+            $line = substr($this->buffer, 0, $pos);
+            $msg  = $this->decode(trim($line));
+            call_user_func($this->onInput, $msg);
+            $this->buffer = substr($this->buffer, $pos + 1);
+        }
     }
 
     private function decode(string $data): MSG

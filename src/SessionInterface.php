@@ -8,18 +8,14 @@ interface SessionInterface
     public const TYPE_CLIENT = 'CLIENT';
     public const TYPE_SERVER = 'SERVER';
 
-    public const FLAG_REGISTER_PASS    = 0b00000000001;
-    public const FLAG_REGISTER_NICK    = 0b00000000010;
-    public const FLAG_REGISTER_USER    = 0b00000000100;
-    public const FLAG_REGISTERED_ALL   = 0b00000000111;
-    public const FLAG_REGISTERED       = 0b00000001000;//<-- deprecated
-    public const FLAG_INVISIBLE        = 0b00000010000;
-    public const FLAG_RECEIVE_NOTICE   = 0b00000100000;
-    public const FLAG_RECEIVE_WALLOPS  = 0b00001000000;
-    public const FLAG_IRC_OPERATOR     = 0b00010000000;
-    public const FLAG_AWAY             = 0b00100000000;
-    public const FLAG_PINGING          = 0b01000000000;
-    public const FLAG_BREAK_CONNECTION = 0b10000000000;
+    public const FLAG_REGISTERED       = 0b00000001;
+    public const FLAG_INVISIBLE        = 0b00000010;
+    public const FLAG_RECEIVE_NOTICE   = 0b00000100;
+    public const FLAG_RECEIVE_WALLOPS  = 0b00001000;
+    public const FLAG_IRC_OPERATOR     = 0b00010000;
+    public const FLAG_AWAY             = 0b00100000;
+    public const FLAG_PINGING          = 0b01000000;
+    public const FLAG_BREAK_CONNECTION = 0b10000000;
 
     public function __construct(ConnectionInterface $connection, string $servername, string $hostname);
 

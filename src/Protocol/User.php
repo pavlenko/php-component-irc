@@ -2,6 +2,8 @@
 
 namespace PE\Component\IRC\Protocol;
 
+use PE\Component\IRC\CMD;
+
 class User
 {
     private Connection $connection;
@@ -13,6 +15,13 @@ class User
 
     public function register(?string $password, string $nickname, string $username, string $realname, int $flags): void
     {
-        //TODO register and fill session data
+        if (!empty($password)) {
+            $this->connection->send(new CMD(CMD::PASSWORD, [$password]));
+        }
+
+        $this->connection->send(new CMD(CMD::NICK, [$nickname]));
+        $this->connection->send(new CMD(CMD::USER, [$username, $flags, '*'], $realname));
+
+        //TODO wait for success...
     }
 }

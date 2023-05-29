@@ -94,6 +94,7 @@ final class Connection
         return $this->remoteAddress;
     }
 
+    //TODO auto resolve deferred
     private function processReceive(string $data): void
     {
         $this->buffer .= $data;

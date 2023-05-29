@@ -39,7 +39,11 @@ final class Client implements ClientInterface, EmitterInterface
         $this->emitter = $emitter ?: new Emitter();
         $this->logger  = $logger ?: new NullLogger();
 
-        $this->loop = $factory->createLoop(fn() => null);//TODO pass loop instead of create in factory?
+        $this->loop = $factory->createLoop(function () {
+            if ($this->connection) {
+                $this->connection->tick();
+            }
+        });
     }
 
     public function attach(string $event, callable $listener, int $priority = 0)
@@ -58,7 +62,7 @@ final class Client implements ClientInterface, EmitterInterface
     }
 
     //TODO start loop at end of connect and call connected event before loop start
-    public function connect(string $address, array $context = [], ?float $timeout = null): Deferred
+    public function connect(string $address, array $context = [], ?float $timeout = null): void
     {
         $this->connection = $this->factory->createConnection(
             $this->factory->createSocketClient($address, $context, $timeout)
@@ -90,36 +94,7 @@ final class Client implements ClientInterface, EmitterInterface
         });
 
         $this->dispatch(new ConnectedEvent($this->connection));
-
-        //TODO extract below to api classes
-        if (null !== $this->config->password) {
-            $this->connection->send(new CMD(CMD::PASSWORD, [$this->config->password]));
-        }
-
-        if (ClientConfig::TYPE_USER === $this->config->type) {
-            $this->connection->send(new CMD(CMD::NICK, [$this->config->nickname]));
-            $this->connection->send(new CMD(
-                CMD::USER,
-                [$this->config->username, $this->config->usermode, '*'],
-                $this->config->realname
-            ));
-
-            return $this->connection->wait(RPL::WELCOME);
-        }
-
-        if (ClientConfig::TYPE_SERVICE === $this->config->type) {
-            $this->connection->send(new CMD(
-                CMD::SERVICE,
-                [$this->config->nickname, 0, $this->config->servers, 0, 0],
-                $this->config->info
-            ));
-
-            return $this->connection->wait(RPL::YOU_ARE_SERVICE);
-        }
-
-        throw new \UnexpectedValueException(
-            'Invalid client mode, allowed only ' . json_encode(ClientConfig::TYPES) . ', got: ' . $this->config->type
-        );
+        $this->loop->run();
     }
 
     private function processReceive(Connection $connection, MSG $msg): void
@@ -137,6 +112,7 @@ final class Client implements ClientInterface, EmitterInterface
         //TODO
     }
 
+    /* @deprecated */
     public function wait(): void
     {
         $this->loop->run();

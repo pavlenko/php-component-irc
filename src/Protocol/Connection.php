@@ -94,14 +94,26 @@ final class Connection
         return $this->remoteAddress;
     }
 
-    //TODO auto resolve deferred
+    private function processMessage(MSG $message): void
+    {
+        // Check wait for specific code - the resolve deferred and remove from it queue
+        foreach ($this->waitQueue as $index => $deferred) {
+            if ($message->getCode() === $deferred->getExpectCode()) {
+                $deferred->success($message);
+                unset($this->waitQueue[$index]);
+                break;
+            }
+        }
+
+        call_user_func($this->onInput, $message);
+    }
+
     private function processReceive(string $data): void
     {
         $this->buffer .= $data;
         while (strlen($this->buffer) > 0 && false !== ($pos = strpos($this->buffer, "\n"))) {
-            $line = substr($this->buffer, 0, $pos);
-            $msg  = $this->decode(trim($line));
-            call_user_func($this->onInput, $msg);
+            $message = $this->decode(trim(substr($this->buffer, 0, $pos)));
+            $this->processMessage($message);
             $this->buffer = substr($this->buffer, $pos + 1);
         }
     }

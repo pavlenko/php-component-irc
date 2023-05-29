@@ -18,7 +18,28 @@ final class CMD extends MSG
     public const INFO        = 'INFO';
     public const INVITE      = 'INVITE';
     public const IS_ON       = 'ISON';//ISON <nickname> [...<nickname>]
-    public const JOIN        = 'JOIN';
+
+    /**
+     * <code>
+     * CMD(:$prefix JOIN $channels $keys)
+     * CMD(:$prefix JOIN 0) - this special case for leave all channels
+     * </code>
+     * - $channels - comma separated channel names
+     * - $keys - associated keys for listed channels
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::INVITE_ONLY_CHANNEL
+     * @see ERR::CHANNEL_IS_FULL
+     * @see ERR::NO_SUCH_CHANNEL
+     * @see ERR::TOO_MANY_TARGETS
+     * @see ERR::BANNED_FROM_CHANNEL
+     * @see ERR::BAD_CHANNEL_KEY
+     * @see ERR::BAD_CHANNEL_MASK
+     * @see ERR::TOO_MANY_CHANNELS
+     * @see ERR::UNAVAILABLE_RESOURCE
+     * @see RPL::TOPIC
+     */
+    public const JOIN = 'JOIN';
+
     public const KICK        = 'KICK';
     public const KILL        = 'KILL';
     public const LINKS       = 'LINKS';
@@ -51,7 +72,18 @@ final class CMD extends MSG
 
     public const NOTICE      = 'NOTICE';
     public const OPERATOR    = 'OPER';
-    public const PART        = 'PART';
+
+    /**
+     * <code>
+     * CMD(:$prefix PART $channels [:$part_message])
+     * </code>
+     * - $channels - comma separated channel names
+     * - $part_message - optional leave channel message
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NO_SUCH_CHANNEL
+     * @see ERR::NOT_ON_CHANNEL
+     */
+    public const PART = 'PART';
 
     /**
      * <code>

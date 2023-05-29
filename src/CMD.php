@@ -5,9 +5,34 @@ namespace PE\Component\IRC;
 final class CMD extends MSG
 {
     public const CAP         = 'CAP';
-    public const ADMIN       = 'ADMIN';//ADMIN [<server>]
+
+    /**
+     * <code>
+     * CMD(ADMIN [$target])
+     * </code>
+     * - $target - server to get admin info from, if not pass - use connected to server
+     * @see ERR::NO_SUCH_SERVER
+     * @see RPL::ADMIN_ME
+     * @see RPL::ADMIN_LOC1
+     * @see RPL::ADMIN_LOC2
+     * @see RPL::ADMIN_EMAIL
+     */
+    public const ADMIN = 'ADMIN';
+
     public const AWAY        = 'AWAY';
-    public const CONNECT     = 'CONNECT';
+
+    /**
+     * <code>
+     * CMD(CONNECT $target $port [$remote])
+     * </code>
+     * - $target - target server to connect local one to
+     * - $port - port to use during connection
+     * - $remote - remote server, if passed used instead of local, can be a mask
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NO_SUCH_SERVER
+     * @see ERR::NO_PRIVILEGES
+     */
+    public const CONNECT = 'CONNECT';
 
     /**
      * @example CMD(ERROR :Closing Link: 127.0.0.1 (Connection timed out))
@@ -15,7 +40,15 @@ final class CMD extends MSG
      */
     public const ERROR = 'ERROR';
 
-    public const INFO        = 'INFO';
+    /**
+     * <code>
+     * CMD(INFO [$target])
+     * </code>
+     * @see ERR::NO_SUCH_SERVER
+     * @see RPL::INFO
+     * @see RPL::END_OF_INFO
+     */
+    public const INFO = 'INFO';
 
     /**
      * <code>
@@ -116,12 +149,23 @@ final class CMD extends MSG
      */
     public const MODE = 'MODE';
 
-    public const MOTD        = 'MOTD';//MODT [<server>]
+    /**
+     * <code>
+     * CMD(MOTD [$target])
+     * </code>
+     * - $target - server from which get MOTD
+     * @see ERR::NO_MOTD
+     * @see RPL::MOTD_START
+     * @see RPL::MOTD
+     * @see RPL::END_OF_MOTD
+     */
+    public const MOTD = 'MOTD';
+
     public const LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]
 
     /**
      * <code>
-     * CMD(NAMES $channels, [:$target])
+     * CMD(NAMES $channels [:$target])
      * </code>
      * - $channels - comma separated channels list
      * - $target - target server(s) from which get list

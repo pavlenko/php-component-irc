@@ -40,15 +40,95 @@ final class RPL extends MSG
 
     public const BOUNCE           = 005;//:<prefix> <rpl code> :Try server <server name>, port <port number>
     public const I_SUPPORT        = 005;//TODO
-    public const TRACE_LINK       = 200;//:<prefix> <rpl code> Link <version & debug level> <destination> <next server>
-    public const TRACE_CONNECTING = 201;//:<prefix> <rpl code> Try. <class> <server>
-    public const TRACE_HANDSHAKE  = 202;//:<prefix> <rpl code> H.S. <class> <server>
-    public const TRACE_UNKNOWN    = 203;//:<prefix> <rpl code> ???? <class> [<client IP address in dot form>]
-    public const TRACE_OPERATOR   = 204;//:<prefix> <rpl code> Oper <class> <nick>
-    public const TRACE_USER       = 205;//:<prefix> <rpl code> User <class> <nick>
-    public const TRACE_SERVER     = 206;//:<prefix> <rpl code> Serv <class> <int>S <int>C <server> <nick!user|*!*>@<host|server>
-    public const TRACE_NEW_TYPE   = 208;//:<prefix> <rpl code> <new type> 0 <client name>
-    public const TRACE_LOG        = 261;//:<prefix> <rpl code> File <logfile> <debug level>
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_LINK :Link $version.$debug_level $destination $next_server)
+     * </code>
+     */
+    public const TRACE_LINK = 200;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_LINK :Try. $class $server)
+     * </code>
+     */
+    public const TRACE_CONNECTING = 201;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_HANDSHAKE :H.S. $class $server)
+     * </code>
+     */
+    public const TRACE_HANDSHAKE = 202;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_UNKNOWN :???? $class $ip_address)
+     * </code>
+     * - $ip_address - client IP address in dot form
+     */
+    public const TRACE_UNKNOWN = 203;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_OPERATOR :Oper $class $nick)
+     * </code>
+     */
+    public const TRACE_OPERATOR = 204;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_USER :User $class $nick)
+     * </code>
+     */
+    public const TRACE_USER = 205;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_SERVER :Serv $class $intS $intC $server $identity@$host V$protocol_version>)
+     * </code>
+     * - $identity - "nick!user" or "*!*"
+     * - $host - hostname or ip address
+     * @TODO maybe in server protocol exists description of this
+     */
+    public const TRACE_SERVER = 206;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_SERVICE :Service $class $name $type $active_type)
+     * </code>
+     */
+    public const TRACE_SERVICE = 207;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_NEW_TYPE :$new_type 0 $client_name)
+     * </code>
+     */
+    public const TRACE_NEW_TYPE = 208;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_CLASS :Class $class $count)
+     * </code>
+     */
+    public const TRACE_CLASS = 209;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_LOG :File $logfile $debug_level)
+     * </code>
+     */
+    public const TRACE_LOG = 261;
+
+    /**
+     * <code>
+     * RPL(:$prefix TRACE_END $server_name $version.$debug_level :End of TRACE)
+     * </code>
+     */
+    public const TRACE_END = 262;
+
     public const STATS_LINK_INFO  = 211;//:<prefix> <rpl code> <link name> <send q> <sent messages> <sent bytes> <received messages> <received bytes> <time open>
 
     /**

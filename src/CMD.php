@@ -16,7 +16,23 @@ final class CMD extends MSG
     public const ERROR = 'ERROR';
 
     public const INFO        = 'INFO';
-    public const INVITE      = 'INVITE';
+
+    /**
+     * <code>
+     * CMD(:$prefix INVITE $nickname $channel)
+     * </code>
+     * - $nickname - user to invite
+     * - $channel - channel to invite to
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NOTONCHANNEL
+     * @see ERR::CHANOPRIVSNEEDED
+     * @see ERR::NOSUCHNICK
+     * @see ERR::USERONCHANNEL
+     * @see RPL::INVITING
+     * @see RPL::AWAY
+     */
+    public const INVITE = 'INVITE';
+
     public const IS_ON       = 'ISON';//ISON <nickname> [...<nickname>]
 
     /**

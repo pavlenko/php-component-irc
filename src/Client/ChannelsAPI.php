@@ -34,7 +34,8 @@ class ChannelsAPI
     {
     }
 
-    public function JOIN(): void
+    // roles: REGISTERED|CHANNEL_OPERATOR
+    public function INVITE(): void
     {
     }
 }

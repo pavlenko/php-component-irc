@@ -103,10 +103,47 @@ final class RPL extends MSG
     public const LIST             = 322;//:<prefix> <rpl code> <channel> <# visible> :<topic>
     public const LIST_END         = 323;//:<prefix> <rpl code> :End of /LIST
     public const CHANNEL_MODE_IS  = 324;//:<prefix> <rpl code> <channel> <mode> <mode params>
+
+    /**
+     * <code>
+     * RPL(:$prefix UNIQUE_OPERATOR_IS $channel $nickname)
+     * </code>
+     */
+    public const UNIQUE_OPERATOR_IS = 325;
+
     public const NO_TOPIC         = 331;//:<prefix> <rpl code> <channel> :No topic is set
     public const TOPIC            = 332;//:<prefix> <rpl code> <channel> :<topic>
     public const INVITING         = 341;//:<prefix> <rpl code> <nick> <channel>
     public const SUMMONING        = 342;//:<prefix> <rpl code> <user> :Summoning user to IRC
+
+    /**
+     * <code>
+     * RPL(:$prefix INVITE_LIST $channel $invite_mask)
+     * </code>
+     */
+    public const INVITE_LIST = 346;
+
+    /**
+     * <code>
+     * RPL(:$prefix END_OF_INVITE_LIST $channel :End of channel invite list)
+     * </code>
+     */
+    public const END_OF_INVITE_LIST = 347;
+
+    /**
+     * <code>
+     * RPL(:$prefix EXCEPTION_LIST $channel $exception_mask)
+     * </code>
+     */
+    public const EXCEPTION_LIST = 348;
+
+    /**
+     * <code>
+     * RPL(:$prefix EXCEPTION_LIST $channel :End of channel exception list)
+     * </code>
+     */
+    public const END_OF_EXCEPTION_LIST = 349;
+
     public const VERSION          = 351;//:<prefix> <rpl code> <version>.<debug level> <server> :<comments>
     public const WHO_REPLY        = 352;//:<prefix> <rpl code> <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hop count> <real name>
     public const END_OF_WHO       = 315;//:<prefix> <rpl code> <name> :End of /WHO

@@ -43,11 +43,61 @@ final class CMD extends MSG
     public const KICK        = 'KICK';
     public const KILL        = 'KILL';
     public const LINKS       = 'LINKS';
-    public const LIST        = 'LIST';//LIST [<channel>{,<channel>} [<server>]]
-    public const MODE        = 'MODE';
+
+    /**
+     * <code>
+     * CMD(LIST $channels [$target])
+     * </code>
+     * - $channels - channels to limit list to
+     * - $target - target server(s) from which get list
+     * @see ERR::TOO_MANY_MATCHES
+     * @see ERR::NO_SUCH_SERVER
+     * @see RPL::LIST
+     * @see RPL::LIST_END
+     */
+    public const LIST = 'LIST';
+
+    /**
+     * <code>
+     * channel: CMD(MODE $channel *($mode [$mode_params]))
+     * </code>
+     * - $channel - channel for get/set mode
+     * - $mode - modes to change/get
+     * - $mode_params - params for modes
+     *
+     * combination of "$mode [$mode_params]" can be repeated
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NO_CHANNEL_MODES
+     * @see ERR::USER_NOT_IN_CHANNEL
+     * @see ERR::KEY_SET
+     * @see ERR::OPERATOR_PRIVILEGES_NEEDED
+     * @see ERR::UNKNOWN_MODE
+     * @see RPL::CHANNEL_MODE_IS
+     * @see RPL::BAN_LIST
+     * @see RPL::EXCEPTION_LIST
+     * @see RPL::INVITE_LIST
+     * @see RPL::UNIQUE_OPERATOR_IS - !!! no documentation for this
+     * @see RPL::END_OF_BAN_LIST
+     * @see RPL::END_OF_EXCEPTION_LIST
+     * @see RPL::END_OF_INVITE_LIST
+     */
+    public const MODE = 'MODE';
+
     public const MOTD        = 'MOTD';//MODT [<server>]
     public const LIST_USERS  = 'LUSERS';//LUSERS [<mask> [<target>]]
-    public const NAMES       = 'NAMES';
+
+    /**
+     * <code>
+     * CMD(NAMES $channels, [:$target])
+     * </code>
+     * - $channels - comma separated channels list
+     * - $target - target server(s) from which get list
+     * @see ERR::TOO_MANY_TARGETS
+     * @see ERR::NO_SUCH_SERVER
+     * @see RPL::NAMES_REPLY
+     * @see RPL::END_OF_NAMES
+     */
+    public const NAMES = 'NAMES';
 
     /**
      * <code>
@@ -138,7 +188,22 @@ final class CMD extends MSG
     public const STATS       = 'STATS';
     public const SUMMON      = 'SUMMON';
     public const TIME        = 'TIME';
-    public const TOPIC       = 'TOPIC';
+
+    /**
+     * <code>
+     * CMD(TOPIC $channel :$topic)
+     * </code>
+     * - $channel - channel to view or change topic
+     * - $topic - topic to set
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NOT_ON_CHANNEL
+     * @see ERR::OPERATOR_PRIVILEGES_NEEDED
+     * @see ERR::NO_CHANNEL_MODES
+     * @see RPL::NO_TOPIC
+     * @see RPL::TOPIC
+     */
+    public const TOPIC = 'TOPIC';
+
     public const TRACE       = 'TRACE';
     public const USER_HOST   = 'USERHOST';//USERHOST <nickname> [...<nickname>]
 

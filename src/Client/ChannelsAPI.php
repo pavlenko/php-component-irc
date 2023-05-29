@@ -14,19 +14,23 @@ class ChannelsAPI
     {
     }
 
-    public function JOIN(): void
+    // roles: REGISTERED|CHANNEL_OPERATOR
+    public function MODE(): void
     {
     }
 
-    public function JOIN(): void
+    // roles: REGISTERED|CHANNEL_OPERATOR
+    public function TOPIC(): void
     {
     }
 
-    public function JOIN(): void
+    // roles: REGISTERED
+    public function NAMES(): void
     {
     }
 
-    public function JOIN(): void
+    // roles: REGISTERED
+    public function LIST(): void
     {
     }
 

@@ -102,7 +102,17 @@ final class ERR extends MSG
     public const INVITE_ONLY_CHANNEL        = 473;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+i)
     public const BANNED_FROM_CHANNEL        = 474;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+b)
     public const BAD_CHANNEL_KEY            = 475;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+k)
+
+
     public const BAD_CHANNEL_MASK           = 476;//:<prefix> <rpl code> <curr nick> <channel> :Bad Channel Mask
+
+    /**
+     * <code>
+     * ERR(:$prefix NO_CHANNEL_MODES $curr_nick $channel :Channel does not support modes)
+     * </code>
+     */
+    public const NO_CHANNEL_MODES = 477;
+
     public const NO_PRIVILEGES              = 481;//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
     public const OPERATOR_PRIVILEGES_NEEDED = 482;//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
     public const CANNOT_KILL_SERVER         = 483;//:<prefix> <rpl code> <curr nick> :You cant kill a server!

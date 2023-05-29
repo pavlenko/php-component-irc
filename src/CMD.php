@@ -53,6 +53,8 @@ final class CMD extends MSG
      * @see ERR::TOO_MANY_CHANNELS
      * @see ERR::UNAVAILABLE_RESOURCE
      * @see RPL::TOPIC
+     * @see RPL::NAMES_REPLY
+     * @see RPL::END_OF_NAMES
      */
     public const JOIN = 'JOIN';
 

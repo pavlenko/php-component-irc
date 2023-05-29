@@ -3,9 +3,11 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\Event\Emitter;
+use PE\Component\Event\EmitterInterface;
 use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Deferred;
+use PE\Component\IRC\Event\ConnectedEvent;
 use PE\Component\IRC\MSG;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\Protocol\Factory;
@@ -15,7 +17,8 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
 
-final class Client implements ClientInterface
+//TODO create API classes with helper methods
+final class Client implements ClientInterface, EmitterInterface
 {
     private ClientConfig $config;
     private Factory $factory;
@@ -28,17 +31,33 @@ final class Client implements ClientInterface
     public function __construct(
         ClientConfig $config,
         Factory $factory,
-        Emitter $emitter,
+        Emitter $emitter = null,
         LoggerInterface $logger = null
     ) {
         $this->config  = $config;
         $this->factory = $factory;
-        $this->emitter = $emitter;
+        $this->emitter = $emitter ?: new Emitter();
         $this->logger  = $logger ?: new NullLogger();
 
         $this->loop = $factory->createLoop(fn() => null);//TODO pass loop instead of create in factory?
     }
 
+    public function attach(string $event, callable $listener, int $priority = 0)
+    {
+        $this->emitter->attach($event, $listener, $priority);
+    }
+
+    public function detach(string $event, callable $listener)
+    {
+        $this->emitter->detach($event, $listener);
+    }
+
+    public function dispatch(object $event): void
+    {
+        $this->emitter->dispatch($event);
+    }
+
+    //TODO start loop at end of connect and call connected event before loop start
     public function connect(string $address, array $context = [], ?float $timeout = null): Deferred
     {
         $this->connection = $this->factory->createConnection(
@@ -70,6 +89,9 @@ final class Client implements ClientInterface
             //$this->connection->setStatus(ConnectionInterface::STATUS_CLOSED);
         });
 
+        $this->dispatch(new ConnectedEvent($this->connection));
+
+        //TODO extract below to api classes
         if (null !== $this->config->password) {
             $this->connection->send(new CMD(CMD::PASSWORD, [$this->config->password]));
         }

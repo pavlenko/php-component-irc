@@ -132,7 +132,13 @@ final class CMD extends MSG
      * - $mode_params - params for modes
      *
      * combination of "$mode [$mode_params]" can be repeated
-     * @see ERR::NEED_MORE_PARAMS
+     *
+     * @see ERR::NEED_MORE_PARAMS - both for user & channel modes
+     *
+     * @see ERR::USERS_DONT_MATCH - user only
+     * @see ERR::USER_MODE_UNKNOWN_FLAG - user only
+     * @see RPL::USER_MODE_IS - user only
+     *
      * @see ERR::NO_CHANNEL_MODES
      * @see ERR::USER_NOT_IN_CHANNEL
      * @see ERR::KEY_SET
@@ -198,7 +204,17 @@ final class CMD extends MSG
     public const NICK = 'NICK';
 
     public const NOTICE      = 'NOTICE';
-    public const OPERATOR    = 'OPER';
+
+    /**
+     * <code>
+     * CMD(OPERATOR $name $password)
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NO_OPERATOR_HOST
+     * @see ERR::PASSWORD_MISMATCH
+     * @see RPL::YOU_ARE_OPERATOR
+     */
+    public const OPERATOR = 'OPER';
 
     /**
      * <code>
@@ -229,7 +245,14 @@ final class CMD extends MSG
     public const PING        = 'PING';//PING <server> [...<server>]
     public const PONG        = 'PONG';//PONG <server> [...<server>]
     public const PRIVATE_MSG = 'PRIVMSG';
-    public const QUIT        = 'QUIT';//QUIT [<quit message>]
+
+    /**
+     * <code>
+     * CMD(QUIT :$quit_message)
+     * </code>
+     */
+    public const QUIT = 'QUIT';
+
     public const REHASH      = 'REHASH';
     public const RESTART     = 'RESTART';
 
@@ -241,6 +264,14 @@ final class CMD extends MSG
      */
     public const SERVER = 'SERVER';
 
+    /**
+     * <code>
+     * CMD(SERVER_QUIT $server :$comment)
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::NO_SUCH_SERVER
+     * @see ERR::NO_PRIVILEGES
+     */
     public const SERVER_QUIT = 'SQUIT';
 
     /**

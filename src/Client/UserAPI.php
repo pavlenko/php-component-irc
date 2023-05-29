@@ -1,12 +1,13 @@
 <?php
 
-namespace PE\Component\IRC\Protocol;
+namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Deferred;
+use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
-class User
+class UserAPI
 {
     private Connection $connection;
 
@@ -35,18 +36,30 @@ class User
     }
 
     // roles: REGISTERED
-    public function OPERATOR(): void
-    {}
+    public function OPER(string $name, string $password): void
+    {
+        $this->connection->send(new CMD(CMD::OPERATOR, [$name, $password]));
+        $this->connection->wait(RPL::YOU_ARE_OPERATOR);
+    }
 
     // roles: REGISTERED
-    public function MODE(): void
-    {}
+    public function MODE(string $nickname, string $modes): void
+    {
+        $this->connection->send(new CMD(CMD::MODE, [$nickname, $modes]));
+        $this->connection->wait(RPL::USER_MODE_IS);
+    }
 
     // roles: REGISTERED
-    public function QUIT(): void
-    {}
+    public function QUIT(string $message = null): void
+    {
+        $this->connection->send(new CMD(CMD::QUIT, [], $message));
+        $this->connection->wait(CMD::ERROR);// this ack by error command
+    }
 
     // roles: REGISTERED|IRC_OPERATOR
-    public function SERVER_QUIT(): void
-    {}
+    public function S_QUIT(string $server, string $comment): void
+    {
+        $this->connection->send(new CMD(CMD::QUIT, [$server], $comment));
+        $this->connection->wait(CMD::WALLOPS);
+    }
 }

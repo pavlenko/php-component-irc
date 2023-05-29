@@ -126,7 +126,7 @@ final class ERR extends MSG
     public const RESTRICTED = 484;
 
     public const NO_OPERATOR_HOST           = 491;//:<prefix> <rpl code> <curr nick> :No O-lines for your host
-    public const U_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
+    public const USER_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
     public const USERS_DONT_MATCH           = 502;//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
 
     public function __construct(string $prefix, int $code, array $args = [], string $comment = null)
@@ -221,7 +221,7 @@ final class ERR extends MSG
                 return 'You cant kill a server!';
             case self::NO_OPERATOR_HOST:
                 return 'No O-lines for your host';
-            case self::U_MODE_UNKNOWN_FLAG:
+            case self::USER_MODE_UNKNOWN_FLAG:
                 return 'Unknown MODE flag';
             case self::USERS_DONT_MATCH:
                 return 'Cant change mode for other users';

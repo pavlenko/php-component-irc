@@ -33,6 +33,15 @@ class ChannelsAPI
     public function MODE(string $channel, string $modes, string $params): void
     {
         $this->connection->send(new CMD(CMD::MODE, [$channel, $modes, $params]));
+        $this->connection->wait([
+            RPL::CHANNEL_MODE_IS,
+            RPL::BAN_LIST,
+            RPL::EXCEPTION_LIST,
+            RPL::INVITE_LIST,
+            RPL::END_OF_BAN_LIST,
+            RPL::END_OF_EXCEPTION_LIST,
+            RPL::END_OF_INVITE_LIST,
+        ]);
         //TODO response dependent on passed arguments, so better split to some parts
     }
 

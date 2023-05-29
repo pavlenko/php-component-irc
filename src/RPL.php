@@ -184,12 +184,10 @@ final class RPL extends MSG
     public const LIST_END         = 323;//:<prefix> <rpl code> :End of /LIST
     public const CHANNEL_MODE_IS  = 324;//:<prefix> <rpl code> <channel> <mode> <mode params>
 
-    /**
-     * <code>
-     * RPL(:$prefix UNIQUE_OPERATOR_IS $channel $nickname)
-     * </code>
-     */
-    public const UNIQUE_OPERATOR_IS = 325;
+    //from solanum server code: RPL_CHANNELMLOCK     325
+    //from solanum server code: RPL_CHANNELURL       328 /* to be sent by services */
+    //from solanum server code: RPL_CREATIONTIME     329
+    //from solanum server code: RPL_WHOISLOGGEDIN    330
 
     public const NO_TOPIC         = 331;//:<prefix> <rpl code> <channel> :No topic is set
     public const TOPIC            = 332;//:<prefix> <rpl code> <channel> :<topic>

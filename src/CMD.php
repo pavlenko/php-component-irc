@@ -60,10 +60,11 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * CMD(KICK $channels $users)
+     * CMD(KICK $channels $users [:$comment])
      * </code>
      * - $channels - comma separated list of channel to kick of
      * - $users - comma separated list of users to kick off channels
+     * - $comment - optional comment, if not set - issuer nickname used
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::BAD_CHANNEL_MASK
      * @see ERR::USER_NOT_IN_CHANNEL

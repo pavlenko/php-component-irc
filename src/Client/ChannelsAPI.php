@@ -61,12 +61,16 @@ class ChannelsAPI
     }
 
     // roles: REGISTERED|CHANNEL_OPERATOR
-    public function INVITE(): void
+    public function INVITE(string $channel, string $nickname): void
     {
+        $this->connection->send(new CMD(CMD::INVITE, [$nickname, $channel]));
+        $this->connection->wait([RPL::INVITING, RPL::AWAY]);//TODO are both can be received at once?
     }
 
     // roles: REGISTERED|CHANNEL_OPERATOR
-    public function KICK(): void
+    public function KICK(string $channel, string $nickname, string $comment = null): void
     {
+        $this->connection->send(new CMD(CMD::KICK, [$channel, $nickname], $comment));
+        $this->connection->wait(CMD::KICK);//TODO also check if issuer match current user
     }
 }

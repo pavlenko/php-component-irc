@@ -101,9 +101,13 @@ final class CMD extends MSG
 
     /**
      * <code>
-     * client: CMD(USER $user $mode $unused :$realname)
-     * server: CMD(USER $user $mode $servername :$realname)
+     * client: CMD(USER $username $usermode * :$realname)
+     * server: CMD(USER $username $usermode $servername :$realname)
      * </code>
+     * - $username - user display name
+     * - $usermode - user mode flags, bitmask, if set bit 2 - auto add mode "w", if set bit 3 - auto add mode "i"
+     * - $servername - name of server on which user is registered, used only for send data to other servers, else "*"
+     * - $realname - real name of user, may be first name + last name string
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED
      * @see ERR::NO_NICKNAME_GIVEN

@@ -4,7 +4,7 @@ namespace PE\Component\IRC\Protocol;
 
 use PE\Component\IRC\CMD;
 
-class User
+class Service
 {
     private Connection $connection;
 
@@ -13,15 +13,14 @@ class User
         $this->connection = $connection;
     }
 
-    public function register(?string $password, string $nickname, string $username, string $realname, int $flags): void
+    public function register(?string $password, string $nickname, string $servers, string $info): void
     {
         if (!empty($password)) {
             $this->connection->send(new CMD(CMD::PASSWORD, [$password]));
         }
 
-        $this->connection->send(new CMD(CMD::NICK, [$nickname]));
-        $this->connection->send(new CMD(CMD::USER, [$username, $flags, '*'], $realname));
+        $this->connection->send(new CMD(CMD::SERVICE, [$nickname, 0, $servers, 0, 0], $info));
 
-        //TODO wait for WELCOME...
+        //TODO wait for YOU_ARE_SERVICE
     }
 }

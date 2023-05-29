@@ -51,6 +51,10 @@ final class CMD extends MSG
      * client: CMD(PASS $password)
      * server: CMD(PASS $password $version $flags [$options])
      * </code>
+     * - $password - sets a connection password, must be before NICK+USER or SERVICE command is send
+     * - $version - if attempt to register as a server only, protocol + software versions combination string
+     * - $flags - if attempt to register as a server only, protocol implementation dependent
+     * - $options - if attempt to register as a server only, connection options
      * @see ERR::NEED_MORE_PARAMS
      * @see ERR::ALREADY_REGISTERED
      */

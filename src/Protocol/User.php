@@ -15,15 +15,38 @@ class User
         $this->connection = $connection;
     }
 
-    public function register(?string $password, string $nickname, string $username, string $realname, int $flags): Deferred
+    //TODO if registered - protocol exception
+    public function register(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
     {
-        if (!empty($password)) {
-            $this->connection->send(new CMD(CMD::PASSWORD, [$password]));
+        if (!empty($pass)) {
+            $this->connection->send(new CMD(CMD::PASSWORD, [$pass]));
         }
 
-        $this->connection->send(new CMD(CMD::NICK, [$nickname]));
-        $this->connection->send(new CMD(CMD::USER, [$username, $flags, '*'], $realname));
+        $this->connection->send(new CMD(CMD::NICK, [$nick]));
+        $this->connection->send(new CMD(CMD::USER, [$user, $flags, '*'], $realname));
 
         return $this->connection->wait(RPL::WELCOME);
     }
+
+    // roles: GUEST|REGISTERED
+    public function NICK(string $nick): void
+    {
+        $this->connection->send(new CMD(CMD::NICK, [$nick]));
+    }
+
+    // roles: REGISTERED
+    public function OPERATOR(): void
+    {}
+
+    // roles: REGISTERED
+    public function MODE(): void
+    {}
+
+    // roles: REGISTERED
+    public function QUIT(): void
+    {}
+
+    // roles: REGISTERED|IRC_OPERATOR
+    public function SERVER_QUIT(): void
+    {}
 }

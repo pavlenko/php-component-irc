@@ -31,8 +31,15 @@ final class CMD extends MSG
     /**
      * <code>
      * client: CMD(NICK $nickname)
-     * server: CMD(NICK $nickname $hop_count $username $host $server_token $u_mode $realname)
+     * server: CMD(NICK $nickname $hop_count $username $hostname $server_token $usermode :$realname)
      * </code>
+     * - $nickname - nickname of user
+     * - $hop_count - how far servers
+     * - $username - username from client's user command received
+     * - $hostname - hostname on which user is registered
+     * - $server_token - numeric server token(id)
+     * - $usermode - user mode from client's user command received
+     * - $realname - real name from client's user command received
      * @see ERR::NO_NICKNAME_GIVEN
      * @see ERR::ERRONEOUS_NICKNAME
      * @see ERR::NICKNAME_IN_USE
@@ -49,7 +56,7 @@ final class CMD extends MSG
     /**
      * <code>
      * client: CMD(PASS $password)
-     * server: CMD(PASS $password $version $flags [$options])
+     * server: CMD(PASS $password $version $flags [:$options])
      * </code>
      * - $password - sets a connection password, must be before NICK+USER or SERVICE command is send
      * - $version - if attempt to register as a server only, protocol + software versions combination string

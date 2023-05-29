@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC;
 
+//TODO rethink deferred, maybe add possible responses list (both error + reply)
 final class Deferred
 {
     private string $expectCode;

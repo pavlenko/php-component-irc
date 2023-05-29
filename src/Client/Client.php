@@ -6,12 +6,10 @@ use PE\Component\Event\Emitter;
 use PE\Component\Event\EmitterInterface;
 use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
-use PE\Component\IRC\Deferred;
 use PE\Component\IRC\Event\ConnectedEvent;
 use PE\Component\IRC\MSG;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\Protocol\Factory;
-use PE\Component\IRC\RPL;
 use PE\Component\Loop\LoopInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -61,7 +59,6 @@ final class Client implements ClientInterface, EmitterInterface
         $this->emitter->dispatch($event);
     }
 
-    //TODO start loop at end of connect and call connected event before loop start
     public function connect(string $address, array $context = [], ?float $timeout = null): void
     {
         $this->connection = $this->factory->createConnection(

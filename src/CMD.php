@@ -56,7 +56,21 @@ final class CMD extends MSG
      */
     public const JOIN = 'JOIN';
 
-    public const KICK        = 'KICK';
+    /**
+     * <code>
+     * CMD(KICK $channels $users)
+     * </code>
+     * - $channels - comma separated list of channel to kick of
+     * - $users - comma separated list of users to kick off channels
+     * @see ERR::NEED_MORE_PARAMS
+     * @see ERR::BAD_CHANNEL_MASK
+     * @see ERR::USER_NOT_IN_CHANNEL
+     * @see ERR::NO_SUCH_CHANNEL
+     * @see ERR::OPERATOR_PRIVILEGES_NEEDED
+     * @see ERR::NOT_ON_CHANNEL
+     */
+    public const KICK = 'KICK';
+
     public const KILL        = 'KILL';
     public const LINKS       = 'LINKS';
 

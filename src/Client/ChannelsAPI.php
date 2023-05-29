@@ -38,4 +38,9 @@ class ChannelsAPI
     public function INVITE(): void
     {
     }
+
+    // roles: REGISTERED|CHANNEL_OPERATOR
+    public function KICK(): void
+    {
+    }
 }

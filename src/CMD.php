@@ -19,7 +19,14 @@ final class CMD extends MSG
      */
     public const ADMIN = 'ADMIN';
 
-    public const AWAY        = 'AWAY';
+    /**
+     * <code>
+     * CMD(AWAY :[$message])
+     * </code>
+     * @see RPL::UN_AWAY
+     * @see RPL::NOW_AWAY
+     */
+    public const AWAY = 'AWAY';
 
     /**
      * <code>
@@ -33,6 +40,14 @@ final class CMD extends MSG
      * @see ERR::NO_PRIVILEGES
      */
     public const CONNECT = 'CONNECT';
+
+    /**
+     * <code>
+     * CMD(DIE)
+     * </code>
+     * @see ERR::NO_PRIVILEGES
+     */
+    public const DIE = 'DIE';
 
     /**
      * @example CMD(ERROR :Closing Link: 127.0.0.1 (Connection timed out))
@@ -253,8 +268,22 @@ final class CMD extends MSG
      */
     public const QUIT = 'QUIT';
 
-    public const REHASH      = 'REHASH';
-    public const RESTART     = 'RESTART';
+    /**
+     * <code>
+     * CMD(REHASH)
+     * </code>
+     * @see ERR::NO_PRIVILEGES
+     * @see RPL::REHASHING
+     */
+    public const REHASH = 'REHASH';
+
+    /**
+     * <code>
+     * CMD(RESTART)
+     * </code>
+     * @see ERR::NO_PRIVILEGES
+     */
+    public const RESTART = 'RESTART';
 
     /**
      * <code>
@@ -294,7 +323,20 @@ final class CMD extends MSG
     public const SERVICE = 'SERVICE';
 
     public const STATS       = 'STATS';
-    public const SUMMON      = 'SUMMON';
+
+    /**
+     * <code>
+     * CMD(SUMMON $user [$target [$channel]])
+     * </code>
+     * @see ERR::NO_RECIPIENT
+     * @see ERR::FILE_ERROR
+     * @see ERR::NO_LOGIN
+     * @see ERR::NO_SUCH_SERVER
+     * @see ERR::SUMMON_DISABLED
+     * @see RPL::SUMMONING
+     */
+    public const SUMMON = 'SUMMON';
+
     public const TIME        = 'TIME';
 
     /**

@@ -237,7 +237,13 @@ final class RPL extends MSG
     public const MOTD             = 372;//:<prefix> <rpl code> <nick> :- <text>
     public const END_OF_MOTD      = 376;//:<prefix> <rpl code> <nick> :End of /MOTD
     public const YOU_ARE_OPERATOR = 381;//:<prefix> <rpl code> :You are now an IRC operator
-    public const REHASHING        = 382;//:<prefix> <rpl code> <config file> :Rehashing
+
+    /**
+     * <code>
+     * RPL(:$prefix REHASHING $file :Rehashing)
+     * </code>
+     */
+    public const REHASHING = 382;
 
     /**
      * <code>

@@ -174,7 +174,11 @@ final class Connection
         }
     }
 
-    public function wait(string $code): Deferred
+    /**
+     * @param string|string[] $code
+     * @return Deferred
+     */
+    public function wait($code): Deferred
     {
         return $this->waitQueue[] = new Deferred($code, $this->responseTimeout);
     }

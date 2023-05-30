@@ -4,74 +4,74 @@ namespace PE\Component\IRC;
 
 final class ERR extends MSG
 {
-    public const NO_SUCH_NICK               = 401;//:<prefix> <rpl code> <curr nick> <nickname> :No such nick/channel
-    public const NO_SUCH_SERVER             = 402;//:<prefix> <rpl code> <curr nick> <server name> :No such server
-    public const NO_SUCH_CHANNEL            = 403;//:<prefix> <rpl code> <curr nick> <channel name> :No such channel
-    public const CANNOT_SEND_TO_CHANNEL     = 404;//:<prefix> <rpl code> <curr nick> <channel name> :Cannot send to channel
-    public const TOO_MANY_CHANNELS          = 405;//:<prefix> <rpl code> <curr nick> <channel name> :You have joined too many channels
-    public const WAS_NO_SUCH_NICK           = 406;//:<prefix> <rpl code> <curr nick> <nickname> :There was no such nickname
-    public const TOO_MANY_TARGETS           = 407;//:<prefix> <rpl code> <curr nick> <target> :Duplicate recipients. No message delivered
-    public const NO_ORIGIN                  = 409;//:<prefix> <rpl code> <curr nick> :No origin specified
-    public const NO_RECIPIENT               = 411;//:<prefix> <rpl code> <curr nick> :No recipient given (<command>)
-    public const NO_TEXT_TO_SEND            = 412;//:<prefix> <rpl code> <curr nick> :No text to send
-    public const NO_TOP_LEVEL               = 413;//:<prefix> <rpl code> <curr nick> <mask> :No toplevel domain specified
-    public const WILDCARD_TOP_LEVEL         = 414;//:<prefix> <rpl code> <curr nick> <mask> :Wildcard in toplevel domain
+    public const NO_SUCH_NICK               = '401';//:<prefix> <rpl code> <curr nick> <nickname> :No such nick/channel
+    public const NO_SUCH_SERVER             = '402';//:<prefix> <rpl code> <curr nick> <server name> :No such server
+    public const NO_SUCH_CHANNEL            = '403';//:<prefix> <rpl code> <curr nick> <channel name> :No such channel
+    public const CANNOT_SEND_TO_CHANNEL     = '404';//:<prefix> <rpl code> <curr nick> <channel name> :Cannot send to channel
+    public const TOO_MANY_CHANNELS          = '405';//:<prefix> <rpl code> <curr nick> <channel name> :You have joined too many channels
+    public const WAS_NO_SUCH_NICK           = '406';//:<prefix> <rpl code> <curr nick> <nickname> :There was no such nickname
+    public const TOO_MANY_TARGETS           = '407';//:<prefix> <rpl code> <curr nick> <target> :Duplicate recipients. No message delivered
+    public const NO_ORIGIN                  = '409';//:<prefix> <rpl code> <curr nick> :No origin specified
+    public const NO_RECIPIENT               = '411';//:<prefix> <rpl code> <curr nick> :No recipient given (<command>)
+    public const NO_TEXT_TO_SEND            = '412';//:<prefix> <rpl code> <curr nick> :No text to send
+    public const NO_TOP_LEVEL               = '413';//:<prefix> <rpl code> <curr nick> <mask> :No toplevel domain specified
+    public const WILDCARD_TOP_LEVEL         = '414';//:<prefix> <rpl code> <curr nick> <mask> :Wildcard in toplevel domain
     // Returned by a server in response to a LIST or NAMES message to indicate the result contains too many items to be returned to the client.
-    public const TOO_MANY_MATCHES           = 416;//:<prefix> <rpl code> <curr nick> <channel> :Output too long (try locally)
-    public const UNKNOWN_COMMAND            = 421;//:<prefix> <rpl code> <curr nick> <command> :Unknown command
-    public const NO_MOTD                    = 422;//:<prefix> <rpl code> <curr nick> :MOTD File is missing
-    public const NO_ADMIN_INFO              = 423;//:<prefix> <rpl code> <curr nick> <server> :No administrative info available
-    public const FILE_ERROR                 = 424;//:<prefix> <rpl code> <curr nick> :File error doing <file op> on <file>
+    public const TOO_MANY_MATCHES           = '416';//:<prefix> <rpl code> <curr nick> <channel> :Output too long (try locally)
+    public const UNKNOWN_COMMAND            = '421';//:<prefix> <rpl code> <curr nick> <command> :Unknown command
+    public const NO_MOTD                    = '422';//:<prefix> <rpl code> <curr nick> :MOTD File is missing
+    public const NO_ADMIN_INFO              = '423';//:<prefix> <rpl code> <curr nick> <server> :No administrative info available
+    public const FILE_ERROR                 = '424';//:<prefix> <rpl code> <curr nick> :File error doing <file op> on <file>
 
     /**
      * <code>
      * ERR(:$prefix NO_NICKNAME_GIVEN $curr_nick :No nickname given)
      * </code>
      */
-    public const NO_NICKNAME_GIVEN = 431;
+    public const NO_NICKNAME_GIVEN = '431';
 
     /**
      * <code>
      * ERR(:$prefix ERRONEOUS_NICKNAME $curr_nick $nick :Erroneous nickname)
      * </code>
      */
-    public const ERRONEOUS_NICKNAME = 432;
+    public const ERRONEOUS_NICKNAME = '432';
 
     /**
      * <code>
      * ERR(:$prefix NICKNAME_IN_USE $curr_nick $nick :Nickname is already in use)
      * </code>
      */
-    public const NICKNAME_IN_USE = 433;
+    public const NICKNAME_IN_USE = '433';
 
     /**
      * <code>
      * ERR(:$prefix NICKNAME_COLLISION $curr_nick $nick :Nickname collision KILL)
      * </code>
      */
-    public const NICKNAME_COLLISION = 436;
+    public const NICKNAME_COLLISION = '436';
 
     /**
      * <code>
      * ERR(:$prefix UNAVAILABLE_RESOURCE $curr_nick $nick/$channel :Nick/channel is temporarily unavailable)
      * </code>
      */
-    public const UNAVAILABLE_RESOURCE = 437;
+    public const UNAVAILABLE_RESOURCE = '437';
 
-    public const USER_NOT_IN_CHANNEL        = 441;//:<prefix> <rpl code> <curr nick> <nick> <channel> :They aren’t on that channel
-    public const NOT_ON_CHANNEL             = 442;//:<prefix> <rpl code> <curr nick> <channel> :You’re not on that channel
-    public const USER_ON_CHANNEL            = 443;//:<prefix> <rpl code> <curr nick> <user> <channel> :is already on channel
-    public const NO_LOGIN                   = 444;//:<prefix> <rpl code> <curr nick> <user> :User not logged in
-    public const SUMMON_DISABLED            = 445;//:<prefix> <rpl code> <curr nick> :SUMMON has been disabled
-    public const USERS_DISABLED             = 446;//:<prefix> <rpl code> <curr nick> :USERS has been disabled
-    public const NOT_REGISTERED             = 451;//:<prefix> <rpl code> <curr nick> :You have not registered
+    public const USER_NOT_IN_CHANNEL        = '441';//:<prefix> <rpl code> <curr nick> <nick> <channel> :They aren’t on that channel
+    public const NOT_ON_CHANNEL             = '442';//:<prefix> <rpl code> <curr nick> <channel> :You’re not on that channel
+    public const USER_ON_CHANNEL            = '443';//:<prefix> <rpl code> <curr nick> <user> <channel> :is already on channel
+    public const NO_LOGIN                   = '444';//:<prefix> <rpl code> <curr nick> <user> :User not logged in
+    public const SUMMON_DISABLED            = '445';//:<prefix> <rpl code> <curr nick> :SUMMON has been disabled
+    public const USERS_DISABLED             = '446';//:<prefix> <rpl code> <curr nick> :USERS has been disabled
+    public const NOT_REGISTERED             = '451';//:<prefix> <rpl code> <curr nick> :You have not registered
 
     /**
      * <code>
      * ERR(:$prefix NEED_MORE_PARAMS $curr_nick $command :Not enough parameters)
      * </code>
      */
-    public const NEED_MORE_PARAMS = 461;
+    public const NEED_MORE_PARAMS = '461';
 
     /**
      * <code>
@@ -82,9 +82,9 @@ final class ERR extends MSG
      * @see CMD::SERVICE
      * @see CMD::USER
      */
-    public const ALREADY_REGISTERED = 462;
+    public const ALREADY_REGISTERED = '462';
 
-    public const NO_PERM_FOR_HOST           = 463;//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
+    public const NO_PERM_FOR_HOST           = '463';//:<prefix> <rpl code> <curr nick> :Your host isn’t among the privileged
 
     /**
      * <code>
@@ -93,29 +93,29 @@ final class ERR extends MSG
      * @see CMD::USER
      * @see CMD::OPERATOR
      */
-    public const PASSWORD_MISMATCH = 464;
+    public const PASSWORD_MISMATCH = '464';
 
-    public const YOU_ARE_BANNED_CREEP       = 465;//:<prefix> <rpl code> <curr nick> :You are banned from this server
-    public const KEY_SET                    = 467;//:<prefix> <rpl code> <curr nick> <channel> :Channel key already set
-    public const CHANNEL_IS_FULL            = 471;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+l)
-    public const UNKNOWN_MODE               = 472;//:<prefix> <rpl code> <curr nick> <char> :is unknown mode char to me
-    public const INVITE_ONLY_CHANNEL        = 473;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+i)
-    public const BANNED_FROM_CHANNEL        = 474;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+b)
-    public const BAD_CHANNEL_KEY            = 475;//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+k)
+    public const YOU_ARE_BANNED_CREEP       = '465';//:<prefix> <rpl code> <curr nick> :You are banned from this server
+    public const KEY_SET                    = '467';//:<prefix> <rpl code> <curr nick> <channel> :Channel key already set
+    public const CHANNEL_IS_FULL            = '471';//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+l)
+    public const UNKNOWN_MODE               = '472';//:<prefix> <rpl code> <curr nick> <char> :is unknown mode char to me
+    public const INVITE_ONLY_CHANNEL        = '473';//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+i)
+    public const BANNED_FROM_CHANNEL        = '474';//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+b)
+    public const BAD_CHANNEL_KEY            = '475';//:<prefix> <rpl code> <curr nick> <channel> :Cannot join channel (+k)
 
 
-    public const BAD_CHANNEL_MASK           = 476;//:<prefix> <rpl code> <curr nick> <channel> :Bad Channel Mask
+    public const BAD_CHANNEL_MASK           = '476';//:<prefix> <rpl code> <curr nick> <channel> :Bad Channel Mask
 
     /**
      * <code>
      * ERR(:$prefix NO_CHANNEL_MODES $curr_nick $channel :Channel does not support modes)
      * </code>
      */
-    public const NO_CHANNEL_MODES = 477;
+    public const NO_CHANNEL_MODES = '477';
 
-    public const NO_PRIVILEGES              = 481;//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
-    public const OPERATOR_PRIVILEGES_NEEDED = 482;//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
-    public const CANNOT_KILL_SERVER         = 483;//:<prefix> <rpl code> <curr nick> :You cant kill a server!
+    public const NO_PRIVILEGES              = '481';//:<prefix> <rpl code> <curr nick> :Permission Denied - You’re not an IRC operator
+    public const OPERATOR_PRIVILEGES_NEEDED = '482';//:<prefix> <rpl code> <curr nick> <channel> :You’re not channel operator
+    public const CANNOT_KILL_SERVER         = '483';//:<prefix> <rpl code> <curr nick> :You cant kill a server!
 
     /**
      * <code>
@@ -123,11 +123,11 @@ final class ERR extends MSG
      * </code>
      * @see CMD::NICK
      */
-    public const RESTRICTED = 484;
+    public const RESTRICTED = '484';
 
-    public const NO_OPERATOR_HOST           = 491;//:<prefix> <rpl code> <curr nick> :No O-lines for your host
-    public const USER_MODE_UNKNOWN_FLAG        = 501;//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
-    public const USERS_DONT_MATCH           = 502;//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
+    public const NO_OPERATOR_HOST           = '491';//:<prefix> <rpl code> <curr nick> :No O-lines for your host
+    public const USER_MODE_UNKNOWN_FLAG     = '501';//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
+    public const USERS_DONT_MATCH           = '502';//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
 
     public function __construct(string $prefix, int $code, array $args = [], string $comment = null)
     {

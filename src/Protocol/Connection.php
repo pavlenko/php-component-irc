@@ -156,6 +156,7 @@ final class Connection
      */
     public function tick(): void
     {
+        // Check expected response timed out
         foreach ($this->waitQueue as $deferred) {
             if ($deferred->getExpiredAt() < time()) {
                 $deferred->failure($exception = new TimeoutException());
@@ -165,12 +166,17 @@ final class Connection
             }
         }
 
-        $overdue = time() - $this->lastMessageTime > $this->inactiveTimeout;
-        if ($overdue) {
-            $this->send(new CMD('PING', [], null, /*TODO session prefix*/));
-            $this->wait('PONG')
-                ->onSuccess(fn() => null)//TODO check if error received
-                ->onFailure(fn() => $this->close());
+        // Check last message time
+        if (time() - $this->lastMessageTime > $this->inactiveTimeout) {
+            $this->send(new CMD('PING'));
+            $this->wait(['PONG']);
+            $this->lastMessageTime = time();
+            $this->lastPingingTime = time();
+        }
+
+        // Check last pinging time
+        if (time() - $this->lastPingingTime > $this->inactiveTimeout) {
+            $this->close();
         }
     }
 

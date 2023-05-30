@@ -3,6 +3,10 @@
 namespace PE\Component\IRC;
 
 //TODO rethink deferred, maybe add possible responses list (both error + reply)
+
+//TODO all cmd, rpl, err is a success responses
+
+/* @deprecated */
 final class Deferred
 {
     private string $expectCode;

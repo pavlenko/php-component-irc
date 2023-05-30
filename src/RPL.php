@@ -267,26 +267,26 @@ final class RPL extends MSG
     protected function resolveComment(): ?string
     {
         switch ($this->getCode()) {
-            case self::WELCOME          :
+            case self::WELCOME:
                 return 'Welcome to the Internet Relay Network';
-            case self::YOUR_HOST        :
-            case self::END_OF_STATS     :
+            case self::YOUR_HOST:
+            case self::END_OF_STATS:
                 return 'End of /STATS report';
-            case self::L_USER_OPERATORS :
+            case self::L_USER_OPERATORS:
                 return 'operator(s) online';
-            case self::L_USER_UNKNOWN   :
+            case self::L_USER_UNKNOWN:
                 return 'unknown connection(s)';
-            case self::L_USER_CHANNELS  :
+            case self::L_USER_CHANNELS:
                 return 'channels formed';
-            case self::ADMIN_ME         :
+            case self::ADMIN_ME:
                 return 'Administrative info';
-            case self::UN_AWAY          :
+            case self::UN_AWAY:
                 return 'You are no longer marked as being away';
-            case self::NOW_AWAY         :
+            case self::NOW_AWAY:
                 return 'You have been marked as being away';
-            case self::WHO_IS_OPERATOR  :
+            case self::WHO_IS_OPERATOR:
                 return 'is an IRC operator';
-            case self::WHO_IS_IDLE      :
+            case self::WHO_IS_IDLE:
                 return 'seconds idle';
             case self::END_OF_WHO_IS     :
                 return 'End of /WHOIS';
@@ -314,9 +314,9 @@ final class RPL extends MSG
                 return 'You are now an IRC operator';
             case self::REHASHING        :
                 return 'Rehashing';
-            case self::USERS_START      :
+            case self::USERS_START:
                 return 'UserID Terminal Host';
-            case self::END_OF_USERS     :
+            case self::END_OF_USERS:
                 return 'End of /USERS';
             case self::NO_USERS:
                 return 'Nobody logged in';

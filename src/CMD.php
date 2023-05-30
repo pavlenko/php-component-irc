@@ -72,10 +72,10 @@ final class CMD extends MSG
      * - $nickname - user to invite
      * - $channel - channel to invite to
      * @see ERR::NEED_MORE_PARAMS
-     * @see ERR::NOTONCHANNEL
-     * @see ERR::CHANOPRIVSNEEDED
-     * @see ERR::NOSUCHNICK
-     * @see ERR::USERONCHANNEL
+     * @see ERR::NOT_ON_CHANNEL
+     * @see ERR::OPERATOR_PRIVILEGES_NEEDED
+     * @see ERR::NO_SUCH_NICK
+     * @see ERR::USER_ON_CHANNEL
      * @see RPL::INVITING
      * @see RPL::AWAY
      */

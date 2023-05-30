@@ -65,23 +65,22 @@ final class Client implements ClientInterface, EmitterInterface
             $this->factory->createSocketClient($address, $context, $timeout)
         );
 
-        $this->connection->setInputHandler(function (MSG $msg) {
+        $this->connection->attach(Connection::ON_INPUT, function (MSG $msg) {
             $this->logger->log(LogLevel::NOTICE, 'I: ' . $msg->toLogger());
             $this->processReceive($this->connection, $msg);
         });
 
-        $this->connection->setWriteHandler(function (MSG $msg) {
+        $this->connection->attach(Connection::ON_WRITE, function (MSG $msg) {
             $this->logger->log(LogLevel::NOTICE, 'O: ' . $msg->toLogger());
         });
 
-        $this->connection->setErrorHandler(function (\Throwable $exception, $line = null) {
-            dump($line);
+        $this->connection->attach(Connection::ON_ERROR, function (\Throwable $exception) {
             $this->logger->log(LogLevel::ERROR, 'E: ' . $exception->getCode() . ': ' . $exception->getMessage());
             $this->logger->log(LogLevel::DEBUG, 'E: ' . $exception->getTraceAsString());
             $this->processErrored($this->connection, $exception);
         });
 
-        $this->connection->setCloseHandler(function (string $message = null) {
+        $this->connection->attach(Connection::ON_CLOSE, function (string $message = null) {
             $this->logger->log(
                 LogLevel::DEBUG,
                 "Connection to {$this->connection->getRemoteAddress()} closed" . ($message ? ': ' . $message : '')

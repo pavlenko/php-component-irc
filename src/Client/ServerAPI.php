@@ -3,8 +3,11 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
+use PE\Component\IRC\ERR;
+use PE\Component\IRC\MSG;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
+use React\Promise\Deferred;
 
 class ServerAPI
 {
@@ -16,11 +19,32 @@ class ServerAPI
         $this->connection = $connection;
     }
 
-    public function MOTD(string $server = null): void
+    public function MOTD(string $server = null): Deferred
     {
-        //TODO read all motd message to single string, maybe check all possible responses
         $this->connection->send(new CMD(CMD::MOTD, [$server]));
-        $this->connection->wait([RPL::MOTD_START, RPL::MOTD, RPL::END_OF_MOTD]);
+        $this->connection->wait([RPL::MOTD_START, RPL::MOTD, RPL::END_OF_MOTD]);//TODO this is just for check timeout
+
+        $deferred = new Deferred();
+        $handler = function (MSG $msg) use (&$handler, $deferred) {
+            $motd = '';
+            switch ($msg->getCode()) {
+                case RPL::MOTD_START:
+                case RPL::MOTD:
+                    $motd .= $msg->getComment();
+                    break;
+                case RPL::END_OF_MOTD:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->resolve($motd);
+                    break;
+                case ERR::NO_MOTD:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->reject($msg->getComment());
+                    break;
+            }
+        };
+
+        $this->connection->attach(Connection::ON_INPUT, $handler);
+        return $deferred;
     }
 
     public function LIST_USERS(string $mask = null, string $server = null): void

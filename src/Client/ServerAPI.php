@@ -8,6 +8,7 @@ use PE\Component\IRC\RPL;
 
 class ServerAPI
 {
+    //TODO pass client here!!!
     private Connection $connection;
 
     public function __construct(Connection $connection)

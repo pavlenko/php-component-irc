@@ -81,7 +81,14 @@ final class CMD extends MSG
      */
     public const INVITE = 'INVITE';
 
-    public const IS_ON       = 'ISON';//ISON <nickname> [...<nickname>]
+    /**
+     * <code>
+     * CMD(IS_ON $nickname [...$nickname])
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see RPL::IS_ON
+     */
+    public const IS_ON = 'ISON';
 
     /**
      * <code>
@@ -355,7 +362,15 @@ final class CMD extends MSG
     public const TOPIC = 'TOPIC';
 
     public const TRACE       = 'TRACE';
-    public const USER_HOST   = 'USERHOST';//USERHOST <nickname> [...<nickname>]
+
+    /**
+     * <code>
+     * CMD(USER_HOST $nickname [...$nickname])
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     * @see RPL::USER_HOST
+     */
+    public const USER_HOST = 'USERHOST';
 
     /**
      * <code>
@@ -378,9 +393,30 @@ final class CMD extends MSG
      */
     public const USER = 'USER';
 
-    public const USERS       = 'USERS';
+    /**
+     * <code>
+     * CMD(USERS [$target])
+     * </code>
+     * @see ERR::NO_SUCH_SERVER
+     * @see ERR::FILE_ERROR
+     * @see ERR::USERS_DISABLED
+     * @see RPL::USERS_START
+     * @see RPL::USERS
+     * @see RPL::NO_USERS
+     * @see RPL::END_OF_USERS
+     */
+    public const USERS = 'USERS';
+
     public const VERSION     = 'VERSION';//VERSION [<server>]
-    public const WALLOPS     = 'WALLOPS';//WALLOPS <text>
+
+    /**
+     * <code>
+     * CMD(WALLOPS :$message)
+     * </code>
+     * @see ERR::NEED_MORE_PARAMS
+     */
+    public const WALLOPS = 'WALLOPS';
+
     public const WHOIS       = 'WHOIS';
     public const WHO         = 'WHO';
     public const WHO_WAS     = 'WHOWAS';

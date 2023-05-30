@@ -2,6 +2,9 @@
 
 namespace PE\Component\IRC\Protocol;
 
+use PE\Component\Event\EmitterInterface;
+use PE\Component\Event\EmitterTrait;
+use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Config;
 use PE\Component\IRC\Deferred;
@@ -11,18 +14,20 @@ use PE\Component\IRC\MSG;
 use PE\Component\IRC\RPL;
 use PE\Component\Socket\Client as SocketClient;
 
-final class Connection
+final class Connection implements EmitterInterface
 {
+    use EmitterTrait;
+
+    public const ON_INPUT = 'input';
+    public const ON_WRITE = 'write';
+    public const ON_ERROR = 'error';
+    public const ON_CLOSE = 'close';
+
     private SocketClient $socket;
     private int $responseTimeout;
     private int $inactiveTimeout;
     private int $lastPingingTime = 0;
     private int $lastMessageTime = 0;
-
-    private \Closure $onInput;
-    private \Closure $onWrite;
-    private \Closure $onError;
-    private \Closure $onClose;
 
     private ?string $clientAddress = null;
     private ?string $remoteAddress = null;
@@ -41,41 +46,20 @@ final class Connection
         $this->responseTimeout = $responseTimeout;
         $this->inactiveTimeout = $inactiveTimeout;
 
-        $this->onInput = fn() => null;
-        $this->onWrite = fn() => null;
-        $this->onError = fn() => null;
-        $this->onClose = fn() => null;
-
         $this->socket = $socket;
-        $this->socket->setCloseHandler(fn(string $message = null) => $this->close($message));
-        $this->socket->setErrorHandler(fn(\Throwable $e) => call_user_func($this->onError, $e));
+        $this->socket->setCloseHandler(function (string $message = null) {
+            $this->close($message);
+        });
+        $this->socket->setErrorHandler(function (\Throwable $exception) {
+            $this->dispatch(new Event(self::ON_ERROR, $exception));
+        });
         $this->socket->setInputHandler(function (string $data) {
             try {
                 $this->processReceive($data);
             } catch (\Throwable $exception) {
-                call_user_func($this->onError, $exception);
+                $this->dispatch(new Event(self::ON_ERROR, $exception));
             }
         });
-    }
-
-    public function setInputHandler(callable $handler): void
-    {
-        $this->onInput = \Closure::fromCallable($handler);
-    }
-
-    public function setWriteHandler(callable $handler): void
-    {
-        $this->onWrite = \Closure::fromCallable($handler);
-    }
-
-    public function setErrorHandler(callable $handler): void
-    {
-        $this->onError = \Closure::fromCallable($handler);
-    }
-
-    public function setCloseHandler(callable $handler): void
-    {
-        $this->onClose = \Closure::fromCallable($handler);
     }
 
     public function getClientAddress(): ?string
@@ -105,7 +89,7 @@ final class Connection
             }
         }
 
-        call_user_func($this->onInput, $message);
+        $this->dispatch(new Event(self::ON_INPUT, $message));
     }
 
     private function processReceive(string $data): void
@@ -160,7 +144,7 @@ final class Connection
         foreach ($this->waitQueue as $deferred) {
             if ($deferred->getExpiredAt() < time()) {
                 $deferred->failure($exception = new TimeoutException());
-                call_user_func($this->onError, $exception);
+                $this->dispatch(new Event(self::ON_ERROR, $exception));
                 $this->close();
                 return;
             }
@@ -191,19 +175,15 @@ final class Connection
 
     public function send(MSG $msg, bool $close = false): void
     {
-        call_user_func($this->onWrite, $msg);
+        $this->dispatch(new Event(self::ON_WRITE, $msg));
         $this->socket->write($msg->toString() . "\r\n", $close);
     }
 
     public function close(string $message = null): void
     {
-        call_user_func($this->onClose, $message);
+        $this->dispatch(new Event(self::ON_CLOSE, $message));
 
         $this->socket->setCloseHandler(fn() => null);
         $this->socket->close();
-
-        $this->onInput = fn() => null;
-        $this->onError = fn() => null;
-        $this->onClose = fn() => null;
     }
 }

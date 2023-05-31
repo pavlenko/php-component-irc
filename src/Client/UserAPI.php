@@ -16,6 +16,7 @@ class UserAPI
     }
 
     //TODO if registered - protocol exception
+    /* @deprecated */
     public function register(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
     {
         if (!empty($pass)) {

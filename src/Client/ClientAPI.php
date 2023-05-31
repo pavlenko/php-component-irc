@@ -16,6 +16,14 @@ class ClientAPI
         $this->connection = $connection;
     }
 
+    // roles: GUEST|REGISTERED
+    public function NICK(string $nick): Deferred
+    {
+        //TODO this method only for change nick only so check for registered flag
+        $this->connection->send(new CMD(CMD::NICK, [$nick]));
+        return $this->connection->wait(CMD::NICK)->deferred();
+    }
+
     // roles: REGISTERED
     public function AWAY(string $message = null): Deferred
     {

@@ -1,15 +1,14 @@
 <?php
 
-namespace PE\Component\IRC;
+namespace PE\Component\IRC\Util;
 
-//TODO write example code usages for multi-response commands
 use PE\Component\Socket\SelectInterface;
 
-class Deferred2
+/**
+ * Class for store callbacks for delayed execution
+ */
+final class Deferred2
 {
-    private int $expiredAt;
-    private array $expectCodes;
-
     private ?\Closure $onSuccess = null;
     private ?\Closure $onFailure = null;
 
@@ -18,28 +17,21 @@ class Deferred2
      */
     private $value = null;
 
-    public function __construct(int $timeout, string ...$expectCode)
+    public function __construct()
     {
-        $this->expiredAt   = time() + $timeout;
-        $this->expectCodes = $expectCode;
-    }
-
-    public function getExpiredAt(): int
-    {
-        return $this->expiredAt;
-    }
-
-    public function isExpectCode(string $code): bool
-    {
-        return in_array($code, $this->expectCodes);
     }
 
     public function then(callable $handler)
-    {}
+    {
+        $this->onSuccess = \Closure::fromCallable($handler);
+    }
 
     public function else(callable $handler)
-    {}
+    {
+        $this->onSuccess = \Closure::fromCallable($handler);
+    }
 
+    //TODO check how to prevent exceptions in internal usage
     public function resolve($value): void
     {
         $this->value  = $value;
@@ -49,13 +41,12 @@ class Deferred2
             } else {
                 throw $value;
             }
-        } else {
-            if (null !== $this->onSuccess) {
-                call_user_func($this->onSuccess, $value);
-            }
+        } elseif (null !== $this->onSuccess) {
+            call_user_func($this->onSuccess, $value);
         }
     }
 
+    // This allows block execute code after until value is resolved
     public function wait(SelectInterface $select)
     {
         while (null === $this->value) {

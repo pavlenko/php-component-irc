@@ -7,11 +7,11 @@ use PE\Component\Event\EmitterTrait;
 use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Config;
-use PE\Component\IRC\Deferred;
 use PE\Component\IRC\ERR;
 use PE\Component\IRC\Exception\TimeoutException;
 use PE\Component\IRC\MSG;
 use PE\Component\IRC\RPL;
+use PE\Component\IRC\Util\Waiting;
 use PE\Component\Socket\Client as SocketClient;
 
 final class Connection implements EmitterInterface
@@ -33,7 +33,7 @@ final class Connection implements EmitterInterface
     private ?string $remoteAddress = null;
 
     /**
-     * @var Deferred[]
+     * @var Waiting[]
      */
     private array $waitQueue = [];
     private string $buffer = '';
@@ -81,9 +81,9 @@ final class Connection implements EmitterInterface
     private function processMessage(MSG $message): void
     {
         // Check wait for specific code - the resolve deferred and remove from it queue
-        foreach ($this->waitQueue as $index => $deferred) {
-            if ($message->getCode() === $deferred->getExpectCode()) {
-                $deferred->success($message);
+        foreach ($this->waitQueue as $index => $waiting) {
+            if ($waiting->isExpectCode($message->getCode())) {
+                $waiting->deferred()->resolve($message);
                 unset($this->waitQueue[$index]);
                 break;
             }
@@ -141,9 +141,9 @@ final class Connection implements EmitterInterface
     public function tick(): void
     {
         // Check expected response timed out
-        foreach ($this->waitQueue as $deferred) {
-            if ($deferred->getExpiredAt() < time()) {
-                $deferred->failure($exception = new TimeoutException());
+        foreach ($this->waitQueue as $waiting) {
+            if ($waiting->getExpiredAt() < time()) {
+                $waiting->deferred()->resolve($exception = new TimeoutException());
                 $this->dispatch(new Event(self::ON_ERROR, $exception));
                 $this->close();
                 return;
@@ -152,8 +152,8 @@ final class Connection implements EmitterInterface
 
         // Check last message time
         if (time() - $this->lastMessageTime > $this->inactiveTimeout) {
-            $this->send(new CMD('PING'));
-            $this->wait(['PONG']);
+            $this->send(new CMD(CMD::PING));
+            $this->wait(CMD::PONG);
             $this->lastMessageTime = time();
             $this->lastPingingTime = time();
         }
@@ -164,13 +164,9 @@ final class Connection implements EmitterInterface
         }
     }
 
-    /**
-     * @param string|string[] $code
-     * @return Deferred
-     */
-    public function wait($code): Deferred
+    public function wait(string ...$codes): Waiting
     {
-        return $this->waitQueue[] = new Deferred($code, $this->responseTimeout);
+        return $this->waitQueue[] = new Waiting($this->responseTimeout, ...$codes);
     }
 
     public function send(MSG $msg, bool $close = false): void

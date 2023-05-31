@@ -3,6 +3,7 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
+use PE\Component\IRC\Util\Deferred2;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
@@ -16,13 +17,16 @@ class ClientAPI
     }
 
     // roles: REGISTERED
-    public function AWAY(string $message = null): void
+    public function AWAY(string $message = null)
     {
+        $deferred = new Deferred2();
+
         $this->connection->send(new CMD(CMD::AWAY, [], $message));
-        $this->connection->wait([
-            RPL::UN_AWAY,
-            RPL::NOW_AWAY,
-        ]);
+        $this->connection->wait([RPL::UN_AWAY, RPL::NOW_AWAY])
+            ->then(fn($msg) => $deferred->resolve($msg))
+            ->else(fn($err) => $deferred->resolve($err));
+
+        return $deferred;
     }
 
     // roles: IRC_OPERATOR

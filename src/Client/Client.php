@@ -79,8 +79,8 @@ final class Client implements ClientInterface, EmitterInterface
             $connection->send(new CMD(CMD::PONG, [$msg->getArg(0)]));
         }
 
-        $this->emitter->dispatch(new Event('message', $msg, $connection));
-        $this->emitter->dispatch(new Event($msg->getCode(), $msg, $connection));
+        $this->dispatch(new Event('message', $msg, $connection));
+        $this->dispatch(new Event($msg->getCode(), $msg, $connection));
     }
 
     private function processErrored(Connection $connection, \Throwable $exception): void

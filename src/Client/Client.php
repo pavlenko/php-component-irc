@@ -2,8 +2,8 @@
 
 namespace PE\Component\IRC\Client;
 
-use PE\Component\Event\Emitter;
 use PE\Component\Event\EmitterInterface;
+use PE\Component\Event\EmitterTrait;
 use PE\Component\Event\Event;
 use PE\Component\IRC\CMD;
 use PE\Component\IRC\Event\ConnectedEvent;
@@ -15,26 +15,21 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
 
-//TODO create API classes with helper methods
 final class Client implements ClientInterface, EmitterInterface
 {
-    private ClientConfig $config;
+    use EmitterTrait;
+
     private Factory $factory;
-    private Emitter $emitter;
     private LoggerInterface $logger;
     private LoopInterface $loop;
 
     private ?Connection $connection = null;
 
     public function __construct(
-        ClientConfig $config,
         Factory $factory,
-        Emitter $emitter = null,
         LoggerInterface $logger = null
     ) {
-        $this->config  = $config;
         $this->factory = $factory;
-        $this->emitter = $emitter ?: new Emitter();
         $this->logger  = $logger ?: new NullLogger();
 
         $this->loop = $factory->createLoop(function () {
@@ -42,21 +37,6 @@ final class Client implements ClientInterface, EmitterInterface
                 $this->connection->tick();
             }
         });
-    }
-
-    public function attach(string $event, callable $listener, int $priority = 0)
-    {
-        $this->emitter->attach($event, $listener, $priority);
-    }
-
-    public function detach(string $event, callable $listener)
-    {
-        $this->emitter->detach($event, $listener);
-    }
-
-    public function dispatch(object $event): void
-    {
-        $this->emitter->dispatch($event);
     }
 
     public function connect(string $address, array $context = [], ?float $timeout = null): void

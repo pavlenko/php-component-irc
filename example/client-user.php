@@ -21,7 +21,7 @@ $client->attach(ConnectedEvent::class, function (ConnectedEvent $event) {
     $conn = $event->getConnection();
 
     $api = new ClientAPI($conn, new Session(null, $conn->getRemoteAddress(), $conn->getClientAddress()));
-    $api->registerAsUser(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
+    $api->USER(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
         ->then(function () use ($conn) {
             $conn->send(new CMD(CMD::WHOIS, ['master__']));
         });

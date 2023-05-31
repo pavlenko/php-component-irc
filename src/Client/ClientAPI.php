@@ -33,7 +33,7 @@ final class ClientAPI
      * @param int $flags
      * @return Deferred
      */
-    public function registerAsUser(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
+    public function USER(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
     {
         if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             throw new ProtocolException('Already registered');
@@ -61,7 +61,7 @@ final class ClientAPI
      * @param string $info
      * @return Deferred
      */
-    public function registerAsService(?string $pass, string $name, string $servers, string $info): Deferred
+    public function SERVICE(?string $pass, string $name, string $servers, string $info): Deferred
     {
         if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             throw new ProtocolException('Already registered');
@@ -120,8 +120,67 @@ final class ClientAPI
         return $this->connection->wait(RPL::YOU_ARE_OPERATOR)->deferred();
     }
 
-    //todo move mode, quit, squit here
-    //TODO how to split mode commands
+    /**
+     * Get/Set user mode, unusable for services
+     *
+     * @param string $nick
+     * @param string|null $mode
+     * @return Deferred
+     */
+    public function userMODE(string $nick, string $mode = null): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        if ($this->session->getType() !== SessionInterface::TYPE_CLIENT) {
+            throw new ProtocolException('You must register as client');
+        }
+
+        if (null !== $mode && !preg_match('/^[+\-][aioOrsw]$/', $mode)) {
+            throw new ProtocolException('Invalid mode passed, allowed set only one per call');
+        }
+
+        $this->connection->send(new CMD(CMD::MODE, [$nick, $mode]));
+        return $this->connection->wait(RPL::USER_MODE_IS)->deferred();
+    }
+
+    public function chanMODE(string $chan, string $mode = null, string $params = null): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        if ($this->session->getType() !== SessionInterface::TYPE_CLIENT) {
+            throw new ProtocolException('You must register as client');
+        }
+
+        if (null !== $mode && !preg_match('/^[+\-][abeiIklmnoOpqrstv]$/', $mode)) {
+            throw new ProtocolException('Invalid mode passed, allowed get/set only one per call');
+        }
+
+        $this->connection->send(new CMD(CMD::MODE, [$chan, $mode, $params]));
+        if (null === $mode) {
+            return $this->connection->wait(RPL::CHANNEL_MODE_IS)->deferred();
+        }
+
+        if (null === $params) {
+            if ('+b' === $mode) {
+                $this->connection->wait(RPL::BAN_LIST, RPL::END_OF_BAN_LIST);
+            }
+
+            if ('+e' === $mode) {
+                $this->connection->wait(RPL::EXCEPTION_LIST, RPL::END_OF_EXCEPTION_LIST);
+            }
+
+            if ('+I' === $mode) {
+                $this->connection->wait(RPL::INVITE_LIST, RPL::END_OF_INVITE_LIST);
+            }
+        }
+
+        // Else wait for mode command
+        return $this->connection->wait(CMD::MODE)->deferred();
+    }
 
     // roles: REGISTERED
     public function AWAY(string $message = null): Deferred

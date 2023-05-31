@@ -16,14 +16,6 @@ class UserAPI
     }
 
     // roles: REGISTERED
-    //TODO unusable for services
-    public function MODE(string $nickname, string $modes): void
-    {
-        $this->connection->send(new CMD(CMD::MODE, [$nickname, $modes]));
-        $this->connection->wait(RPL::USER_MODE_IS);
-    }
-
-    // roles: REGISTERED
     public function QUIT(string $message = null): void
     {
         $this->connection->send(new CMD(CMD::QUIT, [], $message));

@@ -30,6 +30,7 @@ class ChannelsAPI
     }
 
     // roles: REGISTERED|CHANNEL_OPERATOR
+    /* @deprecated */
     public function MODE(string $channel, string $modes, string $params): void
     {
         $this->connection->send(new CMD(CMD::MODE, [$channel, $modes, $params]));

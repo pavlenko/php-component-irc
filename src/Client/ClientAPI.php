@@ -9,9 +9,9 @@ use PE\Component\IRC\Util\Deferred;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
-/**
- * @TODO represent only registered client API, other move to: server|user|channel|registration spis
- */
+//TODO represent only registered client API, other move to: server|user|channel|registration apis
+//TODO maybe create commands as USER & SERVICE but as wrapper with full logic
+//TODO maybe create separate commands for change user/channel mode
 final class ClientAPI
 {
     private Connection $connection;

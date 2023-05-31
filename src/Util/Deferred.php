@@ -8,7 +8,7 @@ use PE\Component\Socket\SelectInterface;
 /**
  * Class for store callbacks for delayed execution
  */
-final class Deferred2
+final class Deferred
 {
     public const TIMEOUT  = 30;
     public const PENDING  = 'pending';

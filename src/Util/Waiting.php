@@ -7,7 +7,7 @@ namespace PE\Component\IRC\Util;
  */
 final class Waiting
 {
-    private ?Deferred2 $deferred = null;
+    private ?Deferred $deferred = null;
 
     private int $expiredAt;
     private array $expectCodes;
@@ -28,7 +28,7 @@ final class Waiting
         return in_array($code, $this->expectCodes);
     }
 
-    public function deferred(): Deferred2
+    public function deferred(): Deferred
     {
         if ($this->deferred === null) {
             $this->deferred = null;

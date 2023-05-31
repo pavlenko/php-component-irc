@@ -2,8 +2,6 @@
 
 namespace PE\Component\IRC\Client;
 
-use PE\Component\IRC\Deferred;
-
 /**
  * User representation
  *

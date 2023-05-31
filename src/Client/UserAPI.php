@@ -3,7 +3,6 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
-use PE\Component\IRC\Deferred;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 

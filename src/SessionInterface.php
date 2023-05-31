@@ -5,8 +5,9 @@ namespace PE\Component\IRC;
 interface SessionInterface
 {
     //TODO mark session by type after success registration
-    public const TYPE_CLIENT = 'CLIENT';
-    public const TYPE_SERVER = 'SERVER';
+    public const TYPE_CLIENT  = 'CLIENT';
+    public const TYPE_SERVER  = 'SERVER';
+    public const TYPE_SERVICE = 'SERVICE';
 
     public const FLAG_REGISTERED       = 0b00000001;
     public const FLAG_INVISIBLE        = 0b00000010;

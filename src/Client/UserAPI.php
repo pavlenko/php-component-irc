@@ -6,6 +6,7 @@ use PE\Component\IRC\CMD;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
+/* @deprecated */
 class UserAPI
 {
     private Connection $connection;

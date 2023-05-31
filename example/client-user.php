@@ -3,9 +3,9 @@
 namespace PE\Component\IRC;
 
 use PE\Component\IRC\Client\Client;
+use PE\Component\IRC\Client\ClientAPI;
 use PE\Component\IRC\Event\ConnectedEvent;
 use PE\Component\IRC\Protocol\Factory;
-use PE\Component\IRC\Client\UserAPI;
 use PE\Component\Socket\Factory as SocketFactory;
 use PE\Component\Socket\Select as SocketSelect;
 use Symfony\Component\Console\Logger\ConsoleLogger;
@@ -18,7 +18,11 @@ $logger  = new ConsoleLogger(new ConsoleOutput(ConsoleOutput::VERBOSITY_DEBUG));
 $client  = new Client($factory, $logger);
 
 $client->attach(ConnectedEvent::class, function (ConnectedEvent $event) {
-    $user = new UserAPI($event->getConnection());
+    $conn = $event->getConnection();
+    $user = new ClientAPI(
+        $conn,
+        new Session(null, $conn->getRemoteAddress(), $conn->getClientAddress())
+    );
     $user->register(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
         ->onSuccess(fn() => $event->getConnection()->send(new CMD(CMD::WHOIS, ['master__'])));
 });

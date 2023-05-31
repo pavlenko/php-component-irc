@@ -3,23 +3,68 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
+use PE\Component\IRC\Exception\ProtocolException;
+use PE\Component\IRC\SessionInterface;
 use PE\Component\IRC\Util\Deferred;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
-class ClientAPI
+final class ClientAPI
 {
     private Connection $connection;
+    private SessionInterface $session;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, SessionInterface $session)
     {
         $this->connection = $connection;
+        $this->session    = $session;
     }
 
-    // roles: GUEST|REGISTERED
+    public function registerAsUser(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
+    {
+        if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('Already registered');
+        }
+
+        $this->session->setFlag(SessionInterface::FLAG_REGISTERED);
+        $this->session->setType(SessionInterface::TYPE_CLIENT);
+
+        if (!empty($pass)) {
+            $this->connection->send(new CMD(CMD::PASSWORD, [$pass]));
+        }
+
+        $this->connection->send(new CMD(CMD::NICK, [$nick]));
+        $this->connection->send(new CMD(CMD::USER, [$user, $flags, '*'], $realname));
+
+        //TODO maybe handle registration here & wrap in another deferred
+        return $this->connection->wait(RPL::WELCOME)->deferred();
+    }
+
+    public function registerAsService(?string $pass, string $name, string $servers, string $info): Deferred
+    {
+        if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('Already registered');
+        }
+
+        $this->session->setFlag(SessionInterface::FLAG_REGISTERED);
+        $this->session->setType(SessionInterface::TYPE_SERVICE);
+
+        if (!empty($pass)) {
+            $this->connection->send(new CMD(CMD::PASSWORD, [$pass]));
+        }
+
+        $this->connection->send(new CMD(CMD::SERVICE, [$name, 0, $servers, 0, 0], $info));
+
+        //TODO maybe handle registration here & wrap in another deferred
+        return $this->connection->wait(RPL::YOU_ARE_SERVICE)->deferred();
+    }
+
     public function NICK(string $nick): Deferred
     {
-        //TODO this method only for change nick only so check for registered flag
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
         $this->connection->send(new CMD(CMD::NICK, [$nick]));
         return $this->connection->wait(CMD::NICK)->deferred();
     }

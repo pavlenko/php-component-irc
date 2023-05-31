@@ -4,7 +4,8 @@ namespace PE\Component\IRC;
 
 final class Session implements SessionInterface
 {
-    private ConnectionInterface $connection;
+    //TODO deprecated, temporary nullable
+    private ?ConnectionInterface $connection;
 
     private array $data = [];
 
@@ -26,7 +27,7 @@ final class Session implements SessionInterface
 
     private array $channels = [];
 
-    public function __construct(ConnectionInterface $connection, string $servername, string $hostname)
+    public function __construct(?ConnectionInterface $connection, string $servername, string $hostname)
     {
         $this->connection = $connection;
         $this->servername = $servername;

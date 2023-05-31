@@ -83,7 +83,7 @@ final class Connection implements EmitterInterface
         // Check wait for specific code - the resolve deferred and remove from it queue
         foreach ($this->waitQueue as $index => $waiting) {
             if ($waiting->isExpectCode($message->getCode())) {
-                $waiting->deferred()->resolve($message);
+                $waiting->deferred()->resolved($message);
                 unset($this->waitQueue[$index]);
                 break;
             }
@@ -143,7 +143,7 @@ final class Connection implements EmitterInterface
         // Check expected response timed out
         foreach ($this->waitQueue as $waiting) {
             if ($waiting->getExpiredAt() < time()) {
-                $waiting->deferred()->resolve($exception = new TimeoutException());
+                $waiting->deferred()->rejected($exception = new TimeoutException());
                 $this->dispatch(new Event(self::ON_ERROR, $exception));
                 $this->close();
                 return;

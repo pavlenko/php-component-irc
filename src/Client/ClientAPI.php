@@ -17,14 +17,15 @@ class ClientAPI
     }
 
     // roles: REGISTERED
-    public function AWAY(string $message = null)
+    public function AWAY(string $message = null): Deferred2
     {
         $deferred = new Deferred2();
 
         $this->connection->send(new CMD(CMD::AWAY, [], $message));
-        $this->connection->wait([RPL::UN_AWAY, RPL::NOW_AWAY])
-            ->then(fn($msg) => $deferred->resolve($msg))
-            ->else(fn($err) => $deferred->resolve($err));
+        $this->connection->wait(RPL::UN_AWAY, RPL::NOW_AWAY)
+            ->deferred()
+            ->then(fn($msg) => $deferred->resolved($msg))
+            ->else(fn($err) => $deferred->rejected($err));
 
         return $deferred;
     }

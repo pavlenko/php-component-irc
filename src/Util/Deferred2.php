@@ -2,6 +2,7 @@
 
 namespace PE\Component\IRC\Util;
 
+use PE\Component\IRC\Exception\DeferredException;
 use PE\Component\Socket\SelectInterface;
 
 /**
@@ -9,51 +10,90 @@ use PE\Component\Socket\SelectInterface;
  */
 final class Deferred2
 {
+    public const TIMEOUT  = 30;
+    public const PENDING  = 'pending';
+    public const RESOLVED = 'resolved';
+    public const REJECTED = 'rejected';
+
     private ?\Closure $onSuccess = null;
     private ?\Closure $onFailure = null;
 
     /**
-     * @var null|\Throwable|mixed
+     * @var mixed
      */
-    private $value = null;
+    private $result = null;
+    private string $status = self::PENDING;
 
-    public function __construct()
+    public function then(callable $handler): self
     {
-    }
+        if (null !== $this->onSuccess) {
+            throw new \UnexpectedValueException('You cannot override onSuccess callback if it already set');
+        }
 
-    public function then(callable $handler)
-    {
         $this->onSuccess = \Closure::fromCallable($handler);
+        return $this;
     }
 
-    public function else(callable $handler)
+    public function else(callable $handler): self
     {
-        $this->onSuccess = \Closure::fromCallable($handler);
+        if (null !== $this->onFailure) {
+            throw new \UnexpectedValueException('You cannot override onFailure callback if it already set');
+        }
+
+        $this->onFailure = \Closure::fromCallable($handler);
+        return $this;
     }
 
-    //TODO check how to prevent exceptions in internal usage
-    public function resolve($value): void
+    public function resolved($value): void
     {
-        $this->value  = $value;
-        if ($value instanceof \Throwable) {
-            if (null !== $this->onFailure) {
-                call_user_func($this->onFailure, $value);
-            } else {
-                throw $value;
+        if ($this->status === self::PENDING) {
+            $this->status = self::RESOLVED;
+            $this->result = $value;
+            if ($this->onSuccess !== null) {
+                call_user_func($this->onSuccess, $value);
             }
-        } elseif (null !== $this->onSuccess) {
-            call_user_func($this->onSuccess, $value);
         }
     }
 
-    // This allows block execute code after until value is resolved
-    public function wait(SelectInterface $select)
+    public function rejected($error): void
     {
-        while (null === $this->value) {
+        if ($this->status === self::PENDING) {
+            $this->status = self::REJECTED;
+            $this->result = $error;
+            if ($this->onFailure !== null) {
+                call_user_func($this->onFailure, $error);
+            }
+        }
+    }
+
+    /**
+     * Wait for result (like JS await), return it on success or throw some exception on failure
+     *
+     * @param SelectInterface $select
+     * @param int $timeout
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function wait(SelectInterface $select, int $timeout = self::TIMEOUT)
+    {
+        $start = microtime(true);
+        while (null === $this->result && microtime(true) - $start < $timeout) {
             $select->dispatch();
             usleep(1000);
         }
 
-        return $this->value;
+        if ($this->status === self::RESOLVED) {
+            return $this->result;
+        }
+
+        if ($this->status === self::REJECTED) {
+            if (!$this->result instanceof \Throwable) {
+                throw new DeferredException($this->result);
+            }
+
+            throw $this->result;
+        }
+
+        throw new DeferredException(null);
     }
 }

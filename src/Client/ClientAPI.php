@@ -20,6 +20,16 @@ final class ClientAPI
         $this->session    = $session;
     }
 
+    /**
+     * Register in IRC network as a user
+     *
+     * @param string|null $pass
+     * @param string $nick
+     * @param string $user
+     * @param string $realname
+     * @param int $flags
+     * @return Deferred
+     */
     public function registerAsUser(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
     {
         if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
@@ -36,10 +46,18 @@ final class ClientAPI
         $this->connection->send(new CMD(CMD::NICK, [$nick]));
         $this->connection->send(new CMD(CMD::USER, [$user, $flags, '*'], $realname));
 
-        //TODO maybe handle registration here & wrap in another deferred
         return $this->connection->wait(RPL::WELCOME)->deferred();
     }
 
+    /**
+     * Register in IRC network as a service
+     *
+     * @param string|null $pass
+     * @param string $name
+     * @param string $servers
+     * @param string $info
+     * @return Deferred
+     */
     public function registerAsService(?string $pass, string $name, string $servers, string $info): Deferred
     {
         if ($this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
@@ -55,18 +73,48 @@ final class ClientAPI
 
         $this->connection->send(new CMD(CMD::SERVICE, [$name, 0, $servers, 0, 0], $info));
 
-        //TODO maybe handle registration here & wrap in another deferred
         return $this->connection->wait(RPL::YOU_ARE_SERVICE)->deferred();
     }
 
+    /**
+     * Change registered user nick
+     *
+     * @param string $nick
+     * @return Deferred
+     */
     public function NICK(string $nick): Deferred
     {
         if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             throw new ProtocolException('You must register before');
         }
 
+        if ($this->session->getType() !== SessionInterface::TYPE_CLIENT) {
+            throw new ProtocolException('You must register as client');
+        }
+
         $this->connection->send(new CMD(CMD::NICK, [$nick]));
         return $this->connection->wait(CMD::NICK)->deferred();
+    }
+
+    /**
+     * Login registered user as network operator
+     *
+     * @param string $name
+     * @param string $password
+     * @return Deferred
+     */
+    public function OPER(string $name, string $password): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        if ($this->session->getType() !== SessionInterface::TYPE_CLIENT) {
+            throw new ProtocolException('You must register as client');
+        }
+
+        $this->connection->send(new CMD(CMD::OPERATOR, [$name, $password]));
+        return $this->connection->wait(RPL::YOU_ARE_OPERATOR)->deferred();
     }
 
     // roles: REGISTERED

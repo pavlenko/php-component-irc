@@ -31,7 +31,7 @@ final class Waiting
     public function deferred(): Deferred
     {
         if ($this->deferred === null) {
-            $this->deferred = null;
+            $this->deferred = new Deferred();
         }
 
         return $this->deferred;

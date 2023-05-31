@@ -4,6 +4,7 @@ namespace PE\Component\IRC\Event;
 
 use PE\Component\IRC\Protocol\Connection;
 
+/* @deprecated */
 final class ConnectedEvent
 {
     private Connection $connection;

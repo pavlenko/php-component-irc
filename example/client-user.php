@@ -19,11 +19,11 @@ $client  = new Client($factory, $logger);
 
 $client->attach(ConnectedEvent::class, function (ConnectedEvent $event) {
     $conn = $event->getConnection();
-    $user = new ClientAPI(
-        $conn,
-        new Session(null, $conn->getRemoteAddress(), $conn->getClientAddress())
-    );
-    $user->register(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
-        ->onSuccess(fn() => $event->getConnection()->send(new CMD(CMD::WHOIS, ['master__'])));
+
+    $api = new ClientAPI($conn, new Session(null, $conn->getRemoteAddress(), $conn->getClientAddress()));
+    $api->registerAsUser(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
+        ->then(function () use ($conn) {
+            $conn->send(new CMD(CMD::WHOIS, ['master__']));
+        });
 });
 $client->connect('tls://irc.libera.chat:6697');

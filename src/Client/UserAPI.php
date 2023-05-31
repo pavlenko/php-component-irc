@@ -6,7 +6,6 @@ use PE\Component\IRC\CMD;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
-/* @deprecated */
 class UserAPI
 {
     private Connection $connection;
@@ -14,33 +13,6 @@ class UserAPI
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-    }
-
-    //TODO if registered - protocol exception
-    /* @deprecated */
-    public function register(?string $pass, string $nick, string $user, string $realname, int $flags): Deferred
-    {
-        if (!empty($pass)) {
-            $this->connection->send(new CMD(CMD::PASSWORD, [$pass]));
-        }
-
-        $this->connection->send(new CMD(CMD::NICK, [$nick]));
-        $this->connection->send(new CMD(CMD::USER, [$user, $flags, '*'], $realname));
-
-        return $this->connection->wait(RPL::WELCOME);
-    }
-
-    // roles: GUEST|REGISTERED
-    public function NICK(string $nick): void
-    {
-        $this->connection->send(new CMD(CMD::NICK, [$nick]));
-    }
-
-    // roles: REGISTERED
-    public function OPER(string $name, string $password): void
-    {
-        $this->connection->send(new CMD(CMD::OPERATOR, [$name, $password]));
-        $this->connection->wait(RPL::YOU_ARE_OPERATOR);
     }
 
     // roles: REGISTERED

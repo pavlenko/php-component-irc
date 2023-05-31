@@ -9,6 +9,9 @@ use PE\Component\IRC\Util\Deferred;
 use PE\Component\IRC\Protocol\Connection;
 use PE\Component\IRC\RPL;
 
+/**
+ * @TODO represent only registered client API, other move to: server|user|channel|registration spis
+ */
 final class ClientAPI
 {
     private Connection $connection;
@@ -116,6 +119,9 @@ final class ClientAPI
         $this->connection->send(new CMD(CMD::OPERATOR, [$name, $password]));
         return $this->connection->wait(RPL::YOU_ARE_OPERATOR)->deferred();
     }
+
+    //todo move mode, quit, squit here
+    //TODO how to split mode commands
 
     // roles: REGISTERED
     public function AWAY(string $message = null): Deferred

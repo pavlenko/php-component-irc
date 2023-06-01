@@ -417,8 +417,15 @@ final class CMD extends MSG
      */
     public const WALLOPS = 'WALLOPS';
 
+    /**
+     * <code>
+     * CMD(WHO [$mask ["o"]])
+     * </code>
+     */
+    public const WHO = 'WHO';
+
+
     public const WHOIS       = 'WHOIS';
-    public const WHO         = 'WHO';
     public const WHO_WAS     = 'WHOWAS';
 
     protected function resolveComment(): ?string

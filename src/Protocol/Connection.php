@@ -156,7 +156,7 @@ final class Connection implements EmitterInterface
 
         // Check last message time
         if (time() - $this->lastMessageTime > $this->inactiveTimeout) {
-            $this->send(new CMD(CMD::PING));
+            $this->send(new CMD(CMD::PING, [$this->getRemoteAddress()]));
             $this->wait(CMD::PONG);
             $this->lastMessageTime = time();
             $this->lastPingingTime = time();

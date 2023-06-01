@@ -3,7 +3,9 @@
 namespace PE\Component\IRC\Client;
 
 use PE\Component\IRC\CMD;
+use PE\Component\IRC\ERR;
 use PE\Component\IRC\Exception\ProtocolException;
+use PE\Component\IRC\MSG;
 use PE\Component\IRC\SessionInterface;
 use PE\Component\IRC\Util\Deferred;
 use PE\Component\IRC\Protocol\Connection;
@@ -269,5 +271,32 @@ final class ClientAPI
     {
         $this->connection->send(new CMD(CMD::IS_ON, $nicknames));
         $this->connection->wait(RPL::IS_ON);
+    }
+
+    public function WHO(string $mask): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        $this->connection->send(new CMD(CMD::WHO, [$mask]));
+        $this->connection->wait(RPL::WHO_REPLY, RPL::END_OF_WHO);
+
+        $deferred = new Deferred();
+        $result   = [];
+        $handler  = function (MSG $msg) use (&$handler, $deferred, &$result) {
+            switch ($msg->getCode()) {
+                case RPL::WHO_REPLY:
+                    $result[] = $msg->getComment();
+                    break;
+                case RPL::END_OF_WHO:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->resolved($result);
+                    break;
+            }
+        };
+
+        $this->connection->attach(Connection::ON_INPUT, $handler);
+        return $deferred;
     }
 }

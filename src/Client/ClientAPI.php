@@ -339,7 +339,7 @@ final class ClientAPI
                 case RPL::WHO_IS_OPERATOR:
                 case RPL::WHO_IS_SECURE:
                 case RPL::WHO_IS_ACTUALLY:
-                    $result[$msg->getCode()] = $msg->getComment();
+                    $result[$msg->getCode()] = $msg;
                     break;
                 case RPL::END_OF_WHO_IS:
                     $this->connection->detach(Connection::ON_INPUT, $handler);

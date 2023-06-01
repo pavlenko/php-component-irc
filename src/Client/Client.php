@@ -55,8 +55,7 @@ final class Client implements ClientInterface, EmitterInterface
         });
 
         $this->connection->attach(Connection::ON_ERROR, function (\Throwable $exception) {
-            $this->logger->log(LogLevel::ERROR, 'E: ' . $exception->getCode() . ': ' . $exception->getMessage());
-            $this->logger->log(LogLevel::DEBUG, 'E: ' . $exception->getTraceAsString());
+            $this->logger->log(LogLevel::ERROR, 'E: ' . $exception);
             $this->processErrored($this->connection, $exception);
         });
 

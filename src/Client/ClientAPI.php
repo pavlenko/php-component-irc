@@ -121,6 +121,22 @@ final class ClientAPI
     }
 
     /**
+     * Quit IRC network with optional message
+     *
+     * @param string|null $message
+     * @return Deferred
+     */
+    public function QUIT(string $message = null): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        $this->connection->send(new CMD(CMD::QUIT, [], $message));
+        return $this->connection->wait(CMD::ERROR)->deferred();
+    }
+
+    /**
      * Get/Set user mode, unusable for services
      *
      * @param string $nick

@@ -15,13 +15,7 @@ class UserAPI
         $this->connection = $connection;
     }
 
-    // roles: REGISTERED
-    public function QUIT(string $message = null): void
-    {
-        $this->connection->send(new CMD(CMD::QUIT, [], $message));
-        $this->connection->wait(CMD::ERROR);// this ack by error command
-    }
-
+    //TODO server api....
     // roles: REGISTERED|IRC_OPERATOR
     public function S_QUIT(string $server, string $comment): void
     {

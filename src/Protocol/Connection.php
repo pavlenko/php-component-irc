@@ -26,8 +26,8 @@ final class Connection implements EmitterInterface
     private SocketClient $socket;
     private int $responseTimeout;
     private int $inactiveTimeout;
-    private int $lastPingingTime = 0;
-    private int $lastMessageTime = 0;
+    private int $lastPingingTime;
+    private int $lastMessageTime;
 
     private ?string $clientAddress = null;
     private ?string $remoteAddress = null;
@@ -45,6 +45,9 @@ final class Connection implements EmitterInterface
     ) {
         $this->responseTimeout = $responseTimeout;
         $this->inactiveTimeout = $inactiveTimeout;
+
+        $this->lastMessageTime = time();
+        $this->lastPingingTime = time();
 
         $this->socket = $socket;
         $this->socket->setCloseHandler(function (string $message = null) {
@@ -143,6 +146,7 @@ final class Connection implements EmitterInterface
         // Check expected response timed out
         foreach ($this->waitQueue as $waiting) {
             if ($waiting->getExpiredAt() < time()) {
+                dump($waiting);
                 $waiting->deferred()->rejected($exception = new TimeoutException());
                 $this->dispatch(new Event(self::ON_ERROR, $exception));
                 $this->close();

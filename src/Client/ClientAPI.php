@@ -273,13 +273,13 @@ final class ClientAPI
         $this->connection->wait(RPL::IS_ON);
     }
 
-    public function WHO(string $mask): Deferred
+    public function WHO(string $mask, bool $operators = false): Deferred
     {
         if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
             throw new ProtocolException('You must register before');
         }
 
-        $this->connection->send(new CMD(CMD::WHO, [$mask]));
+        $this->connection->send(new CMD(CMD::WHO, [$mask, $operators ? 'o' : '']));
         $this->connection->wait(RPL::WHO_REPLY, RPL::END_OF_WHO);
 
         $deferred = new Deferred();

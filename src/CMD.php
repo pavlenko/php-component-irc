@@ -443,6 +443,17 @@ final class CMD extends MSG
      * @see RPL::END_OF_WHO_IS
      */
     public const WHO_IS  = 'WHOIS';
+
+    /**
+     * <code>
+     * CMD(WHO_WAS [$target] ...$masks))
+     * </code>
+     * @see ERR::NO_NICKNAME_GIVEN
+     * @see ERR::WAS_NO_SUCH_NICK
+     * @see RPL::WHO_WAS_USER
+     * @see RPL::WHO_IS_SERVER
+     * @see RPL::END_OF_WHO_WAS
+     */
     public const WHO_WAS = 'WHOWAS';
 
     protected function resolveComment(): ?string

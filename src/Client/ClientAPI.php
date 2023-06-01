@@ -306,7 +306,6 @@ final class ClientAPI
      * @param string|null $target
      * @param string ...$masks
      * @return Deferred
-     * @codingStandardsIgnoreStart
      */
     public function WHO_IS(?string $target, string ...$masks): Deferred
     {
@@ -347,6 +346,47 @@ final class ClientAPI
                     break;
                 case ERR::NO_SUCH_SERVER:
                 case ERR::NO_SUCH_NICK:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->rejected($msg->getComment());
+                    break;
+            }
+        };
+
+        $this->connection->attach(Connection::ON_INPUT, $handler);
+        return $deferred;
+    }
+
+    /**
+     * Ask for information about a nickname which no longer exists.
+     *
+     * @param array $nicknames
+     * @param int|null $count
+     * @param string|null $target
+     * @return Deferred
+     */
+    public function WHO_WAS(array $nicknames, int $count = null, string $target = null): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        $this->connection->send(new CMD(CMD::WHO_WAS, [...$nicknames, $count, $target]));
+        $this->connection->wait(RPL::WHO_WAS_USER, RPL::WHO_IS_SERVER, RPL::END_OF_WHO_WAS);
+
+        $deferred = new Deferred();
+        $result   = [];
+        $handler  = function (MSG $msg) use (&$handler, $deferred, &$result) {
+            switch ($msg->getCode()) {
+                case RPL::WHO_WAS_USER:
+                case RPL::WHO_IS_SERVER:
+                    $result[$msg->getCode()] = $msg;
+                    break;
+                case RPL::END_OF_WHO_WAS:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->resolved($result);
+                    break;
+                case ERR::NO_NICKNAME_GIVEN:
+                case ERR::WAS_NO_SUCH_NICK:
                     $this->connection->detach(Connection::ON_INPUT, $handler);
                     $deferred->rejected($msg->getComment());
                     break;

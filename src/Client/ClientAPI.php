@@ -299,4 +299,61 @@ final class ClientAPI
         $this->connection->attach(Connection::ON_INPUT, $handler);
         return $deferred;
     }
+
+    /**
+     * Query information about particularly user
+     *
+     * @param string|null $target
+     * @param string ...$masks
+     * @return Deferred
+     * @codingStandardsIgnoreStart
+     */
+    public function WHO_IS(?string $target, string ...$masks): Deferred
+    {
+        if (!$this->session->hasFlag(SessionInterface::FLAG_REGISTERED)) {
+            throw new ProtocolException('You must register before');
+        }
+
+        $this->connection->send(new CMD(CMD::WHO_IS, [$target, ...$masks]));
+        $this->connection->wait(
+            RPL::AWAY,
+            RPL::WHO_IS_USER,
+            RPL::WHO_IS_CHANNELS,
+            RPL::WHO_IS_IDLE,
+            RPL::WHO_IS_SERVER,
+            RPL::WHO_IS_OPERATOR,
+            RPL::WHO_IS_SECURE,
+            RPL::WHO_IS_ACTUALLY,
+            RPL::END_OF_WHO_IS,
+        );
+
+        $deferred = new Deferred();
+        $result   = [];
+        $handler  = function (MSG $msg) use (&$handler, $deferred, &$result) {
+            switch ($msg->getCode()) {
+                case RPL::AWAY:
+                case RPL::WHO_IS_USER:
+                case RPL::WHO_IS_CHANNELS:
+                case RPL::WHO_IS_IDLE:
+                case RPL::WHO_IS_SERVER:
+                case RPL::WHO_IS_OPERATOR:
+                case RPL::WHO_IS_SECURE:
+                case RPL::WHO_IS_ACTUALLY:
+                    $result[$msg->getCode()] = $msg->getComment();
+                    break;
+                case RPL::END_OF_WHO_IS:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->resolved($result);
+                    break;
+                case ERR::NO_SUCH_SERVER:
+                case ERR::NO_SUCH_NICK:
+                    $this->connection->detach(Connection::ON_INPUT, $handler);
+                    $deferred->rejected($msg->getComment());
+                    break;
+            }
+        };
+
+        $this->connection->attach(Connection::ON_INPUT, $handler);
+        return $deferred;
+    }
 }

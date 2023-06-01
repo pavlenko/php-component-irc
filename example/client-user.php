@@ -24,7 +24,7 @@ $client->attach(ConnectedEvent::class, function (ConnectedEvent $event) {
     $api->USER(null, 'master__', 'phpbot', 'php IRC bot test', 0b1000)
         ->then(function () use ($conn, $api) {
             //$conn->send(new CMD(CMD::WHOIS, ['master__']));
-            $api->WHO('master__')->then(fn($r) => dump($r));
+            $api->WHO_IS('master__')->then(fn($r) => dump($r));
         });
 });
 $client->connect('tls://irc.libera.chat:6697');

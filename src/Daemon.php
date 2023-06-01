@@ -116,19 +116,19 @@ final class Daemon
             CMD::RESTART     => new HandlerRESTART(),
             CMD::SERVER      => new HandlerSERVER(),
             CMD::SERVER_QUIT => new HandlerSQUIT(),
-            CMD::STATS       => new HandlerSTATS(),
-            CMD::SUMMON      => new HandlerSUMMON(),
-            CMD::TIME        => new HandlerTIME(),
-            CMD::TOPIC       => new HandlerTOPIC(),
-            CMD::TRACE       => [$this, ''],//TODO
-            CMD::USER_HOST   => new HandlerUSERHOST(),
-            CMD::USER        => new HandlerUSER(),
-            CMD::USERS       => [$this, ''],//TODO
-            CMD::VERSION     => new HandlerVERSION(),
-            CMD::WALLOPS     => new HandlerWALLOPS(),
-            CMD::WHOIS       => new HandlerWHOIS(),
-            CMD::WHO         => new HandlerWHO(),
-            CMD::WHO_WAS     => new HandlerWHOWAS(),
+            CMD::STATS     => new HandlerSTATS(),
+            CMD::SUMMON    => new HandlerSUMMON(),
+            CMD::TIME      => new HandlerTIME(),
+            CMD::TOPIC     => new HandlerTOPIC(),
+            CMD::TRACE     => [$this, ''],//TODO
+            CMD::USER_HOST => new HandlerUSERHOST(),
+            CMD::USER      => new HandlerUSER(),
+            CMD::USERS     => [$this, ''],//TODO
+            CMD::VERSION   => new HandlerVERSION(),
+            CMD::WALLOPS   => new HandlerWALLOPS(),
+            CMD::WHO_IS    => new HandlerWHOIS(),
+            CMD::WHO       => new HandlerWHO(),
+            CMD::WHO_WAS   => new HandlerWHOWAS(),
         ];
     }
 

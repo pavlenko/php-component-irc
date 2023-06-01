@@ -129,6 +129,8 @@ final class ERR extends MSG
     public const USER_MODE_UNKNOWN_FLAG     = '501';//:<prefix> <rpl code> <curr nick> :Unknown MODE flag
     public const USERS_DONT_MATCH           = '502';//:<prefix> <rpl code> <curr nick> :Cant change mode for other users
 
+    public const WHO_IS_SECURE = '671';
+
     public function __construct(string $prefix, int $code, array $args = [], string $comment = null)
     {
         parent::__construct($code, $args, $comment, $prefix);

@@ -130,7 +130,7 @@ final class Connection implements EmitterInterface
         $comment = !empty($parts[1]) ? trim($parts[1]) : null;
 
         if (is_numeric($code)) {
-            if ($code < 400) {
+            if ($code < 400 || in_array($code, [670, 671])) {
                 return new RPL($prefix, $code, $args, $comment);
             }
             return new ERR($prefix, $code, $args, $comment);
@@ -156,7 +156,7 @@ final class Connection implements EmitterInterface
 
         // Check last message time
         if (time() - $this->lastMessageTime > $this->inactiveTimeout) {
-            $this->send(new CMD(CMD::PING, [$this->getRemoteAddress()]));
+            $this->send(new CMD(CMD::PING, [$this->lastPingingTime/*$this->getRemoteAddress()*/]));
             $this->wait(CMD::PONG);
             $this->lastMessageTime = time();
             $this->lastPingingTime = time();

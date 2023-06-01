@@ -191,6 +191,28 @@ final class RPL extends MSG
 
     public const NO_TOPIC         = '331';//:<prefix> <rpl code> <channel> :No topic is set
     public const TOPIC            = '332';//:<prefix> <rpl code> <channel> :<topic>
+
+    /**
+     * <code>
+     * RPL(:$prefix TOPIC_WHO_TIME :%s 333 %s %s %s %lld)
+     * </code>
+     */
+    public const TOPIC_WHO_TIME = '333';
+
+    /**
+     * <code>
+     * RPL(:$prefix WHO_IS_TEXT :???)
+     * </code>
+     */
+    public const WHO_IS_TEXT = '337';
+
+    /**
+     * <code>
+     * RPL(:$prefix WHO_IS_ACTUALLY $nick $user $host :actually using host)
+     * </code>
+     */
+    public const WHO_IS_ACTUALLY = '338';
+
     public const INVITING         = '341';//:<prefix> <rpl code> <nick> <channel>
     public const SUMMONING        = '342';//:<prefix> <rpl code> <user> :Summoning user to IRC
 
@@ -258,6 +280,14 @@ final class RPL extends MSG
     public const USERS            = '393';//:<prefix> <rpl code> :%-8s %-9s %-8s
     public const END_OF_USERS     = '394';//:<prefix> <rpl code> :End of users
     public const NO_USERS         = '395';//:<prefix> <rpl code> :Nobody logged in
+
+    /**
+     * <code>
+     * RPL(:$prefix WHO_IS_SECURE $curr_nick $nickname :is using a secure connection [$chippers])
+     * </code>
+     * @see CMD::WHO_IS
+     */
+    public const WHO_IS_SECURE = '671';
 
     public function __construct(string $prefix, int $code, array $args = [], string $comment = null)
     {

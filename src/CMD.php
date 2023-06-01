@@ -421,12 +421,29 @@ final class CMD extends MSG
      * <code>
      * CMD(WHO [$mask ["o"]])
      * </code>
+     * @see ERR::NO_SUCH_SERVER
+     * @see RPL::WHO_REPLY
+     * @see RPL::END_OF_WHO
      */
     public const WHO = 'WHO';
 
-
-    public const WHOIS       = 'WHOIS';
-    public const WHO_WAS     = 'WHOWAS';
+    /**
+     * <code>
+     * CMD(WHO_IS [$target] ...$masks))
+     * </code>
+     * @see ERR::NO_NICKNAME_GIVEN
+     * @see ERR::NO_SUCH_SERVER
+     * @see ERR::NO_SUCH_NICK
+     * @see RPL::AWAY
+     * @see RPL::WHO_IS_USER
+     * @see RPL::WHO_IS_CHANNELS
+     * @see RPL::WHO_IS_IDLE
+     * @see RPL::WHO_IS_SERVER
+     * @see RPL::WHO_IS_OPERATOR
+     * @see RPL::END_OF_WHO_IS
+     */
+    public const WHO_IS  = 'WHOIS';
+    public const WHO_WAS = 'WHOWAS';
 
     protected function resolveComment(): ?string
     {
